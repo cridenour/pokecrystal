@@ -1,78 +1,78 @@
+The source files are assembled into a rom using [**rgbds**](https://github.com/bentley/rgbds).
+These instructions explain how to set up the tools required to build.
+
+If you run into trouble, ask on irc ([**freenode#pret**](https://kiwiirc.com/client/irc.freenode.net/?#pret)).
+
+
 # Linux
 
-Dependencies:
+Python 2.7 is required.
 
-	sudo apt-get install make gcc bison git python python-setuptools
-	sudo easy_install pip
+```bash
+sudo apt-get install make gcc bison git python
 
-The assembler used is [**rgbds**](https://github.com/bentley/rgbds).
+git clone https://github.com/bentley/rgbds
+cd rgbds
+sudo make install
+cd ..
 
-	git clone git://github.com/bentley/rgbds.git
-	cd rgbds
-	sudo mkdir -p /usr/local/man/man{1,7}
-	sudo make install
-	cd ..
-
-Set up the repository.
-
-	git clone git://github.com/kanzure/pokecrystal.git
-	cd pokecrystal
-	git submodule init
-	git submodule update
-	sudo pip install -r extras/requirements.txt
-
-- Copy your Pokémon Crystal rom to the directory. Name it **baserom.gbc**.
+git clone --recursive https://github.com/pret/pokecrystal
+cd pokecrystal
+```
 
 To build **pokecrystal.gbc**:
 
-	make
+```bash
+make
+```
 
-This should take about 30 seconds.
-Subsequent builds are much faster (2-10 seconds).
 
+# Mac
 
-# OS X
+In **Terminal**, run:
 
-Download and install **Command Line Tools for Xcode**.
-Then follow the Linux instructions.
+```bash
+xcode-select --install
 
-If you have Xcode already, you can get Command Line Tools with:
+git clone https://github.com/bentley/rgbds
+cd rgbds
+sudo make install
+cd ..
 
-	xcode-select --install
+git clone --recursive https://github.com/pret/pokecrystal
+cd pokecrystal
+```
+
+To build **pokecrystal.gbc**:
+
+```bash
+make
+```
 
 
 # Windows
 
-It's recommended that you use a virtual machine running Linux or OS X.
+To build on Windows, install [**Cygwin**](http://cygwin.com/install.html) with the default settings.
 
-If you insist on Windows, use [**Cygwin**](http://cygwin.com/install.html) (32-bit).
+In the installer, select the following packages: `make` `git` `python` `gettext`
 
-Dependencies are downloaded in the installer rather than the command line.
-Select the following packages:
-* make
-* git
-* python
-* python-setuptools
-* gcc
-* libsasl2
-* ca-certificates
+Then get the most recent version of [**rgbds**](https://github.com/bentley/rgbds/releases/).
+Extract the archive and put `rgbasm.exe`, `rgblink.exe` and `rgbfix.exe` in `C:\cygwin64\usr\local\bin`.
 
-To install rgbds, extract the contents of
-**http://iimarck.us/etc/rgbds.zip**
-and put them in `C:\cygwin\usr\local\bin`.
+In the **Cygwin terminal**:
 
-Then set up the repository. In the **Cygwin terminal**:
+```bash
 
-	git clone git://github.com/kanzure/pokecrystal.git
-	cd pokecrystal
-	git submodule init
-	git submodule update
-	easy_install pip
-	pip install -r extras/requirements.txt
+git clone --recursive https://github.com/pret/pokecrystal
+cd pokecrystal
+```
 
-- Copy your Pokémon Crystal rom to the directory. Name it **baserom.gbc**.
+To build **pokecrystal.gbc**:
 
-To build:
+```bash
+make
+```
 
-	make
+## notes
 
+- If `gettext` no longer exists, grab `libsasl2-3` `ca-certificates`.

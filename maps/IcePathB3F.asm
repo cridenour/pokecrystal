@@ -1,37 +1,36 @@
-IcePathB3F_MapScriptHeader: ; 0x7e66d
-	; trigger count
+const_value set 2
+	const ICEPATHB3F_POKE_BALL
+	const ICEPATHB3F_ROCK
+
+IcePathB3F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x7e66f
 
-ItemFragment_0x7e66f: ; 0x7e66f
-	db NEVERMELTICE, 1
-; 0x7e671
+IcePathB3FNevermeltice:
+	itemball NEVERMELTICE
 
-RockScript_0x7e671: ; 0x7e671
-	jumpstd $000f
-; 0x7e674
+IcePathB3FRock:
+	jumpstd smashrock
 
-IcePathB3F_MapEventHeader: ; 0x7e674
+IcePathB3F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $5, $3, 2, GROUP_ICE_PATH_B2F_MAHOGANY_SIDE, MAP_ICE_PATH_B2F_MAHOGANY_SIDE
-	warp_def $5, $f, 2, GROUP_ICE_PATH_B2F_BLACKTHORN_SIDE, MAP_ICE_PATH_B2F_BLACKTHORN_SIDE
+	warp_def $5, $3, 2, ICE_PATH_B2F_MAHOGANY_SIDE
+	warp_def $5, $f, 2, ICE_PATH_B2F_BLACKTHORN_SIDE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_POKE_BALL, 11, 9, $1, $0, 255, 255, $1, 0, ItemFragment_0x7e66f, $068e
-	person_event SPRITE_ROCK, 10, 10, $18, $0, 255, 255, $0, 0, RockScript_0x7e671, $ffff
-; 0x7e69e
-
+	person_event SPRITE_POKE_BALL, 7, 5, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, IcePathB3FNevermeltice, EVENT_ICE_PATH_B3F_NEVERMELTICE
+	person_event SPRITE_ROCK, 6, 6, SPRITEMOVEDATA_SMASHABLE_ROCK, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, IcePathB3FRock, -1

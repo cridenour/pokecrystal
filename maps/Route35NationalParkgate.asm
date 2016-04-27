@@ -1,261 +1,238 @@
-Route35NationalParkgate_MapScriptHeader: ; 0x6a189
-	; trigger count
+const_value set 2
+	const ROUTE35NATIONALPARKGATE_OFFICER1
+	const ROUTE35NATIONALPARKGATE_YOUNGSTER
+	const ROUTE35NATIONALPARKGATE_OFFICER2
+
+Route35NationalParkgate_MapScriptHeader:
+.MapTriggers:
 	db 3
 
 	; triggers
-	dw UnknownScript_0x6a19d, $0000
-	dw UnknownScript_0x6a19e, $0000
-	dw UnknownScript_0x6a19f, $0000
+	dw Route35NationalParkgate_Trigger1, 0
+	dw Route35NationalParkgate_Trigger2, 0
+	dw Route35NationalParkgate_Trigger3, 0
 
-	; callback count
+.MapCallbacks:
 	db 2
 
 	; callbacks
 
-	dbw 5, UnknownScript_0x6a1a3
+	dbw MAPCALLBACK_NEWMAP, Route35NationalParkgate_CheckIfStillInContest
 
-	dbw 2, UnknownScript_0x6a1af
-; 0x6a19d
+	dbw MAPCALLBACK_OBJECTS, Route35NationalParkgate_CheckIfContestDay
 
-UnknownScript_0x6a19d: ; 0x6a19d
+Route35NationalParkgate_Trigger1:
 	end
-; 0x6a19e
 
-UnknownScript_0x6a19e: ; 0x6a19e
+Route35NationalParkgate_Trigger2:
 	end
-; 0x6a19f
 
-UnknownScript_0x6a19f: ; 0x6a19f
-	priorityjump UnknownScript_0x6a1d1
+Route35NationalParkgate_Trigger3:
+	priorityjump Route35NationalParkGate_LeavingContestEarly
 	end
-; 0x6a1a3
 
-UnknownScript_0x6a1a3: ; 0x6a1a3
-	checkflag $0011
-	iftrue UnknownScript_0x6a1ac
+Route35NationalParkgate_CheckIfStillInContest:
+	checkflag ENGINE_BUG_CONTEST_TIMER
+	iftrue Route35NationalParkgate_Yes
 	dotrigger $0
 	return
-; 0x6a1ac
 
-UnknownScript_0x6a1ac: ; 0x6a1ac
+Route35NationalParkgate_Yes:
 	dotrigger $2
 	return
-; 0x6a1af
 
-UnknownScript_0x6a1af: ; 0x6a1af
-	checkcode $b
-	if_equal TUESDAY, UnknownScript_0x6a1ca
-	if_equal THURSDAY, UnknownScript_0x6a1ca
-	if_equal SATURDAY, UnknownScript_0x6a1ca
-	checkflag $0011
-	iftrue UnknownScript_0x6a1ac
-	disappear $2
-	appear $3
-	appear $4
+Route35NationalParkgate_CheckIfContestDay:
+	checkcode VAR_WEEKDAY
+	if_equal TUESDAY, Route35NationalParkgate_IsContestDay
+	if_equal THURSDAY, Route35NationalParkgate_IsContestDay
+	if_equal SATURDAY, Route35NationalParkgate_IsContestDay
+	checkflag ENGINE_BUG_CONTEST_TIMER
+	iftrue Route35NationalParkgate_Yes
+	disappear ROUTE35NATIONALPARKGATE_OFFICER1
+	appear ROUTE35NATIONALPARKGATE_YOUNGSTER
+	appear ROUTE35NATIONALPARKGATE_OFFICER2
 	return
-; 0x6a1ca
 
-UnknownScript_0x6a1ca: ; 0x6a1ca
-	appear $2
-	disappear $3
-	disappear $4
+Route35NationalParkgate_IsContestDay:
+	appear ROUTE35NATIONALPARKGATE_OFFICER1
+	disappear ROUTE35NATIONALPARKGATE_YOUNGSTER
+	disappear ROUTE35NATIONALPARKGATE_OFFICER2
 	return
-; 0x6a1d1
 
-UnknownScript_0x6a1d1: ; 0x6a1d1
-	applymovement $0, MovementData_0x6a2e2
-	spriteface $2, $3
-	loadfont
-	checkcode $11
+Route35NationalParkGate_LeavingContestEarly:
+	applymovement PLAYER, MovementData_0x6a2e2
+	spriteface ROUTE35NATIONALPARKGATE_OFFICER1, RIGHT
+	opentext
+	checkcode VAR_CONTESTMINUTES
 	addvar $1
 	RAM2MEM $0
-	2writetext UnknownText_0x6a79a
+	writetext UnknownText_0x6a79a
 	yesorno
-	iffalse UnknownScript_0x6a1ee
-	2writetext UnknownText_0x6a7db
-	closetext
-	loadmovesprites
-	jumpstd $0016
-; 0x6a1ee
-
-UnknownScript_0x6a1ee: ; 0x6a1ee
-	2writetext UnknownText_0x6a823
-	closetext
-	loadmovesprites
-	2call UnknownScript_0x6a261
-	playsound SFX_ENTER_DOOR
-	special $002e
+	iffalse Route35NationalParkgate_GoBackIn
+	writetext UnknownText_0x6a7db
 	waitbutton
-	warpfacing $1, GROUP_NATIONAL_PARK_BUG_CONTEST, MAP_NATIONAL_PARK_BUG_CONTEST, $a, $2f
-	end
-; 0x6a204
+	closetext
+	jumpstd bugcontestresultswarp
 
-OfficerScript_0x6a204: ; 0x6a204
-	checkcode $b
-	if_equal SUNDAY, UnknownScript_0x6a2c7
-	if_equal MONDAY, UnknownScript_0x6a2c7
-	if_equal WEDNESDAY, UnknownScript_0x6a2c7
-	if_equal FRIDAY, UnknownScript_0x6a2c7
+Route35NationalParkgate_GoBackIn:
+	writetext UnknownText_0x6a823
+	waitbutton
+	closetext
+	scall Route35NationalParkgate_EnterContest
+	playsound SFX_ENTER_DOOR
+	special FadeOutPalettes
+	waitsfx
+	warpfacing UP, NATIONAL_PARK_BUG_CONTEST, $a, $2f
+	end
+
+OfficerScript_0x6a204:
+	checkcode VAR_WEEKDAY
+	if_equal SUNDAY, Route35NationalParkgate_NoContestToday
+	if_equal MONDAY, Route35NationalParkgate_NoContestToday
+	if_equal WEDNESDAY, Route35NationalParkgate_NoContestToday
+	if_equal FRIDAY, Route35NationalParkgate_NoContestToday
 	faceplayer
-	loadfont
-	checkflag $0051
-	iftrue UnknownScript_0x6a2c1
-	2call UnknownScript_0x6a2de
-	2writetext UnknownText_0x6a2eb
+	opentext
+	checkflag ENGINE_DAILY_BUG_CONTEST
+	iftrue Route35NationalParkgate_ContestIsOver
+	scall Route35NationalParkgate_GetDayOfWeek
+	writetext UnknownText_0x6a2eb
 	yesorno
-	iffalse UnknownScript_0x6a2a3
-	checkcode $1
-	if_greater_than $1, UnknownScript_0x6a271
-	special $0016
-	clearevent $0308
-UnknownScript_0x6a234: ; 0x6a234
-	setflag $0011
-	special $003c
-	2writetext UnknownText_0x6a39d
-	keeptextopen
-	2writetext UnknownText_0x6a3c7
+	iffalse Route35NationalParkgate_DeclinedToParticipate
+	checkcode VAR_PARTYCOUNT
+	if_greater_than $1, Route35NationalParkgate_LeaveTheRestBehind
+	special ContestDropOffMons
+	clearevent EVENT_LEFT_MONS_WITH_CONTEST_OFFICER
+Route35NationalParkgate_OkayToProceed:
+	setflag ENGINE_BUG_CONTEST_TIMER
+	special PlayMapMusic
+	writetext UnknownText_0x6a39d
+	buttonsound
+	writetext UnknownText_0x6a3c7
 	playsound SFX_ITEM
+	waitsfx
+	writetext UnknownText_0x6a3e2
 	waitbutton
-	2writetext UnknownText_0x6a3e2
 	closetext
-	loadmovesprites
-	special $0018
-	2call UnknownScript_0x6a261
+	special Special_GiveParkBalls
+	scall Route35NationalParkgate_EnterContest
 	playsound SFX_ENTER_DOOR
-	special $002e
-	waitbutton
-	special $0047
-	warpfacing $1, GROUP_NATIONAL_PARK_BUG_CONTEST, MAP_NATIONAL_PARK_BUG_CONTEST, $a, $2f
+	special FadeOutPalettes
+	waitsfx
+	special Special_SelectRandomBugContestContestants
+	warpfacing UP, NATIONAL_PARK_BUG_CONTEST, $a, $2f
 	end
-; 0x6a261
 
-UnknownScript_0x6a261: ; 0x6a261
-	checkcode $9
-	if_equal $2, UnknownScript_0x6a26c
-	applymovement $0, MovementData_0x6a2e5
+Route35NationalParkgate_EnterContest:
+	checkcode VAR_FACING
+	if_equal LEFT, Route35NationalParkgate_FacingLeft
+	applymovement PLAYER, MovementData_0x6a2e5
 	end
-; 0x6a26c
 
-UnknownScript_0x6a26c: ; 0x6a26c
-	applymovement $0, MovementData_0x6a2e9
+Route35NationalParkgate_FacingLeft:
+	applymovement PLAYER, MovementData_0x6a2e9
 	end
-; 0x6a271
 
-UnknownScript_0x6a271: ; 0x6a271
-	checkcode $1
-	if_less_than $6, UnknownScript_0x6a27d
-	checkcode $10
-	if_equal $0, UnknownScript_0x6a2b5
+Route35NationalParkgate_LeaveTheRestBehind:
+	checkcode VAR_PARTYCOUNT
+	if_less_than 6, Route35NationalParkgate_LessThanFullParty
+	checkcode VAR_BOXSPACE
+	if_equal 0, Route35NationalParkgate_NoRoomInBox
 
-UnknownScript_0x6a27d: ; 6a27d
-	special $005a
-	if_equal $1, UnknownScript_0x6a2bb
-	2writetext UnknownText_0x6a4c6
+Route35NationalParkgate_LessThanFullParty: ; 6a27d
+	special CheckFirstMonIsEgg
+	if_equal $1, Route35NationalParkgate_FirstMonIsEgg
+	writetext UnknownText_0x6a4c6
 	yesorno
-	iffalse UnknownScript_0x6a2a9
-	special $0016
-	iftrue UnknownScript_0x6a2af
-	setevent $0308
-	2writetext UnknownText_0x6a537
-	keeptextopen
-	2writetext UnknownText_0x6a56b
+	iffalse Route35NationalParkgate_DeclinedToLeaveMonsBehind
+	special ContestDropOffMons
+	iftrue Route35NationalParkgate_FirstMonIsFainted
+	setevent EVENT_LEFT_MONS_WITH_CONTEST_OFFICER
+	writetext UnknownText_0x6a537
+	buttonsound
+	writetext UnknownText_0x6a56b
 	playsound SFX_GOT_SAFARI_BALLS
+	waitsfx
+	buttonsound
+	jump Route35NationalParkgate_OkayToProceed
+
+Route35NationalParkgate_DeclinedToParticipate:
+	writetext UnknownText_0x6a5dc
 	waitbutton
-	keeptextopen
-	2jump UnknownScript_0x6a234
-; 0x6a2a3
-
-UnknownScript_0x6a2a3: ; 0x6a2a3
-	2writetext UnknownText_0x6a5dc
 	closetext
-	loadmovesprites
 	end
-; 0x6a2a9
 
-UnknownScript_0x6a2a9: ; 0x6a2a9
-	2writetext UnknownText_0x6a597
+Route35NationalParkgate_DeclinedToLeaveMonsBehind:
+	writetext UnknownText_0x6a597
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x6a2af
 
-UnknownScript_0x6a2af: ; 0x6a2af
-	2writetext UnknownText_0x6a608
+Route35NationalParkgate_FirstMonIsFainted:
+	writetext UnknownText_0x6a608
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x6a2b5
 
-UnknownScript_0x6a2b5: ; 0x6a2b5
-	2writetext UnknownText_0x6a67c
+Route35NationalParkgate_NoRoomInBox:
+	writetext UnknownText_0x6a67c
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x6a2bb
 
-UnknownScript_0x6a2bb: ; 0x6a2bb
-	2writetext UnknownText_0x6a71f
+Route35NationalParkgate_FirstMonIsEgg:
+	writetext UnknownText_0x6a71f
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x6a2c1
 
-UnknownScript_0x6a2c1: ; 0x6a2c1
-	2writetext UnknownText_0x6a84f
+Route35NationalParkgate_ContestIsOver:
+	writetext UnknownText_0x6a84f
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x6a2c7
 
-UnknownScript_0x6a2c7: ; 0x6a2c7
+Route35NationalParkgate_NoContestToday:
 	jumptextfaceplayer UnknownText_0x6a894
-; 0x6a2ca
 
-OfficerScript_0x6a2ca: ; 0x6a2ca
+OfficerScript_0x6a2ca:
 	faceplayer
-	loadfont
-	checkflag $0051
-	iftrue UnknownScript_0x6a2c1
-	2writetext UnknownText_0x6a894
+	opentext
+	checkflag ENGINE_DAILY_BUG_CONTEST
+	iftrue Route35NationalParkgate_ContestIsOver
+	writetext UnknownText_0x6a894
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x6a2d8
 
-YoungsterScript_0x6a2d8: ; 0x6a2d8
+YoungsterScript_0x6a2d8:
 	jumptextfaceplayer UnknownText_0x6a8d8
-; 0x6a2db
 
-MapRoute36NationalParkgateSignpost0Script: ; 0x6a2db
+MapRoute36NationalParkgateSignpost0Script:
 	jumptext UnknownText_0x6a90e
-; 0x6a2de
 
-UnknownScript_0x6a2de: ; 0x6a2de
-	jumpstd $0015
+Route35NationalParkgate_GetDayOfWeek:
+	jumpstd daytotext
 	end
-; 0x6a2e2
 
-MovementData_0x6a2e2: ; 0x6a2e2
+MovementData_0x6a2e2:
 	step_down
 	turn_head_left
 	step_end
-; 0x6a2e5
 
-MovementData_0x6a2e5: ; 0x6a2e5
+MovementData_0x6a2e5:
 	step_right
 	step_up
 	step_up
 	step_end
-; 0x6a2e9
 
-MovementData_0x6a2e9: ; 0x6a2e9
+MovementData_0x6a2e9:
 	step_up
 	step_end
-; 0x6a2eb
 
-UnknownText_0x6a2eb: ; 0x6a2eb
+UnknownText_0x6a2eb:
 	text "Today's @"
-	text_from_ram $d099
+	text_from_ram StringBuffer3
 	text "."
 	line "That means the"
 
@@ -274,22 +251,19 @@ UnknownText_0x6a2eb: ; 0x6a2eb
 	para "Would you like to"
 	line "give it a try?"
 	done
-; 0x6a39d
 
-UnknownText_0x6a39d: ; 0x6a39d
+UnknownText_0x6a39d:
 	text "Here are the PARK"
 	line "BALLS for the"
 	cont "Contest."
 	done
-; 0x6a3c7
 
-UnknownText_0x6a3c7: ; 0x6a3c7
-	text $52, " received"
+UnknownText_0x6a3c7:
+	text "<PLAYER> received"
 	line "20 PARK BALLS."
 	done
-; 0x6a3e2
 
-UnknownText_0x6a3e2: ; 0x6a3e2
+UnknownText_0x6a3e2:
 	text "The person who"
 	line "gets the strong-"
 	cont "est bug #MON"
@@ -312,9 +286,8 @@ UnknownText_0x6a3e2: ; 0x6a3e2
 	para "#MON you can"
 	line "find!"
 	done
-; 0x6a4c6
 
-UnknownText_0x6a4c6: ; 0x6a4c6
+UnknownText_0x6a4c6:
 	text "Uh-oh…"
 
 	para "You have more than"
@@ -322,7 +295,7 @@ UnknownText_0x6a4c6: ; 0x6a4c6
 
 	para "You'll have to use"
 	line "@"
-	text_from_ram $d099
+	text_from_ram StringBuffer3
 	text ", the"
 
 	para "first #MON in"
@@ -331,39 +304,34 @@ UnknownText_0x6a4c6: ; 0x6a4c6
 	para "Is that OK with"
 	line "you?"
 	done
-; 0x6a537
 
-UnknownText_0x6a537: ; 0x6a537
+UnknownText_0x6a537:
 	text "Fine, we'll hold"
 	line "your other #MON"
 	cont "while you compete."
 	done
-; 0x6a56b
 
-UnknownText_0x6a56b: ; 0x6a56b
-	text $52, "'s #MON"
+UnknownText_0x6a56b:
+	text "<PLAYER>'s #MON"
 	line "were left with the"
 	cont "CONTEST HELPER."
 	done
-; 0x6a597
 
-UnknownText_0x6a597: ; 0x6a597
+UnknownText_0x6a597:
 	text "Please choose the"
 	line "#MON to be used"
 
 	para "in the Contest,"
 	line "then come see me."
 	done
-; 0x6a5dc
 
-UnknownText_0x6a5dc: ; 0x6a5dc
+UnknownText_0x6a5dc:
 	text "OK. We hope you'll"
 	line "take part in the"
 	cont "future."
 	done
-; 0x6a608
 
-UnknownText_0x6a608: ; 0x6a608
+UnknownText_0x6a608:
 	text "Uh-oh…"
 	line "The first #MON"
 
@@ -376,9 +344,8 @@ UnknownText_0x6a608: ; 0x6a608
 	para "you want to use,"
 	line "then come see me."
 	done
-; 0x6a67c
 
-UnknownText_0x6a67c: ; 0x6a67c
+UnknownText_0x6a67c:
 	text "Uh-oh…"
 	line "Both your party"
 
@@ -395,9 +362,8 @@ UnknownText_0x6a67c: ; 0x6a67c
 	para "your PC BOX, then"
 	line "come see me."
 	done
-; 0x6a71f
 
-UnknownText_0x6a71f: ; 0x6a71f
+UnknownText_0x6a71f:
 	text "Uh-oh…"
 	line "You have an EGG as"
 
@@ -410,61 +376,54 @@ UnknownText_0x6a71f: ; 0x6a71f
 	para "you want to use,"
 	line "then come see me."
 	done
-; 0x6a79a
 
-UnknownText_0x6a79a: ; 0x6a79a
+UnknownText_0x6a79a:
 	text "You still have @"
-	text_from_ram $d099
-	db $0
+	text_from_ram StringBuffer3
+	text ""
 	line "minute(s) left."
 
 	para "Do you want to"
 	line "finish now?"
 	done
-; 0x6a7db
 
-UnknownText_0x6a7db: ; 0x6a7db
+UnknownText_0x6a7db:
 	text "OK. Please wait at"
 	line "the North Gate for"
 
 	para "the announcement"
 	line "of the winners."
 	done
-; 0x6a823
 
-UnknownText_0x6a823: ; 0x6a823
+UnknownText_0x6a823:
 	text "OK. Please get"
 	line "back outside and"
 	cont "finish up."
 	done
-; 0x6a84f
 
-UnknownText_0x6a84f: ; 0x6a84f
+UnknownText_0x6a84f:
 	text "Today's Contest is"
 	line "over. We hope you"
 
 	para "will participate"
 	line "in the future."
 	done
-; 0x6a894
 
-UnknownText_0x6a894: ; 0x6a894
+UnknownText_0x6a894:
 	text "We hold Contests"
 	line "regularly in the"
 
 	para "PARK. You should"
 	line "give it a shot."
 	done
-; 0x6a8d8
 
-UnknownText_0x6a8d8: ; 0x6a8d8
+UnknownText_0x6a8d8:
 	text "When is the next"
 	line "Bug-Catching Con-"
 	cont "test going to be?"
 	done
-; 0x6a90e
 
-UnknownText_0x6a90e: ; 0x6a90e
+UnknownText_0x6a90e:
 	text "The Bug-Catching"
 	line "Contest is held on"
 
@@ -483,30 +442,27 @@ UnknownText_0x6a90e: ; 0x6a90e
 	para "have at the end of"
 	line "the contest."
 	done
-; 0x6a9d2
 
-Route35NationalParkgate_MapEventHeader: ; 0x6a9d2
+Route35NationalParkgate_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 4
-	warp_def $0, $3, 3, GROUP_NATIONAL_PARK, MAP_NATIONAL_PARK
-	warp_def $0, $4, 4, GROUP_NATIONAL_PARK, MAP_NATIONAL_PARK
-	warp_def $7, $3, 3, GROUP_ROUTE_35, MAP_ROUTE_35
-	warp_def $7, $4, 3, GROUP_ROUTE_35, MAP_ROUTE_35
+	warp_def $0, $3, 3, NATIONAL_PARK
+	warp_def $0, $4, 4, NATIONAL_PARK
+	warp_def $7, $3, 3, ROUTE_35
+	warp_def $7, $4, 3, ROUTE_35
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 1
-	signpost 0, 5, $0, MapRoute36NationalParkgateSignpost0Script
+	signpost 0, 5, SIGNPOST_READ, MapRoute36NationalParkgateSignpost0Script
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_OFFICER, 5, 6, $6, $0, 255, 255, $a0, 0, OfficerScript_0x6a204, $0745
-	person_event SPRITE_YOUNGSTER, 9, 10, $2, $11, 255, 255, $80, 0, YoungsterScript_0x6a2d8, $0734
-	person_event SPRITE_OFFICER, 7, 4, $9, $0, 255, 255, $a0, 0, OfficerScript_0x6a2ca, $0746
-; 0x6aa18
-
+	person_event SPRITE_OFFICER, 1, 2, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, OfficerScript_0x6a204, EVENT_ROUTE_35_NATIONAL_PARK_GATE_OFFICER_CONTEST_DAY
+	person_event SPRITE_YOUNGSTER, 5, 6, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, YoungsterScript_0x6a2d8, EVENT_ROUTE_35_NATIONAL_PARK_GATE_YOUNGSTER
+	person_event SPRITE_OFFICER, 3, 0, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, OfficerScript_0x6a2ca, EVENT_ROUTE_35_NATIONAL_PARK_GATE_OFFICER_NOT_CONTEST_DAY

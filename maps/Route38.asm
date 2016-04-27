@@ -1,496 +1,358 @@
-Route38_MapScriptHeader: ; 0x1a1d0c
-	; trigger count
+const_value set 2
+	const ROUTE38_STANDING_YOUNGSTER1
+	const ROUTE38_LASS
+	const ROUTE38_STANDING_YOUNGSTER2
+	const ROUTE38_BUENA1
+	const ROUTE38_SAILOR
+	const ROUTE38_FRUIT_TREE
+	const ROUTE38_BUENA2
+
+Route38_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1a1d0e
 
-TrainerBird_keeperToby: ; 0x1a1d0e
-	; bit/flag number
-	dw $3ff
+TrainerBird_keeperToby:
+	trainer EVENT_BEAT_BIRD_KEEPER_TOBY, BIRD_KEEPER, TOBY, Bird_keeperTobySeenText, Bird_keeperTobyBeatenText, 0, .script
 
-	; trainer group && trainer id
-	db BIRD_KEEPER, TOBY
-
-	; text when seen
-	dw Bird_keeperTobySeenText
-
-	; text when trainer beaten
-	dw Bird_keeperTobyBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw Bird_keeperTobyScript
-; 0x1a1d1a
-
-Bird_keeperTobyScript: ; 0x1a1d1a
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a1f86
+.script
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a1f86
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a1d22
 
-TrainerSailorHarry: ; 0x1a1d22
-	; bit/flag number
-	dw $57e
+TrainerSailorHarry:
+	trainer EVENT_BEAT_SAILOR_HARRY, SAILOR, HARRY, SailorHarrySeenText, SailorHarryBeatenText, 0, .script
 
-	; trainer group && trainer id
-	db SAILOR, HARRY
-
-	; text when seen
-	dw SailorHarrySeenText
-
-	; text when trainer beaten
-	dw SailorHarryBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SailorHarryScript
-; 0x1a1d2e
-
-SailorHarryScript: ; 0x1a1d2e
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a220c
+.script
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a220c
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a1d36
 
-TrainerLassDana1: ; 0x1a1d36
-	; bit/flag number
-	dw $51e
+TrainerLassDana1:
+	trainer EVENT_BEAT_LASS_DANA, LASS, DANA1, LassDana1SeenText, LassDana1BeatenText, 0, .script
 
-	; trainer group && trainer id
-	db LASS, DANA1
+.script
+	writecode VAR_CALLERID, PHONE_LASS_DANA
+	end_if_just_battled
+	opentext
+	checkflag ENGINE_DANA
+	iftrue .DanaRematch
+	checkflag ENGINE_DANA_HAS_THUNDERSTONE
+	iftrue .TryGiveThunderstone
+	checkcellnum PHONE_LASS_DANA
+	iftrue .NumberAccepted
+	checkevent EVENT_DANA_ASKED_FOR_PHONE_NUMBER
+	iftrue .SecondTimeAsking
+	writetext UnknownText_0x1a20ec
+	buttonsound
+	setevent EVENT_DANA_ASKED_FOR_PHONE_NUMBER
+	scall .AskNumber1F
+	jump .AskForPhoneNumber
 
-	; text when seen
-	dw LassDana1SeenText
-
-	; text when trainer beaten
-	dw LassDana1BeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw LassDana1Script
-; 0x1a1d42
-
-LassDana1Script: ; 0x1a1d42
-	writecode $17, $1a
-	talkaftercancel
-	loadfont
-	checkflag $0074
-	iftrue UnknownScript_0x1a1d82
-	checkflag $0082
-	iftrue UnknownScript_0x1a1df6
-	checkcellnum $1a
-	iftrue UnknownScript_0x1a1e17
-	checkevent $0289
-	iftrue UnknownScript_0x1a1d6b
-	2writetext UnknownText_0x1a20ec
-	keeptextopen
-	setevent $0289
-	2call UnknownScript_0x1a1e0b
-	2jump UnknownScript_0x1a1d6e
-; 0x1a1d6b
-
-UnknownScript_0x1a1d6b: ; 0x1a1d6b
-	2call UnknownScript_0x1a1e0f
-UnknownScript_0x1a1d6e: ; 0x1a1d6e
-	askforphonenumber $1a
-	if_equal $1, UnknownScript_0x1a1e1f
-	if_equal $2, UnknownScript_0x1a1e1b
+.SecondTimeAsking:
+	scall .AskNumber2F
+.AskForPhoneNumber:
+	askforphonenumber PHONE_LASS_DANA
+	if_equal $1, .PhoneFull
+	if_equal $2, .DeclinedPhoneNumber
 	trainertotext LASS, DANA1, $0
-	2call UnknownScript_0x1a1e13
-	2jump UnknownScript_0x1a1e17
-; 0x1a1d82
+	scall .RegisteredPhoneNumber
+	jump .NumberAccepted
 
-UnknownScript_0x1a1d82: ; 0x1a1d82
-	2call UnknownScript_0x1a1e23
-	winlosstext LassDana1BeatenText, $0000
-	copybytetovar $da03
-	if_equal $4, UnknownScript_0x1a1da1
-	if_equal $3, UnknownScript_0x1a1da7
-	if_equal $2, UnknownScript_0x1a1dad
-	if_equal $1, UnknownScript_0x1a1db3
-	if_equal $0, UnknownScript_0x1a1db9
-UnknownScript_0x1a1da1: ; 0x1a1da1
+.DanaRematch:
+	scall .Rematch
+	winlosstext LassDana1BeatenText, 0
+	copybytetovar wDanaFightCount
+	if_equal 4, .Fight4
+	if_equal 3, .Fight3
+	if_equal 2, .Fight2
+	if_equal 1, .Fight1
+	if_equal 0, .LoadFight0
+.Fight4:
 	checkevent EVENT_RESTORED_POWER_TO_KANTO
-	iftrue UnknownScript_0x1a1ded
-UnknownScript_0x1a1da7: ; 0x1a1da7
-	checkevent $0044
-	iftrue UnknownScript_0x1a1de0
-UnknownScript_0x1a1dad: ; 0x1a1dad
+	iftrue .LoadFight4
+.Fight3:
+	checkevent EVENT_BEAT_ELITE_FOUR
+	iftrue .LoadFight3
+.Fight2:
 	checkevent EVENT_CLEARED_RADIO_TOWER
-	iftrue UnknownScript_0x1a1dd3
-UnknownScript_0x1a1db3: ; 0x1a1db3
-	checkflag $0045
-	iftrue UnknownScript_0x1a1dc6
-UnknownScript_0x1a1db9: ; 0x1a1db9
+	iftrue .LoadFight2
+.Fight1:
+	checkflag ENGINE_FLYPOINT_CIANWOOD
+	iftrue .LoadFight1
+.LoadFight0:
 	loadtrainer LASS, DANA1
 	startbattle
-	returnafterbattle
-	loadvar $da03, $1
-	clearflag $0074
+	reloadmapafterbattle
+	loadvar wDanaFightCount, 1
+	clearflag ENGINE_DANA
 	end
-; 0x1a1dc6
 
-UnknownScript_0x1a1dc6: ; 0x1a1dc6
+.LoadFight1:
 	loadtrainer LASS, DANA2
 	startbattle
-	returnafterbattle
-	loadvar $da03, $2
-	clearflag $0074
+	reloadmapafterbattle
+	loadvar wDanaFightCount, 2
+	clearflag ENGINE_DANA
 	end
-; 0x1a1dd3
 
-UnknownScript_0x1a1dd3: ; 0x1a1dd3
+.LoadFight2:
 	loadtrainer LASS, DANA3
 	startbattle
-	returnafterbattle
-	loadvar $da03, $3
-	clearflag $0074
+	reloadmapafterbattle
+	loadvar wDanaFightCount, 3
+	clearflag ENGINE_DANA
 	end
-; 0x1a1de0
 
-UnknownScript_0x1a1de0: ; 0x1a1de0
+.LoadFight3:
 	loadtrainer LASS, DANA4
 	startbattle
-	returnafterbattle
-	loadvar $da03, $4
-	clearflag $0074
+	reloadmapafterbattle
+	loadvar wDanaFightCount, 4
+	clearflag ENGINE_DANA
 	end
-; 0x1a1ded
 
-UnknownScript_0x1a1ded: ; 0x1a1ded
+.LoadFight4:
 	loadtrainer LASS, DANA5
 	startbattle
-	returnafterbattle
-	clearflag $0074
+	reloadmapafterbattle
+	clearflag ENGINE_DANA
 	end
-; 0x1a1df6
 
-UnknownScript_0x1a1df6: ; 0x1a1df6
-	2call UnknownScript_0x1a1e27
-	verbosegiveitem THUNDERSTONE, 1
-	iffalse UnknownScript_0x1a1e08
-	clearflag $0082
-	setevent $0102
-	2jump UnknownScript_0x1a1e17
-; 0x1a1e08
+.TryGiveThunderstone:
+	scall .Gift
+	verbosegiveitem THUNDERSTONE
+	iffalse .NoRoomForThunderstone
+	clearflag ENGINE_DANA_HAS_THUNDERSTONE
+	setevent EVENT_DANA_GAVE_THUNDERSTONE
+	jump .NumberAccepted
 
-UnknownScript_0x1a1e08: ; 0x1a1e08
-	2jump UnknownScript_0x1a1e2b
-; 0x1a1e0b
+.NoRoomForThunderstone:
+	jump .PackFull
 
-UnknownScript_0x1a1e0b: ; 0x1a1e0b
-	jumpstd $0023
+.AskNumber1F:
+	jumpstd asknumber1f
 	end
-; 0x1a1e0f
 
-UnknownScript_0x1a1e0f: ; 0x1a1e0f
-	jumpstd $0024
+.AskNumber2F:
+	jumpstd asknumber2f
 	end
-; 0x1a1e13
 
-UnknownScript_0x1a1e13: ; 0x1a1e13
-	jumpstd $0025
+.RegisteredPhoneNumber:
+	jumpstd registerednumberf
 	end
-; 0x1a1e17
 
-UnknownScript_0x1a1e17: ; 0x1a1e17
-	jumpstd $0026
+.NumberAccepted:
+	jumpstd numberacceptedf
 	end
-; 0x1a1e1b
 
-UnknownScript_0x1a1e1b: ; 0x1a1e1b
-	jumpstd $0027
+.DeclinedPhoneNumber:
+	jumpstd numberdeclinedf
 	end
-; 0x1a1e1f
 
-UnknownScript_0x1a1e1f: ; 0x1a1e1f
-	jumpstd $0028
+.PhoneFull:
+	jumpstd phonefullf
 	end
-; 0x1a1e23
 
-UnknownScript_0x1a1e23: ; 0x1a1e23
-	jumpstd $0029
+.Rematch:
+	jumpstd rematchf
 	end
-; 0x1a1e27
 
-UnknownScript_0x1a1e27: ; 0x1a1e27
-	jumpstd $002a
+.Gift:
+	jumpstd giftf
 	end
-; 0x1a1e2b
 
-UnknownScript_0x1a1e2b: ; 0x1a1e2b
-	jumpstd $002b
+.PackFull:
+	jumpstd packfullf
 	end
-; 0x1a1e2f
 
-TrainerSchoolboyChad1: ; 0x1a1e2f
-	; bit/flag number
-	dw $475
+TrainerSchoolboyChad1:
+	trainer EVENT_BEAT_SCHOOLBOY_CHAD, SCHOOLBOY, CHAD1, SchoolboyChad1SeenText, SchoolboyChad1BeatenText, 0, .script
 
-	; trainer group && trainer id
-	db SCHOOLBOY, CHAD1
+.script
+	writecode VAR_CALLERID, PHONE_SCHOOLBOY_CHAD
+	end_if_just_battled
+	opentext
+	checkflag ENGINE_CHAD
+	iftrue .ChadRematch
+	checkcellnum PHONE_SCHOOLBOY_CHAD
+	iftrue .HaveChadsNumber
+	checkevent EVENT_CHAD_ASKED_FOR_PHONE_NUMBER
+	iftrue .SecondTimeAsking
+	writetext UnknownText_0x1a200e
+	buttonsound
+	setevent EVENT_CHAD_ASKED_FOR_PHONE_NUMBER
+	scall .AskPhoneNumber1
+	jump .AskToRegisterNumber
 
-	; text when seen
-	dw SchoolboyChad1SeenText
-
-	; text when trainer beaten
-	dw SchoolboyChad1BeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SchoolboyChad1Script
-; 0x1a1e3b
-
-SchoolboyChad1Script: ; 0x1a1e3b
-	writecode $17, $1b
-	talkaftercancel
-	loadfont
-	checkflag $0075
-	iftrue UnknownScript_0x1a1e75
-	checkcellnum $1b
-	iftrue UnknownScript_0x1a1ef5
-	checkevent $028b
-	iftrue UnknownScript_0x1a1e5e
-	2writetext UnknownText_0x1a200e
-	keeptextopen
-	setevent $028b
-	2call UnknownScript_0x1a1ee9
-	2jump UnknownScript_0x1a1e61
-; 0x1a1e5e
-
-UnknownScript_0x1a1e5e: ; 0x1a1e5e
-	2call UnknownScript_0x1a1eed
-UnknownScript_0x1a1e61: ; 0x1a1e61
-	askforphonenumber $1b
-	if_equal $1, UnknownScript_0x1a1efd
-	if_equal $2, UnknownScript_0x1a1ef9
+.SecondTimeAsking:
+	scall .AskPhoneNumber2
+.AskToRegisterNumber:
+	askforphonenumber PHONE_SCHOOLBOY_CHAD
+	if_equal $1, .PhoneFull
+	if_equal $2, .SaidNo
 	trainertotext SCHOOLBOY, CHAD1, $0
-	2call UnknownScript_0x1a1ef1
-	2jump UnknownScript_0x1a1ef5
-; 0x1a1e75
+	scall .RegisteredChad
+	jump .HaveChadsNumber
 
-UnknownScript_0x1a1e75: ; 0x1a1e75
-	2call UnknownScript_0x1a1f01
-	winlosstext SchoolboyChad1BeatenText, $0000
-	copybytetovar $da04
-	if_equal $4, UnknownScript_0x1a1e94
-	if_equal $3, UnknownScript_0x1a1e9a
-	if_equal $2, UnknownScript_0x1a1ea0
-	if_equal $1, UnknownScript_0x1a1ea6
-	if_equal $0, UnknownScript_0x1a1eac
-UnknownScript_0x1a1e94: ; 0x1a1e94
+.ChadRematch:
+	scall .Rematch
+	winlosstext SchoolboyChad1BeatenText, 0
+	copybytetovar wChadFightCount
+	if_equal 4, .Fight4
+	if_equal 3, .Fight3
+	if_equal 2, .Fight2
+	if_equal 1, .Fight1
+	if_equal 0, .LoadFight0
+.Fight4:
 	checkevent EVENT_RESTORED_POWER_TO_KANTO
-	iftrue UnknownScript_0x1a1ee0
-UnknownScript_0x1a1e9a: ; 0x1a1e9a
-	checkevent $0044
-	iftrue UnknownScript_0x1a1ed3
-UnknownScript_0x1a1ea0: ; 0x1a1ea0
+	iftrue .LoadFight4
+.Fight3:
+	checkevent EVENT_BEAT_ELITE_FOUR
+	iftrue .LoadFight3
+.Fight2:
 	checkevent EVENT_CLEARED_RADIO_TOWER
-	iftrue UnknownScript_0x1a1ec6
-UnknownScript_0x1a1ea6: ; 0x1a1ea6
-	checkflag $0049
-	iftrue UnknownScript_0x1a1eb9
-UnknownScript_0x1a1eac: ; 0x1a1eac
+	iftrue .LoadFight2
+.Fight1:
+	checkflag ENGINE_FLYPOINT_MAHOGANY
+	iftrue .LoadFight1
+.LoadFight0:
 	loadtrainer SCHOOLBOY, CHAD1
 	startbattle
-	returnafterbattle
-	loadvar $da04, $1
-	clearflag $0075
+	reloadmapafterbattle
+	loadvar wChadFightCount, 1
+	clearflag ENGINE_CHAD
 	end
-; 0x1a1eb9
 
-UnknownScript_0x1a1eb9: ; 0x1a1eb9
+.LoadFight1:
 	loadtrainer SCHOOLBOY, CHAD2
 	startbattle
-	returnafterbattle
-	loadvar $da04, $2
-	clearflag $0075
+	reloadmapafterbattle
+	loadvar wChadFightCount, 2
+	clearflag ENGINE_CHAD
 	end
-; 0x1a1ec6
 
-UnknownScript_0x1a1ec6: ; 0x1a1ec6
+.LoadFight2:
 	loadtrainer SCHOOLBOY, CHAD3
 	startbattle
-	returnafterbattle
-	loadvar $da04, $3
-	clearflag $0075
+	reloadmapafterbattle
+	loadvar wChadFightCount, 3
+	clearflag ENGINE_CHAD
 	end
-; 0x1a1ed3
 
-UnknownScript_0x1a1ed3: ; 0x1a1ed3
+.LoadFight3:
 	loadtrainer SCHOOLBOY, CHAD4
 	startbattle
-	returnafterbattle
-	loadvar $da04, $4
-	clearflag $0075
+	reloadmapafterbattle
+	loadvar wChadFightCount, 4
+	clearflag ENGINE_CHAD
 	end
-; 0x1a1ee0
 
-UnknownScript_0x1a1ee0: ; 0x1a1ee0
+.LoadFight4:
 	loadtrainer SCHOOLBOY, CHAD5
 	startbattle
-	returnafterbattle
-	clearflag $0075
+	reloadmapafterbattle
+	clearflag ENGINE_CHAD
 	end
-; 0x1a1ee9
 
-UnknownScript_0x1a1ee9: ; 0x1a1ee9
-	jumpstd $0019
+.AskPhoneNumber1:
+	jumpstd asknumber1m
 	end
-; 0x1a1eed
 
-UnknownScript_0x1a1eed: ; 0x1a1eed
-	jumpstd $001a
+.AskPhoneNumber2:
+	jumpstd asknumber2m
 	end
-; 0x1a1ef1
 
-UnknownScript_0x1a1ef1: ; 0x1a1ef1
-	jumpstd $001b
+.RegisteredChad:
+	jumpstd registerednumberm
 	end
-; 0x1a1ef5
 
-UnknownScript_0x1a1ef5: ; 0x1a1ef5
-	jumpstd $001c
+.HaveChadsNumber:
+	jumpstd numberacceptedm
 	end
-; 0x1a1ef9
 
-UnknownScript_0x1a1ef9: ; 0x1a1ef9
-	jumpstd $001d
+.SaidNo:
+	jumpstd numberdeclinedm
 	end
-; 0x1a1efd
 
-UnknownScript_0x1a1efd: ; 0x1a1efd
-	jumpstd $001e
+.PhoneFull:
+	jumpstd phonefullm
 	end
-; 0x1a1f01
 
-UnknownScript_0x1a1f01: ; 0x1a1f01
-	jumpstd $001f
+.Rematch:
+	jumpstd rematchm
 	end
-; 0x1a1f05
 
-TrainerBeautyValerie: ; 0x1a1f05
-	; bit/flag number
-	dw $4bc
+TrainerBeautyValerie:
+	trainer EVENT_BEAT_BEAUTY_VALERIE, BEAUTY, VALERIE, BeautyValerieSeenText, BeautyValerieBeatenText, 0, .script
 
-	; trainer group && trainer id
-	db BEAUTY, VALERIE
-
-	; text when seen
-	dw BeautyValerieSeenText
-
-	; text when trainer beaten
-	dw BeautyValerieBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw BeautyValerieScript
-; 0x1a1f11
-
-BeautyValerieScript: ; 0x1a1f11
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a2185
+.script
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a2185
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a1f19
 
-TrainerBeautyOlivia: ; 0x1a1f19
-	; bit/flag number
-	dw $5c1
+TrainerBeautyOlivia:
+	trainer EVENT_BEAT_BEAUTY_OLIVIA, BEAUTY, OLIVIA, BeautyOliviaSeenText, BeautyOliviaBeatenText, 0, .script
 
-	; trainer group && trainer id
-	db BEAUTY, OLIVIA
-
-	; text when seen
-	dw BeautyOliviaSeenText
-
-	; text when trainer beaten
-	dw BeautyOliviaBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw BeautyOliviaScript
-; 0x1a1f25
-
-BeautyOliviaScript: ; 0x1a1f25
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a229a
+.script
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a229a
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a1f2d
 
-MapRoute38Signpost0Script: ; 0x1a1f2d
-	jumptext UnknownText_0x1a22fd
-; 0x1a1f30
+Route38Sign:
+	jumptext Route38SignText
 
-MapRoute38Signpost1Script: ; 0x1a1f30
-	jumptext UnknownText_0x1a2324
-; 0x1a1f33
+Route38TrainerTips:
+	jumptext Route38TrainerTipsText
 
-FruitTreeScript_0x1a1f33: ; 0x1a1f33
-	fruittree $3
-; 0x1a1f35
+FruitTreeScript_0x1a1f33:
+	fruittree FRUITTREE_ROUTE_38
 
-Bird_keeperTobySeenText: ; 0x1a1f35
+Bird_keeperTobySeenText:
 	text "Fly high into the"
 	line "sky, my beloved"
 	cont "bird #MON!"
 	done
-; 0x1a1f63
 
-Bird_keeperTobyBeatenText: ; 0x1a1f63
+Bird_keeperTobyBeatenText:
 	text "I feel like just"
 	line "flying away now."
 	done
-; 0x1a1f86
 
-UnknownText_0x1a1f86: ; 0x1a1f86
+UnknownText_0x1a1f86:
 	text "I plan to train in"
 	line "CIANWOOD CITY to"
 
 	para "teach my #MON"
 	line "how to FLY."
 	done
-; 0x1a1fc5
 
-SchoolboyChad1SeenText: ; 0x1a1fc5
+SchoolboyChad1SeenText:
 	text "Let me try some-"
 	line "thing I learned"
 	cont "today."
 	done
-; 0x1a1fee
 
-SchoolboyChad1BeatenText: ; 0x1a1fee
+SchoolboyChad1BeatenText:
 	text "I didn't study"
 	line "enough, I guess."
 	done
-; 0x1a200e
 
-UnknownText_0x1a200e: ; 0x1a200e
+UnknownText_0x1a200e:
 	text "I have to take so"
 	line "many tests, I"
 
@@ -501,9 +363,8 @@ UnknownText_0x1a200e: ; 0x1a200e
 	line "to play, I really"
 	cont "concentrate."
 	done
-; 0x1a207d
 
-LassDana1SeenText: ; 0x1a207d
+LassDana1SeenText:
 	text "You seem to be"
 	line "good at #MON."
 
@@ -511,15 +372,13 @@ LassDana1SeenText: ; 0x1a207d
 	line "about giving me"
 	cont "some advice?"
 	done
-; 0x1a20c8
 
-LassDana1BeatenText: ; 0x1a20c8
+LassDana1BeatenText:
 	text "I see. So you can"
 	line "battle that way."
 	done
-; 0x1a20ec
 
-UnknownText_0x1a20ec: ; 0x1a20ec
+UnknownText_0x1a20ec:
 	text "I know something"
 	line "good!"
 
@@ -527,68 +386,59 @@ UnknownText_0x1a20ec: ; 0x1a20ec
 	line "is famous for its"
 	cont "flavor."
 	done
-; 0x1a2130
 
-BeautyValerieSeenText: ; 0x1a2130
+BeautyValerieSeenText:
 	text "Hi! Aren't you a"
 	line "cute trainer!"
 
 	para "May I see your"
 	line "#MON?"
 	done
-; 0x1a2164
 
-BeautyValerieBeatenText: ; 0x1a2164
+BeautyValerieBeatenText:
 	text "I'm glad I got to"
 	line "see your #MON!"
 	done
-; 0x1a2185
 
-UnknownText_0x1a2185: ; 0x1a2185
+UnknownText_0x1a2185:
 	text "When I see #-"
 	line "MON, it seems to"
 	cont "soothe my nerves."
 	done
-; 0x1a21b7
 
-SailorHarrySeenText: ; 0x1a21b7
+SailorHarrySeenText:
 	text "I've been over-"
 	line "seas, so I know"
 
 	para "about all sorts of"
 	line "#MON!"
 	done
-; 0x1a21f0
 
-SailorHarryBeatenText: ; 0x1a21f0
+SailorHarryBeatenText:
 	text "Your skill is"
 	line "world class!"
 	done
-; 0x1a220c
 
-UnknownText_0x1a220c: ; 0x1a220c
+UnknownText_0x1a220c:
 	text "All kinds of peo-"
 	line "ple around the"
 
 	para "world live happily"
 	line "with #MON."
 	done
-; 0x1a224c
 
-BeautyOliviaSeenText: ; 0x1a224c
+BeautyOliviaSeenText:
 	text "Don't you think my"
 	line "#MON and I are"
 	cont "beautiful?"
 	done
-; 0x1a2279
 
-BeautyOliviaBeatenText: ; 0x1a2279
+BeautyOliviaBeatenText:
 	text "We drink MOOMOO"
 	line "MILK every day."
 	done
-; 0x1a229a
 
-UnknownText_0x1a229a: ; 0x1a229a
+UnknownText_0x1a229a:
 	text "MOOMOO MILK is"
 	line "good for beauty"
 
@@ -598,17 +448,15 @@ UnknownText_0x1a229a: ; 0x1a229a
 	para "they only sell a"
 	line "bottle at a time."
 	done
-; 0x1a22fd
 
-UnknownText_0x1a22fd: ; 0x1a22fd
+Route38SignText:
 	text "ROUTE 38"
 
 	para "OLIVINE CITY -"
 	line "ECRUTEAK CITY"
 	done
-; 0x1a2324
 
-UnknownText_0x1a2324: ; 0x1a2324
+Route38TrainerTipsText:
 	text "TRAINER TIPS"
 
 	para "If a #MON is"
@@ -623,33 +471,30 @@ UnknownText_0x1a2324: ; 0x1a2324
 	line "#MON and stops"
 	cont "its evolution."
 	done
-; 0x1a23bb
 
-Route38_MapEventHeader: ; 0x1a23bb
+Route38_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $8, $23, 1, GROUP_ROUTE_38_ECRUTEAK_GATE, MAP_ROUTE_38_ECRUTEAK_GATE
-	warp_def $9, $23, 2, GROUP_ROUTE_38_ECRUTEAK_GATE, MAP_ROUTE_38_ECRUTEAK_GATE
+	warp_def $8, $23, 1, ROUTE_38_ECRUTEAK_GATE
+	warp_def $9, $23, 2, ROUTE_38_ECRUTEAK_GATE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 7, 33, $0, MapRoute38Signpost0Script
-	signpost 13, 5, $0, MapRoute38Signpost1Script
+	signpost 7, 33, SIGNPOST_READ, Route38Sign
+	signpost 13, 5, SIGNPOST_READ, Route38TrainerTips
 
-	; people-events
+.PersonEvents:
 	db 7
-	person_event SPRITE_STANDING_YOUNGSTER, 5, 8, $9, $0, 255, 255, $92, 1, TrainerSchoolboyChad1, $ffff
-	person_event SPRITE_LASS, 7, 19, $a, $0, 255, 255, $92, 2, TrainerLassDana1, $ffff
-	person_event SPRITE_STANDING_YOUNGSTER, 19, 16, $a, $0, 255, 255, $92, 1, TrainerBird_keeperToby, $ffff
-	person_event SPRITE_BUENA, 13, 23, $6, $0, 255, 255, $92, 1, TrainerBeautyValerie, $ffff
-	person_event SPRITE_SAILOR, 9, 28, $1e, $0, 255, 255, $92, 2, TrainerSailorHarry, $ffff
-	person_event SPRITE_FRUIT_TREE, 14, 16, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x1a1f33, $ffff
-	person_event SPRITE_BUENA, 12, 9, $a, $0, 255, 255, $92, 1, TrainerBeautyOlivia, $ffff
-; 0x1a2430
-
+	person_event SPRITE_STANDING_YOUNGSTER, 1, 4, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 1, TrainerSchoolboyChad1, -1
+	person_event SPRITE_LASS, 3, 15, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 2, TrainerLassDana1, -1
+	person_event SPRITE_STANDING_YOUNGSTER, 15, 12, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 1, TrainerBird_keeperToby, -1
+	person_event SPRITE_BUENA, 9, 19, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 1, TrainerBeautyValerie, -1
+	person_event SPRITE_SAILOR, 5, 24, SPRITEMOVEDATA_SPINCOUNTERCLOCKWISE, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 2, TrainerSailorHarry, -1
+	person_event SPRITE_FRUIT_TREE, 10, 12, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FruitTreeScript_0x1a1f33, -1
+	person_event SPRITE_BUENA, 8, 5, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 1, TrainerBeautyOlivia, -1

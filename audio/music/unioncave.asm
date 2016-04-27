@@ -1,8 +1,8 @@
 Music_UnionCave: ; f5c60
-	dbw $c0, Music_UnionCave_Ch1
-	dbw $01, Music_UnionCave_Ch2
-	dbw $02, Music_UnionCave_Ch3
-	dbw $03, Music_UnionCave_Ch4
+	musicheader 4, 1, Music_UnionCave_Ch1
+	musicheader 1, 2, Music_UnionCave_Ch2
+	musicheader 1, 3, Music_UnionCave_Ch3
+	musicheader 1, 4, Music_UnionCave_Ch4
 ; f5c6c
 
 Music_UnionCave_Ch1: ; f5c6c
@@ -262,10 +262,5 @@ Music_UnionCave_branch_f5da9: ; f5da9
 	note G#, 4
 	note __, 8
 	loopchannel 0, Music_UnionCave_branch_f5da9
-; f5dc1
-
-
-INCBIN "baserom.gbc", $f5dc1, $f5dc5 - $f5dc1
-
-
-
+	loopchannel 0, Music_UnionCave_branch_f5da9 ; unused
+; f5dc5

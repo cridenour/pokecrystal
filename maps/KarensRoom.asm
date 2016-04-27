@@ -1,100 +1,95 @@
-KarensRoom_MapScriptHeader: ; 0x180baf
-	; trigger count
+const_value set 2
+	const KARENSROOM_KAREN
+
+KarensRoom_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x180bbc, $0000
-	dw UnknownScript_0x180bc0, $0000
+	dw UnknownScript_0x180bbc, 0
+	dw UnknownScript_0x180bc0, 0
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
 
-	dbw 1, UnknownScript_0x180bc1
-; 0x180bbc
+	dbw MAPCALLBACK_TILES, UnknownScript_0x180bc1
 
-UnknownScript_0x180bbc: ; 0x180bbc
+UnknownScript_0x180bbc:
 	priorityjump UnknownScript_0x180bd6
 	end
-; 0x180bc0
 
-UnknownScript_0x180bc0: ; 0x180bc0
+UnknownScript_0x180bc0:
 	end
-; 0x180bc1
 
-UnknownScript_0x180bc1: ; 0x180bc1
+UnknownScript_0x180bc1:
 	checkevent EVENT_KARENS_ROOM_ENTRANCE_CLOSED
 	iffalse UnknownScript_0x180bcb
 	changeblock $4, $e, $2a
-UnknownScript_0x180bcb: ; 0x180bcb
+UnknownScript_0x180bcb:
 	checkevent EVENT_KARENS_ROOM_EXIT_OPEN
 	iffalse UnknownScript_0x180bd5
 	changeblock $4, $2, $16
-UnknownScript_0x180bd5: ; 0x180bd5
+UnknownScript_0x180bd5:
 	return
-; 0x180bd6
 
-UnknownScript_0x180bd6: ; 0x180bd6
-	applymovement $0, MovementData_0x180c22
+UnknownScript_0x180bd6:
+	applymovement PLAYER, MovementData_0x180c22
 	refreshscreen $86
 	playsound SFX_STRENGTH
 	earthquake 80
 	changeblock $4, $e, $2a
 	reloadmappart
-	loadmovesprites
+	closetext
 	dotrigger $1
 	setevent EVENT_KARENS_ROOM_ENTRANCE_CLOSED
-	waitbutton
+	waitsfx
 	end
-; 0x180bee
 
-KarenScript_0x180bee: ; 0x180bee
+KarenScript_0x180bee:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_BEAT_ELITE_4_KAREN
 	iftrue UnknownScript_0x180c1c
-	2writetext UnknownText_0x180c27
+	writetext UnknownText_0x180c27
+	waitbutton
 	closetext
-	loadmovesprites
-	winlosstext UnknownText_0x180cf8, $0000
+	winlosstext UnknownText_0x180cf8, 0
 	loadtrainer KAREN, 1
 	startbattle
-	returnafterbattle
+	reloadmapafterbattle
 	setevent EVENT_BEAT_ELITE_4_KAREN
-	loadfont
-	2writetext UnknownText_0x180d29
+	opentext
+	writetext UnknownText_0x180d29
+	waitbutton
 	closetext
-	loadmovesprites
 	playsound SFX_ENTER_DOOR
 	changeblock $4, $2, $16
 	reloadmappart
-	loadmovesprites
-	setevent EVENT_KARENS_ROOM_EXIT_OPEN
-	waitbutton
-	end
-; 0x180c1c
-
-UnknownScript_0x180c1c: ; 0x180c1c
-	2writetext UnknownText_0x180d29
 	closetext
-	loadmovesprites
+	setevent EVENT_KARENS_ROOM_EXIT_OPEN
+	waitsfx
 	end
-; 0x180c22
 
-MovementData_0x180c22: ; 0x180c22
+UnknownScript_0x180c1c:
+	writetext UnknownText_0x180d29
+	waitbutton
+	closetext
+	end
+
+MovementData_0x180c22:
 	step_up
 	step_up
 	step_up
 	step_up
 	step_end
-; 0x180c27
 
-UnknownText_0x180c27: ; 0x180c27
+UnknownText_0x180c27:
 	text "I am KAREN of the"
 	line "ELITE FOUR."
 
-	para "You're ", $52, "?"
+	para "You're <PLAYER>?"
 	line "How amusing."
 
 	para "I love dark-type"
@@ -112,16 +107,14 @@ UnknownText_0x180c27: ; 0x180c27
 
 	para "Let's go."
 	done
-; 0x180cf8
 
-UnknownText_0x180cf8: ; 0x180cf8
+UnknownText_0x180cf8:
 	text "Well, aren't you"
 	line "good. I like that"
 	cont "in a trainer."
 	done
-; 0x180d29
 
-UnknownText_0x180d29: ; 0x180d29
+UnknownText_0x180d29:
 	text "Strong #MON."
 
 	para "Weak #MON."
@@ -143,27 +136,24 @@ UnknownText_0x180d29: ; 0x180d29
 	para "Go on--the CHAM-"
 	line "PION is waiting."
 	done
-; 0x180e05
 
-KarensRoom_MapEventHeader: ; 0x180e05
+KarensRoom_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 4
-	warp_def $11, $4, 3, GROUP_BRUNOS_ROOM, MAP_BRUNOS_ROOM
-	warp_def $11, $5, 4, GROUP_BRUNOS_ROOM, MAP_BRUNOS_ROOM
-	warp_def $2, $4, 1, GROUP_LANCES_ROOM, MAP_LANCES_ROOM
-	warp_def $2, $5, 2, GROUP_LANCES_ROOM, MAP_LANCES_ROOM
+	warp_def $11, $4, 3, BRUNOS_ROOM
+	warp_def $11, $5, 4, BRUNOS_ROOM
+	warp_def $2, $4, 1, LANCES_ROOM
+	warp_def $2, $5, 2, LANCES_ROOM
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_KAREN, 11, 9, $6, $0, 255, 255, $80, 0, KarenScript_0x180bee, $ffff
-; 0x180e2c
-
+	person_event SPRITE_KAREN, 7, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, KarenScript_0x180bee, -1

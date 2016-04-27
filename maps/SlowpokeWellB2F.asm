@@ -1,38 +1,38 @@
-SlowpokeWellB2F_MapScriptHeader: ; 0x5ad09
-	; trigger count
+const_value set 2
+	const SLOWPOKEWELLB2F_GYM_GUY
+	const SLOWPOKEWELLB2F_POKE_BALL
+
+SlowpokeWellB2F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x5ad0b
 
-GymGuyScript_0x5ad0b: ; 0x5ad0b
+GymGuyScript_0x5ad0b:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_KINGS_ROCK_IN_SLOWPOKE_WELL
 	iftrue UnknownScript_0x5ad22
-	2writetext UnknownText_0x5ad2a
-	keeptextopen
-	verbosegiveitem KINGS_ROCK, 1
+	writetext UnknownText_0x5ad2a
+	buttonsound
+	verbosegiveitem KINGS_ROCK
 	iffalse UnknownScript_0x5ad20
 	setevent EVENT_GOT_KINGS_ROCK_IN_SLOWPOKE_WELL
-UnknownScript_0x5ad20: ; 0x5ad20
-	loadmovesprites
-	end
-; 0x5ad22
-
-UnknownScript_0x5ad22: ; 0x5ad22
-	2writetext UnknownText_0x5adf2
+UnknownScript_0x5ad20:
 	closetext
-	loadmovesprites
 	end
-; 0x5ad28
 
-ItemFragment_0x5ad28: ; 0x5ad28
-	db TM_18, 1
-; 0x5ad2a
+UnknownScript_0x5ad22:
+	writetext UnknownText_0x5adf2
+	waitbutton
+	closetext
+	end
 
-UnknownText_0x5ad2a: ; 0x5ad2a
+SlowpokeWellB2FTMRainDance:
+	itemball TM_RAIN_DANCE
+
+UnknownText_0x5ad2a:
 	text "I'm waiting to see"
 	line "SLOWPOKE's moment"
 	cont "of evolution."
@@ -51,9 +51,8 @@ UnknownText_0x5ad2a: ; 0x5ad2a
 	line "KING'S ROCK with"
 	cont "you."
 	done
-; 0x5adf2
 
-UnknownText_0x5adf2: ; 0x5adf2
+UnknownText_0x5adf2:
 	text "I'm going to be"
 	line "like SLOWPOKE."
 
@@ -61,25 +60,22 @@ UnknownText_0x5adf2: ; 0x5adf2
 	line "ly, so I can see"
 	cont "one evolve."
 	done
-; 0x5ae40
 
-SlowpokeWellB2F_MapEventHeader: ; 0x5ae40
+SlowpokeWellB2F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 1
-	warp_def $b, $9, 2, GROUP_SLOWPOKE_WELL_B1F, MAP_SLOWPOKE_WELL_B1F
+	warp_def $b, $9, 2, SLOWPOKE_WELL_B1F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_GYM_GUY, 8, 9, $2, $21, 255, 255, $0, 1, GymGuyScript_0x5ad0b, $ffff
-	person_event SPRITE_POKE_BALL, 9, 19, $1, $0, 255, 255, $1, 0, ItemFragment_0x5ad28, $0663
-; 0x5ae65
-
+	person_event SPRITE_GYM_GUY, 4, 5, SPRITEMOVEDATA_WANDER, 2, 1, -1, -1, 0, PERSONTYPE_SCRIPT, 1, GymGuyScript_0x5ad0b, -1
+	person_event SPRITE_POKE_BALL, 5, 15, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, SlowpokeWellB2FTMRainDance, EVENT_SLOWPOKE_WELL_B2F_TM_RAIN_DANCE

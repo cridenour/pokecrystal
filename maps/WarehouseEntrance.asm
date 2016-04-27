@@ -1,20 +1,30 @@
-WarehouseEntrance_MapScriptHeader: ; 0x7c038
-	; trigger count
+const_value set 2
+	const WAREHOUSEENTRANCE_SUPER_NERD1
+	const WAREHOUSEENTRANCE_SUPER_NERD2
+	const WAREHOUSEENTRANCE_SUPER_NERD3
+	const WAREHOUSEENTRANCE_SUPER_NERD4
+	const WAREHOUSEENTRANCE_POKE_BALL
+	const WAREHOUSEENTRANCE_GRAMPS
+	const WAREHOUSEENTRANCE_SUPER_NERD5
+	const WAREHOUSEENTRANCE_SUPER_NERD6
+	const WAREHOUSEENTRANCE_GRANNY
+
+WarehouseEntrance_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 3
 
 	; callbacks
 
-	dbw 5, UnknownScript_0x7c043
+	dbw MAPCALLBACK_NEWMAP, .ResetSwitches
 
-	dbw 1, UnknownScript_0x7c076
+	dbw MAPCALLBACK_TILES, .CheckBasementKey
 
-	dbw 2, UnknownScript_0x7c082
-; 0x7c043
+	dbw MAPCALLBACK_OBJECTS, .CheckDayOfWeek
 
-UnknownScript_0x7c043: ; 0x7c043
+.ResetSwitches:
 	clearevent EVENT_SWITCH_1
 	clearevent EVENT_SWITCH_2
 	clearevent EVENT_SWITCH_3
@@ -33,506 +43,389 @@ UnknownScript_0x7c043: ; 0x7c043
 	writebyte $0
 	copyvartobyte UndergroundSwitchPositions
 	return
-; 0x7c076
 
-UnknownScript_0x7c076: ; 0x7c076
+.CheckBasementKey:
 	checkevent EVENT_USED_BASEMENT_KEY
-	iffalse UnknownScript_0x7c07d
+	iffalse .LockBasementDoor
 	return
-; 0x7c07d
 
-UnknownScript_0x7c07d: ; 0x7c07d
+.LockBasementDoor:
 	changeblock $12, $6, $3d
 	return
-; 0x7c082
 
-UnknownScript_0x7c082: ; 0x7c082
-	checkcode $b
-	if_equal MONDAY, UnknownScript_0x7c0a5
-	if_equal TUESDAY, UnknownScript_0x7c0b5
-	if_equal WEDNESDAY, UnknownScript_0x7c0be
-	if_equal THURSDAY, UnknownScript_0x7c0c7
-	if_equal FRIDAY, UnknownScript_0x7c0d0
-	if_equal SATURDAY, UnknownScript_0x7c0d9
-	disappear $7
-	disappear $8
-	appear $9
-	appear $a
+.CheckDayOfWeek:
+	checkcode VAR_WEEKDAY
+	if_equal MONDAY, .Monday
+	if_equal TUESDAY, .Tuesday
+	if_equal WEDNESDAY, .Wednesday
+	if_equal THURSDAY, .Thursday
+	if_equal FRIDAY, .Friday
+	if_equal SATURDAY, .Saturday
+
+.Sunday:
+	disappear WAREHOUSEENTRANCE_GRAMPS
+	disappear WAREHOUSEENTRANCE_SUPER_NERD5
+	appear WAREHOUSEENTRANCE_SUPER_NERD6
+	appear WAREHOUSEENTRANCE_GRANNY
 	return
-; 0x7c0a5
 
-UnknownScript_0x7c0a5: ; 0x7c0a5
-	disappear $7
-	checktime $1
-	iffalse UnknownScript_0x7c0ae
-	appear $7
-UnknownScript_0x7c0ae: ; 0x7c0ae
-	disappear $8
-	disappear $9
-	disappear $a
+.Monday:
+	disappear WAREHOUSEENTRANCE_GRAMPS
+	checkmorn
+	iffalse .NotMondayMorning
+	appear WAREHOUSEENTRANCE_GRAMPS
+.NotMondayMorning:
+	disappear WAREHOUSEENTRANCE_SUPER_NERD5
+	disappear WAREHOUSEENTRANCE_SUPER_NERD6
+	disappear WAREHOUSEENTRANCE_GRANNY
 	return
-; 0x7c0b5
 
-UnknownScript_0x7c0b5: ; 0x7c0b5
-	disappear $7
-	appear $8
-	disappear $9
-	disappear $a
+.Tuesday:
+	disappear WAREHOUSEENTRANCE_GRAMPS
+	appear WAREHOUSEENTRANCE_SUPER_NERD5
+	disappear WAREHOUSEENTRANCE_SUPER_NERD6
+	disappear WAREHOUSEENTRANCE_GRANNY
 	return
-; 0x7c0be
 
-UnknownScript_0x7c0be: ; 0x7c0be
-	disappear $7
-	disappear $8
-	appear $9
-	disappear $a
+.Wednesday:
+	disappear WAREHOUSEENTRANCE_GRAMPS
+	disappear WAREHOUSEENTRANCE_SUPER_NERD5
+	appear WAREHOUSEENTRANCE_SUPER_NERD6
+	disappear WAREHOUSEENTRANCE_GRANNY
 	return
-; 0x7c0c7
 
-UnknownScript_0x7c0c7: ; 0x7c0c7
-	disappear $7
-	appear $8
-	disappear $9
-	disappear $a
+.Thursday:
+	disappear WAREHOUSEENTRANCE_GRAMPS
+	appear WAREHOUSEENTRANCE_SUPER_NERD5
+	disappear WAREHOUSEENTRANCE_SUPER_NERD6
+	disappear WAREHOUSEENTRANCE_GRANNY
 	return
-; 0x7c0d0
 
-UnknownScript_0x7c0d0: ; 0x7c0d0
-	disappear $7
-	disappear $8
-	appear $9
-	disappear $a
+.Friday:
+	disappear WAREHOUSEENTRANCE_GRAMPS
+	disappear WAREHOUSEENTRANCE_SUPER_NERD5
+	appear WAREHOUSEENTRANCE_SUPER_NERD6
+	disappear WAREHOUSEENTRANCE_GRANNY
 	return
-; 0x7c0d9
 
-UnknownScript_0x7c0d9: ; 0x7c0d9
-	disappear $7
-	appear $8
-	disappear $9
-	appear $a
+.Saturday:
+	disappear WAREHOUSEENTRANCE_GRAMPS
+	appear WAREHOUSEENTRANCE_SUPER_NERD5
+	disappear WAREHOUSEENTRANCE_SUPER_NERD6
+	appear WAREHOUSEENTRANCE_GRANNY
 	return
-; 0x7c0e2
 
-TrainerSupernerdEric: ; 0x7c0e2
-	; bit/flag number
-	dw $582
+TrainerSupernerdEric:
+	trainer EVENT_BEAT_SUPER_NERD_ERIC, SUPER_NERD, ERIC, SupernerdEricSeenText, SupernerdEricBeatenText, 0, SupernerdEricScript
 
-	; trainer group && trainer id
-	db SUPER_NERD, ERIC
-
-	; text when seen
-	dw SupernerdEricSeenText
-
-	; text when trainer beaten
-	dw SupernerdEricBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SupernerdEricScript
-; 0x7c0ee
-
-SupernerdEricScript: ; 0x7c0ee
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x7c36c
+SupernerdEricScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x7c36c
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c0f6
 
-TrainerSupernerdTeru: ; 0x7c0f6
-	; bit/flag number
-	dw $58a
+TrainerSupernerdTeru:
+	trainer EVENT_BEAT_SUPER_NERD_TERU, SUPER_NERD, TERU, SupernerdTeruSeenText, SupernerdTeruBeatenText, 0, SupernerdTeruScript
 
-	; trainer group && trainer id
-	db SUPER_NERD, TERU
-
-	; text when seen
-	dw SupernerdTeruSeenText
-
-	; text when trainer beaten
-	dw SupernerdTeruBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SupernerdTeruScript
-; 0x7c102
-
-SupernerdTeruScript: ; 0x7c102
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x7c410
+SupernerdTeruScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x7c410
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c10a
 
-TrainerPokemaniacIssac: ; 0x7c10a
-	; bit/flag number
-	dw $4ee
+TrainerPokemaniacIssac:
+	trainer EVENT_BEAT_POKEMANIAC_ISSAC, POKEMANIAC, ISSAC, PokemaniacIssacSeenText, PokemaniacIssacBeatenText, 0, PokemaniacIssacScript
 
-	; trainer group && trainer id
-	db POKEMANIAC, ISSAC
-
-	; text when seen
-	dw PokemaniacIssacSeenText
-
-	; text when trainer beaten
-	dw PokemaniacIssacBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw PokemaniacIssacScript
-; 0x7c116
-
-PokemaniacIssacScript: ; 0x7c116
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x7c498
+PokemaniacIssacScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x7c498
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c11e
 
-TrainerPokemaniacDonald: ; 0x7c11e
-	; bit/flag number
-	dw $4ef
+TrainerPokemaniacDonald:
+	trainer EVENT_BEAT_POKEMANIAC_DONALD, POKEMANIAC, DONALD, PokemaniacDonaldSeenText, PokemaniacDonaldBeatenText, 0, PokemaniacDonaldScript
 
-	; trainer group && trainer id
-	db POKEMANIAC, DONALD
-
-	; text when seen
-	dw PokemaniacDonaldSeenText
-
-	; text when trainer beaten
-	dw PokemaniacDonaldBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw PokemaniacDonaldScript
-; 0x7c12a
-
-PokemaniacDonaldScript: ; 0x7c12a
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x7c52f
+PokemaniacDonaldScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x7c52f
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c132
 
-GrannyScript_0x7c132: ; 0x7c132
-	loadfont
-	checkcode $b
-	if_equal SUNDAY, UnknownScript_0x7c140
-	if_equal SATURDAY, UnknownScript_0x7c140
-	2jump UnknownScript_0x7c300
-; 0x7c140
+GrannyScript_0x7c132:
+	opentext
+	checkcode VAR_WEEKDAY
+	if_equal SUNDAY, .Open
+	if_equal SATURDAY, .Open
+	jump WarehouseEntranceScript_ShopClosed
 
-UnknownScript_0x7c140: ; 0x7c140
-	pokemart $1, $0021
-	loadmovesprites
+.Open:
+	pokemart MARTTYPE_BITTER, MART_UNDERGROUND
+	closetext
 	end
-; 0x7c146
 
-GrampsScript_0x7c146: ; 0x7c146
-	loadfont
-	checkflag $0056
-	iftrue UnknownScript_0x7c300
-	checkcode $b
-	if_equal MONDAY, UnknownScript_0x7c156
-	2jump UnknownScript_0x7c300
-; 0x7c156
+GrampsScript_0x7c146:
+	opentext
+	checkflag ENGINE_GOLDENROD_UNDERGROUND_MERCHANT_CLOSED
+	iftrue WarehouseEntranceScript_ShopClosed
+	checkcode VAR_WEEKDAY
+	if_equal MONDAY, .CheckMorn
+	jump WarehouseEntranceScript_ShopClosed
 
-UnknownScript_0x7c156: ; 0x7c156
-	checktime $1
-	iffalse UnknownScript_0x7c300
-	pokemart $2, $0000
-	loadmovesprites
+.CheckMorn:
+	checkmorn
+	iffalse WarehouseEntranceScript_ShopClosed
+	pokemart MARTTYPE_BARGAIN, 0
+	closetext
 	end
-; 0x7c161
 
-SuperNerdScript_0x7c161: ; 0x7c161
-	loadfont
-	checkcode $b
-	if_equal TUESDAY, UnknownScript_0x7c173
-	if_equal THURSDAY, UnknownScript_0x7c173
-	if_equal SATURDAY, UnknownScript_0x7c173
-	2jump UnknownScript_0x7c300
-; 0x7c173
+OlderHaircutBrotherScript:
+	opentext
+	checkcode VAR_WEEKDAY
+	if_equal TUESDAY, .DoHaircut
+	if_equal THURSDAY, .DoHaircut
+	if_equal SATURDAY, .DoHaircut
+	jump WarehouseEntranceScript_ShopClosed
 
-UnknownScript_0x7c173: ; 0x7c173
-	checkflag $005a
-	iftrue UnknownScript_0x7c208
-	special $0051
-	2writetext UnknownText_0x7c5f9
+.DoHaircut:
+	checkflag ENGINE_GOLDENROD_UNDERGROUND_GOT_HAIRCUT
+	iftrue .AlreadyGotHaircut
+	special PlaceMoneyTopRight
+	writetext UnknownText_0x7c5f9
 	yesorno
-	iffalse UnknownScript_0x7c1fc
+	iffalse .Refused
 	checkmoney $0, 500
-	if_equal $2, UnknownScript_0x7c202
-	2writetext UnknownText_0x7c69a
-	keeptextopen
-	special $0061
-	if_equal $0, UnknownScript_0x7c1fc
-	if_equal $1, UnknownScript_0x7c1fc
-	setflag $005a
-	if_equal $2, UnknownScript_0x7c1a9
-	if_equal $3, UnknownScript_0x7c1b5
-	2jump UnknownScript_0x7c1c1
-; 0x7c1a9
+	if_equal $2, .NotEnoughMoney
+	writetext UnknownText_0x7c69a
+	buttonsound
+	special Special_YoungerHaircutBrother
+	if_equal $0, .Refused
+	if_equal $1, .Refused
+	setflag ENGINE_GOLDENROD_UNDERGROUND_GOT_HAIRCUT
+	if_equal $2, .two
+	if_equal $3, .three
+	jump .else
 
-UnknownScript_0x7c1a9: ; 0x7c1a9
-	setevent $0000
-	clearevent $0001
-	clearevent $0002
-	2jump UnknownScript_0x7c1cd
-; 0x7c1b5
+.two
+	setevent EVENT_GAVE_KURT_APRICORNS
+	clearevent EVENT_RECEIVED_BALLS_FROM_KURT
+	clearevent EVENT_DRAGON_SHRINE_QUESTION_2
+	jump .then
 
-UnknownScript_0x7c1b5: ; 0x7c1b5
-	clearevent $0000
-	setevent $0001
-	clearevent $0002
-	2jump UnknownScript_0x7c1cd
-; 0x7c1c1
+.three
+	clearevent EVENT_GAVE_KURT_APRICORNS
+	setevent EVENT_RECEIVED_BALLS_FROM_KURT
+	clearevent EVENT_DRAGON_SHRINE_QUESTION_2
+	jump .then
 
-UnknownScript_0x7c1c1: ; 0x7c1c1
-	clearevent $0000
-	clearevent $0001
-	setevent $0002
-	2jump UnknownScript_0x7c1cd
-; 0x7c1cd
+.else
+	clearevent EVENT_GAVE_KURT_APRICORNS
+	clearevent EVENT_RECEIVED_BALLS_FROM_KURT
+	setevent EVENT_DRAGON_SHRINE_QUESTION_2
+	jump .then
 
-UnknownScript_0x7c1cd: ; 0x7c1cd
+.then
 	takemoney $0, 500
-	special $0051
-	2writetext UnknownText_0x7c6b8
+	special PlaceMoneyTopRight
+	writetext UnknownText_0x7c6b8
+	waitbutton
 	closetext
-	loadmovesprites
-	special $002e
+	special FadeOutPalettes
 	playmusic MUSIC_HEAL
 	pause 60
-	special $0031
-	special $003d
-	loadfont
-	2writetext UnknownText_0x7c6d8
-	closetext
-	checkevent $0000
+	special FadeInPalettes
+	special RestartMapMusic
+	opentext
+	writetext UnknownText_0x7c6d8
+	waitbutton
+	checkevent EVENT_GAVE_KURT_APRICORNS
 	iftrue UnknownScript_0x7c2bb
-	checkevent $0001
+	checkevent EVENT_RECEIVED_BALLS_FROM_KURT
 	iftrue UnknownScript_0x7c2c4
-	2jump UnknownScript_0x7c2cd
-; 0x7c1fc
+	jump UnknownScript_0x7c2cd
 
-UnknownScript_0x7c1fc: ; 0x7c1fc
-	2writetext UnknownText_0x7c6ea
+.Refused:
+	writetext UnknownText_0x7c6ea
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c202
 
-UnknownScript_0x7c202: ; 0x7c202
-	2writetext UnknownText_0x7c709
+.NotEnoughMoney:
+	writetext UnknownText_0x7c709
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c208
 
-UnknownScript_0x7c208: ; 0x7c208
-	2writetext UnknownText_0x7c72b
+.AlreadyGotHaircut:
+	writetext UnknownText_0x7c72b
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c20e
 
-SuperNerdScript_0x7c20e: ; 0x7c20e
-	loadfont
-	checkcode $b
-	if_equal SUNDAY, UnknownScript_0x7c220
-	if_equal WEDNESDAY, UnknownScript_0x7c220
-	if_equal FRIDAY, UnknownScript_0x7c220
-	2jump UnknownScript_0x7c300
-; 0x7c220
+YoungerHaircutBrotherScript:
+	opentext
+	checkcode VAR_WEEKDAY
+	if_equal SUNDAY, .DoHaircut
+	if_equal WEDNESDAY, .DoHaircut
+	if_equal FRIDAY, .DoHaircut
+	jump WarehouseEntranceScript_ShopClosed
 
-UnknownScript_0x7c220: ; 0x7c220
-	checkflag $005a
-	iftrue UnknownScript_0x7c2b5
-	special $0051
-	2writetext UnknownText_0x7c75c
+.DoHaircut:
+	checkflag ENGINE_GOLDENROD_UNDERGROUND_GOT_HAIRCUT
+	iftrue .AlreadyGotHaircut
+	special PlaceMoneyTopRight
+	writetext UnknownText_0x7c75c
 	yesorno
-	iffalse UnknownScript_0x7c2a9
+	iffalse .Refused
 	checkmoney $0, 300
-	if_equal $2, UnknownScript_0x7c2af
-	2writetext UnknownText_0x7c7f1
-	keeptextopen
-	special $0062
-	if_equal $0, UnknownScript_0x7c2a9
-	if_equal $1, UnknownScript_0x7c2a9
-	setflag $005a
-	if_equal $2, UnknownScript_0x7c256
-	if_equal $3, UnknownScript_0x7c262
-	2jump UnknownScript_0x7c26e
-; 0x7c256
+	if_equal $2, .NotEnoughMoney
+	writetext UnknownText_0x7c7f1
+	buttonsound
+	special Special_OlderHaircutBrother
+	if_equal $0, .Refused
+	if_equal $1, .Refused
+	setflag ENGINE_GOLDENROD_UNDERGROUND_GOT_HAIRCUT
+	if_equal $2, .two
+	if_equal $3, .three
+	jump .else
 
-UnknownScript_0x7c256: ; 0x7c256
-	setevent $0000
-	clearevent $0001
-	clearevent $0002
-	2jump UnknownScript_0x7c27a
-; 0x7c262
+.two
+	setevent EVENT_GAVE_KURT_APRICORNS
+	clearevent EVENT_RECEIVED_BALLS_FROM_KURT
+	clearevent EVENT_DRAGON_SHRINE_QUESTION_2
+	jump .then
 
-UnknownScript_0x7c262: ; 0x7c262
-	clearevent $0000
-	setevent $0001
-	clearevent $0002
-	2jump UnknownScript_0x7c27a
-; 0x7c26e
+.three
+	clearevent EVENT_GAVE_KURT_APRICORNS
+	setevent EVENT_RECEIVED_BALLS_FROM_KURT
+	clearevent EVENT_DRAGON_SHRINE_QUESTION_2
+	jump .then
 
-UnknownScript_0x7c26e: ; 0x7c26e
-	clearevent $0000
-	clearevent $0001
-	setevent $0002
-	2jump UnknownScript_0x7c27a
-; 0x7c27a
+.else
+	clearevent EVENT_GAVE_KURT_APRICORNS
+	clearevent EVENT_RECEIVED_BALLS_FROM_KURT
+	setevent EVENT_DRAGON_SHRINE_QUESTION_2
+	jump .then
 
-UnknownScript_0x7c27a: ; 0x7c27a
+.then
 	takemoney $0, 300
-	special $0051
-	2writetext UnknownText_0x7c80e
+	special PlaceMoneyTopRight
+	writetext UnknownText_0x7c80e
+	waitbutton
 	closetext
-	loadmovesprites
-	special $002e
+	special FadeOutPalettes
 	playmusic MUSIC_HEAL
 	pause 60
-	special $0031
-	special $003d
-	loadfont
-	2writetext UnknownText_0x7c82a
-	closetext
-	checkevent $0000
+	special FadeInPalettes
+	special RestartMapMusic
+	opentext
+	writetext UnknownText_0x7c82a
+	waitbutton
+	checkevent EVENT_GAVE_KURT_APRICORNS
 	iftrue UnknownScript_0x7c2bb
-	checkevent $0001
+	checkevent EVENT_RECEIVED_BALLS_FROM_KURT
 	iftrue UnknownScript_0x7c2c4
-	2jump UnknownScript_0x7c2cd
-; 0x7c2a9
+	jump UnknownScript_0x7c2cd
 
-UnknownScript_0x7c2a9: ; 0x7c2a9
-	2writetext UnknownText_0x7c842
+.Refused:
+	writetext UnknownText_0x7c842
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c2af
 
-UnknownScript_0x7c2af: ; 0x7c2af
-	2writetext UnknownText_0x7c85b
+.NotEnoughMoney:
+	writetext UnknownText_0x7c85b
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c2b5
 
-UnknownScript_0x7c2b5: ; 0x7c2b5
-	2writetext UnknownText_0x7c87b
+.AlreadyGotHaircut:
+	writetext UnknownText_0x7c87b
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c2bb
 
-UnknownScript_0x7c2bb: ; 0x7c2bb
-	2writetext UnknownText_0x7c8bf
-	special $0064
+UnknownScript_0x7c2bb:
+	writetext HaircutBrosText_SlightlyHappier
+	special PlayCurMonCry
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c2c4
 
-UnknownScript_0x7c2c4: ; 0x7c2c4
-	2writetext UnknownText_0x7c8dc
-	special $0064
+UnknownScript_0x7c2c4:
+	writetext HaircutBrosText_Happier
+	special PlayCurMonCry
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c2cd
 
-UnknownScript_0x7c2cd: ; 0x7c2cd
-	2writetext UnknownText_0x7c8ee
-	special $0064
+UnknownScript_0x7c2cd:
+	writetext HaircutBrosText_MuchHappier
+	special PlayCurMonCry
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c2d6
 
-MapWarehouseEntranceSignpost0Script:: ; 0x7c2d6
-	loadfont
+BasementDoorScript::
+	opentext
 	checkevent EVENT_USED_BASEMENT_KEY
-	iftrue UnknownScript_0x7c2fa
+	iftrue .Open
 	checkitem BASEMENT_KEY
-	iftrue UnknownScript_0x7c2e8
-	2writetext UnknownText_0x7c5b0
+	iftrue .Unlock
+	writetext UnknownText_0x7c5b0
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c2e8
 
-UnknownScript_0x7c2e8: ; 0x7c2e8
+.Unlock:
 	playsound SFX_TRANSACTION
-	2writetext UnknownText_0x7c5d6
+	writetext UnknownText_0x7c5d6
+	waitbutton
 	closetext
-	loadmovesprites
 	changeblock $12, $6, $2e
 	reloadmappart
-	loadmovesprites
+	closetext
 	setevent EVENT_USED_BASEMENT_KEY
 	end
-; 0x7c2fa
 
-UnknownScript_0x7c2fa: ; 0x7c2fa
-	2writetext UnknownText_0x7c5c3
+.Open:
+	writetext UnknownText_0x7c5c3
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c300
 
-UnknownScript_0x7c300: ; 0x7c300
-	2writetext UnknownText_0x7c904
+WarehouseEntranceScript_ShopClosed:
+	writetext UnknownText_0x7c904
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7c306
 
-ItemFragment_0x7c306: ; 0x7c306
-	db COIN_CASE, 1
-; 0x7c308
+WarehouseEntranceCoinCase:
+	itemball COIN_CASE
 
-MapWarehouseEntranceSignpost1Script: ; 0x7c308
+MapWarehouseEntranceSignpost1Script:
 	jumptext UnknownText_0x7c91a
-; 0x7c30b
 
-MapWarehouseEntranceSignpostItem2: ; 0x7c30b
-	dw $008b
-	db PARLYZ_HEAL
-	
-; 0x7c30e
+WarehouseEntranceHiddenParlyzHeal:
+	dwb EVENT_WAREHOUSE_ENTRANCE_HIDDEN_PARLYZ_HEAL, PARLYZ_HEAL
 
-MapWarehouseEntranceSignpostItem3: ; 0x7c30e
-	dw $008c
-	db SUPER_POTION
-	
-; 0x7c311
 
-MapWarehouseEntranceSignpostItem4: ; 0x7c311
-	dw $008d
-	db ANTIDOTE
-	
-; 0x7c314
+WarehouseEntranceHiddenSuperPotion:
+	dwb EVENT_WAREHOUSE_ENTRANCE_HIDDEN_SUPER_POTION, SUPER_POTION
 
-SupernerdEricSeenText: ; 0x7c314
+
+WarehouseEntranceHiddenAntidote:
+	dwb EVENT_WAREHOUSE_ENTRANCE_HIDDEN_ANTIDOTE, ANTIDOTE
+
+
+SupernerdEricSeenText:
 	text "I got booted out"
 	line "of the GAME COR-"
 	cont "NER."
@@ -541,21 +434,18 @@ SupernerdEricSeenText: ; 0x7c314
 	line "cheat using my"
 	cont "#MON…"
 	done
-; 0x7c361
 
-SupernerdEricBeatenText: ; 0x7c361
+SupernerdEricBeatenText:
 	text "…Grumble…"
 	done
-; 0x7c36c
 
-UnknownText_0x7c36c: ; 0x7c36c
+UnknownText_0x7c36c:
 	text "I guess I have to"
 	line "do things fair and"
 	cont "square…"
 	done
-; 0x7c39a
 
-SupernerdTeruSeenText: ; 0x7c39a
+SupernerdTeruSeenText:
 	text "Do you consider"
 	line "type alignments in"
 	cont "battle?"
@@ -566,61 +456,53 @@ SupernerdTeruSeenText: ; 0x7c39a
 	para "you'll do better"
 	line "in battle."
 	done
-; 0x7c403
 
-SupernerdTeruBeatenText: ; 0x7c403
+SupernerdTeruBeatenText:
 	text "Ow, ow, ow!"
 	done
-; 0x7c410
 
-UnknownText_0x7c410: ; 0x7c410
+UnknownText_0x7c410:
 	text "I know my #MON"
 	line "type alignments."
 
 	para "But I only use one"
 	line "type of #MON."
 	done
-; 0x7c452
 
-PokemaniacIssacSeenText: ; 0x7c452
+PokemaniacIssacSeenText:
 	text "My #MON just"
 	line "got a haircut!"
 
 	para "I'll show you how"
 	line "strong it is!"
 	done
-; 0x7c48e
 
-PokemaniacIssacBeatenText: ; 0x7c48e
+PokemaniacIssacBeatenText:
 	text "Aiyeeee!"
 	done
-; 0x7c498
 
-UnknownText_0x7c498: ; 0x7c498
+UnknownText_0x7c498:
 	text "Your #MON will"
 	line "like you more if"
 
 	para "you give them"
 	line "haircuts."
 	done
-; 0x7c4d1
 
-PokemaniacDonaldSeenText: ; 0x7c4d1
+PokemaniacDonaldSeenText:
 	text "I think you have"
 	line "some rare #MON"
 	cont "with you."
 
 	para "Let me see them!"
 	done
-; 0x7c50d
 
-PokemaniacDonaldBeatenText: ; 0x7c50d
+PokemaniacDonaldBeatenText:
 	text "Gaah! I lost!"
 	line "That makes me mad!"
 	done
-; 0x7c52f
 
-UnknownText_0x7c52f: ; 0x7c52f
+UnknownText_0x7c52f:
 	text "Are you making a"
 	line "#DEX? Here's a"
 	cont "hot tip."
@@ -633,25 +515,21 @@ UnknownText_0x7c52f: ; 0x7c52f
 	line "he sees any rare"
 	cont "#MON."
 	done
-; 0x7c5b0
 
-UnknownText_0x7c5b0: ; 0x7c5b0
+UnknownText_0x7c5b0:
 	text "The door's locked…"
 	done
-; 0x7c5c3
 
-UnknownText_0x7c5c3: ; 0x7c5c3
+UnknownText_0x7c5c3:
 	text "The door is open."
 	done
-; 0x7c5d6
 
-UnknownText_0x7c5d6: ; 0x7c5d6
+UnknownText_0x7c5d6:
 	text "The BASEMENT KEY"
 	line "opened the door."
 	done
-; 0x7c5f9
 
-UnknownText_0x7c5f9: ; 0x7c5f9
+UnknownText_0x7c5f9:
 	text "Welcome!"
 
 	para "I run the #MON"
@@ -668,45 +546,38 @@ UnknownText_0x7c5f9: ; 0x7c5f9
 	para "Would you like me"
 	line "to do that?"
 	done
-; 0x7c69a
 
-UnknownText_0x7c69a: ; 0x7c69a
+UnknownText_0x7c69a:
 	text "Which #MON"
 	line "should I work on?"
 	done
-; 0x7c6b8
 
-UnknownText_0x7c6b8: ; 0x7c6b8
+UnknownText_0x7c6b8:
 	text "OK! Watch it"
 	line "become beautiful!"
 	done
-; 0x7c6d8
 
-UnknownText_0x7c6d8: ; 0x7c6d8
+UnknownText_0x7c6d8:
 	text "There! All done!"
 	done
-; 0x7c6ea
 
-UnknownText_0x7c6ea: ; 0x7c6ea
+UnknownText_0x7c6ea:
 	text "Is that right?"
 	line "That's a shame!"
 	done
-; 0x7c709
 
-UnknownText_0x7c709: ; 0x7c709
+UnknownText_0x7c709:
 	text "You'll need more"
 	line "money than that."
 	done
-; 0x7c72b
 
-UnknownText_0x7c72b: ; 0x7c72b
+UnknownText_0x7c72b:
 	text "I do only one"
 	line "haircut a day. I'm"
 	cont "done for today."
 	done
-; 0x7c75c
 
-UnknownText_0x7c75c: ; 0x7c75c
+UnknownText_0x7c75c:
 	text "Welcome to the"
 	line "#MON SALON!"
 
@@ -721,114 +592,100 @@ UnknownText_0x7c75c: ; 0x7c75c
 
 	para "So? How about it?"
 	done
-; 0x7c7f1
 
-UnknownText_0x7c7f1: ; 0x7c7f1
+UnknownText_0x7c7f1:
 	text "OK, which #MON"
 	line "should I do?"
 	done
-; 0x7c80e
 
-UnknownText_0x7c80e: ; 0x7c80e
+UnknownText_0x7c80e:
 	text "OK! I'll make it"
 	line "look cool!"
 	done
-; 0x7c82a
 
-UnknownText_0x7c82a: ; 0x7c82a
+UnknownText_0x7c82a:
 	text "There we go!"
 	line "All done!"
 	done
-; 0x7c842
 
-UnknownText_0x7c842: ; 0x7c842
+UnknownText_0x7c842:
 	text "No? "
 	line "How disappointing!"
 	done
-; 0x7c85b
 
-UnknownText_0x7c85b: ; 0x7c85b
+UnknownText_0x7c85b:
 	text "You're a little"
 	line "short on funds."
 	done
-; 0x7c87b
 
-UnknownText_0x7c87b: ; 0x7c87b
+UnknownText_0x7c87b:
 	text "I can do only one"
 	line "haircut a day."
 
 	para "Sorry, but I'm all"
 	line "done for today."
 	done
-; 0x7c8bf
 
-UnknownText_0x7c8bf: ; 0x7c8bf
-	text_from_ram $d099
+HaircutBrosText_SlightlyHappier:
+	text_from_ram StringBuffer3
 	text " looks a"
 	line "little happier."
 	done
-; 0x7c8dc
 
-UnknownText_0x7c8dc: ; 0x7c8dc
-	text_from_ram $d099
+HaircutBrosText_Happier:
+	text_from_ram StringBuffer3
 	text " looks"
 	line "happy."
 	done
-; 0x7c8ee
 
-UnknownText_0x7c8ee: ; 0x7c8ee
-	text_from_ram $d099
+HaircutBrosText_MuchHappier:
+	text_from_ram StringBuffer3
 	text " looks"
 	line "delighted!"
 	done
-; 0x7c904
 
-UnknownText_0x7c904: ; 0x7c904
+UnknownText_0x7c904:
 	text "We're not open"
 	line "today."
 	done
-; 0x7c91a
 
-UnknownText_0x7c91a: ; 0x7c91a
+UnknownText_0x7c91a:
 	text "NO ENTRY BEYOND"
 	line "THIS POINT"
 	done
-; 0x7c936
 
-WarehouseEntrance_MapEventHeader: ; 0x7c936
+WarehouseEntrance_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 6
-	warp_def $2, $3, 7, GROUP_UNDERGROUND_PATH_SWITCH_ROOM_ENTRANCES, MAP_UNDERGROUND_PATH_SWITCH_ROOM_ENTRANCES
-	warp_def $22, $3, 4, GROUP_UNDERGROUND_PATH_SWITCH_ROOM_ENTRANCES, MAP_UNDERGROUND_PATH_SWITCH_ROOM_ENTRANCES
-	warp_def $6, $12, 4, GROUP_WAREHOUSE_ENTRANCE, MAP_WAREHOUSE_ENTRANCE
-	warp_def $1f, $15, 3, GROUP_WAREHOUSE_ENTRANCE, MAP_WAREHOUSE_ENTRANCE
-	warp_def $1f, $16, 3, GROUP_WAREHOUSE_ENTRANCE, MAP_WAREHOUSE_ENTRANCE
-	warp_def $1b, $16, 1, GROUP_UNDERGROUND_PATH_SWITCH_ROOM_ENTRANCES, MAP_UNDERGROUND_PATH_SWITCH_ROOM_ENTRANCES
+	warp_def $2, $3, 7, UNDERGROUND_PATH_SWITCH_ROOM_ENTRANCES
+	warp_def $22, $3, 4, UNDERGROUND_PATH_SWITCH_ROOM_ENTRANCES
+	warp_def $6, $12, 4, WAREHOUSE_ENTRANCE
+	warp_def $1f, $15, 3, WAREHOUSE_ENTRANCE
+	warp_def $1f, $16, 3, WAREHOUSE_ENTRANCE
+	warp_def $1b, $16, 1, UNDERGROUND_PATH_SWITCH_ROOM_ENTRANCES
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 5
-	signpost 6, 18, $0, MapWarehouseEntranceSignpost0Script
-	signpost 6, 19, $0, MapWarehouseEntranceSignpost1Script
-	signpost 13, 6, $7, MapWarehouseEntranceSignpostItem2
-	signpost 18, 4, $7, MapWarehouseEntranceSignpostItem3
-	signpost 8, 17, $7, MapWarehouseEntranceSignpostItem4
+	signpost 6, 18, SIGNPOST_READ, BasementDoorScript
+	signpost 6, 19, SIGNPOST_READ, MapWarehouseEntranceSignpost1Script
+	signpost 13, 6, SIGNPOST_ITEM, WarehouseEntranceHiddenParlyzHeal
+	signpost 18, 4, SIGNPOST_ITEM, WarehouseEntranceHiddenSuperPotion
+	signpost 8, 17, SIGNPOST_ITEM, WarehouseEntranceHiddenAntidote
 
-	; people-events
+.PersonEvents:
 	db 9
-	person_event SPRITE_SUPER_NERD, 35, 9, $8, $0, 255, 255, $b2, 3, TrainerSupernerdEric, $ffff
-	person_event SPRITE_SUPER_NERD, 13, 10, $7, $0, 255, 255, $b2, 2, TrainerSupernerdTeru, $ffff
-	person_event SPRITE_SUPER_NERD, 31, 7, $a, $0, 255, 255, $92, 2, TrainerPokemaniacIssac, $ffff
-	person_event SPRITE_SUPER_NERD, 10, 6, $9, $0, 255, 255, $92, 3, TrainerPokemaniacDonald, $ffff
-	person_event SPRITE_POKE_BALL, 29, 11, $1, $0, 255, 255, $1, 0, ItemFragment_0x7c306, $0672
-	person_event SPRITE_GRAMPS, 15, 11, $8, $0, 255, 255, $b0, 0, GrampsScript_0x7c146, $0753
-	person_event SPRITE_SUPER_NERD, 18, 11, $8, $0, 255, 255, $90, 0, SuperNerdScript_0x7c161, $0754
-	person_event SPRITE_SUPER_NERD, 19, 11, $8, $0, 255, 255, $a0, 0, SuperNerdScript_0x7c20e, $0755
-	person_event SPRITE_GRANNY, 25, 11, $8, $0, 255, 255, $b0, 0, GrannyScript_0x7c132, $0752
-; 0x7c9e8
-
+	person_event SPRITE_SUPER_NERD, 31, 5, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 3, TrainerSupernerdEric, -1
+	person_event SPRITE_SUPER_NERD, 9, 6, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 2, TrainerSupernerdTeru, -1
+	person_event SPRITE_SUPER_NERD, 27, 3, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 2, TrainerPokemaniacIssac, -1
+	person_event SPRITE_SUPER_NERD, 6, 2, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 3, TrainerPokemaniacDonald, -1
+	person_event SPRITE_POKE_BALL, 25, 7, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, WarehouseEntranceCoinCase, EVENT_WAREHOUSE_ENTRANCE_COIN_CASE
+	person_event SPRITE_GRAMPS, 11, 7, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_SCRIPT, 0, GrampsScript_0x7c146, EVENT_WAREHOUSE_ENTRANCE_GRAMPS
+	person_event SPRITE_SUPER_NERD, 14, 7, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, OlderHaircutBrotherScript, EVENT_WAREHOUSE_ENTRANCE_OLDER_HAIRCUT_BROTHER
+	person_event SPRITE_SUPER_NERD, 15, 7, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, YoungerHaircutBrotherScript, EVENT_WAREHOUSE_ENTRANCE_YOUNGER_HAIRCUT_BROTHER
+	person_event SPRITE_GRANNY, 21, 7, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_SCRIPT, 0, GrannyScript_0x7c132, EVENT_WAREHOUSE_ENTRANCE_GRANNY

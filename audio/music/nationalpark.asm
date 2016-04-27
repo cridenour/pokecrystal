@@ -1,8 +1,8 @@
 Music_NationalPark: ; f54e8
-	dbw $c0, Music_NationalPark_Ch1
-	dbw $01, Music_NationalPark_Ch2
-	dbw $02, Music_NationalPark_Ch3
-	dbw $03, Music_NationalPark_Ch4
+	musicheader 4, 1, Music_NationalPark_Ch1
+	musicheader 1, 2, Music_NationalPark_Ch2
+	musicheader 1, 3, Music_NationalPark_Ch3
+	musicheader 1, 4, Music_NationalPark_Ch4
 ; f54f4
 
 Music_NationalPark_Ch1: ; f54f4
@@ -666,5 +666,3 @@ Music_NationalPark_branch_f57c8: ; f57c8
 	note D#, 1
 	loopchannel 0, Music_NationalPark_branch_f57bd
 ; f57e8
-
-

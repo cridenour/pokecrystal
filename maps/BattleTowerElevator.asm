@@ -1,71 +1,66 @@
-BattleTowerElevator_MapScriptHeader: ; 0x9f558
-	; trigger count
+const_value set 2
+	const BATTLETOWERELEVATOR_RECEPTIONIST
+
+BattleTowerElevator_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x9f562, $0000
-	dw UnknownScript_0x9f567, $0000
+	maptrigger .Trigger0
+	maptrigger .Trigger1
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x9f562
 
-UnknownScript_0x9f562: ; 0x9f562
-	priorityjump UnknownScript_0x9f568
+.Trigger0:
+	priorityjump .RideElevator
 	dotrigger $1
-; 0x9f567
 
-UnknownScript_0x9f567: ; 0x9f567
+.Trigger1:
 	end
-; 0x9f568
 
-UnknownScript_0x9f568: ; 0x9f568
-	follow $2, $0
-	applymovement $2, MovementData_0x9f58f
-	applymovement $0, MovementData_0x9f592
-	writebyte $a
-	special $0086
+.RideElevator:
+	follow BATTLETOWERELEVATOR_RECEPTIONIST, PLAYER
+	applymovement BATTLETOWERELEVATOR_RECEPTIONIST, MovementData_BattleTowerElevatorReceptionistWalksIn
+	applymovement PLAYER, MovementData_BattleTowerElevatorPlayerWalksIn
+	writebyte BATTLETOWERACTION_0A
+	special BattleTowerAction
 	playsound SFX_ELEVATOR
 	earthquake 60
-	waitbutton
-	follow $2, $0
-	applymovement $2, MovementData_0x9e578
+	waitsfx
+	follow BATTLETOWERELEVATOR_RECEPTIONIST, PLAYER
+	applymovement BATTLETOWERELEVATOR_RECEPTIONIST, MovementData_BattleTowerElevatorExitElevator
 	stopfollow
 	warpsound
-	disappear $2
-	applymovement $0, MovementData_0x9e578
+	disappear BATTLETOWERELEVATOR_RECEPTIONIST
+	applymovement PLAYER, MovementData_BattleTowerElevatorExitElevator
 	warpcheck
 	end
-; 0x9f58f
 
-MovementData_0x9f58f: ; 0x9f58f
+MovementData_BattleTowerElevatorReceptionistWalksIn:
 	step_right
 	turn_head_down
 	step_end
-; 0x9f592
 
-MovementData_0x9f592: ; 0x9f592
+MovementData_BattleTowerElevatorPlayerWalksIn:
 	turn_head_down
 	step_end
-; 0x9f594
 
-BattleTowerElevator_MapEventHeader: ; 0x9f594
+BattleTowerElevator_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $3, $1, 1, GROUP_BATTLE_TOWER_HALLWAY, MAP_BATTLE_TOWER_HALLWAY
-	warp_def $3, $2, 1, GROUP_BATTLE_TOWER_HALLWAY, MAP_BATTLE_TOWER_HALLWAY
+	warp_def $3, $1, 1, BATTLE_TOWER_HALLWAY
+	warp_def $3, $2, 1, BATTLE_TOWER_HALLWAY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_RECEPTIONIST, 6, 5, $9, $0, 255, 255, $0, 0, MovementData_0x9f58f, $ffff
-; 0x9f5b1
-
+	person_event SPRITE_RECEPTIONIST, 2, 1, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, MovementData_BattleTowerElevatorReceptionistWalksIn, -1

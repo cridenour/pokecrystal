@@ -1,3 +1,4 @@
+Trainers:
 
 ; All trainers follow a basic structure:
 	; Name
@@ -5,7 +6,7 @@
 	; Type
 		; 0: Level, species
 		; 1: Level, species, moves
-		; 2: Level, sepcies, item
+		; 2: Level, species, item
 		; 3: Level, species, item, moves
 	; Party
 		; Up to six monsters following the data type
@@ -25,14 +26,14 @@ FalknerGroup:
 	db 7, PIDGEY
 		db TACKLE
 		db MUD_SLAP
-		db NONE
-		db NONE
+		db 0
+		db 0
 
 	db 9, PIDGEOTTO
 		db TACKLE
 		db MUD_SLAP
 		db GUST
-		db NONE
+		db 0
 
 	db $ff ; end
 
@@ -82,19 +83,19 @@ BugsyGroup:
 		db TACKLE
 		db STRING_SHOT
 		db HARDEN
-		db NONE
+		db 0
 
 	db 14, KAKUNA
 		db POISON_STING
 		db STRING_SHOT
 		db HARDEN
-		db NONE
+		db 0
 
 	db 16, SCYTHER
 		db QUICK_ATTACK
 		db LEER
 		db FURY_CUTTER
-		db NONE
+		db 0
 
 	db $ff ; end
 
@@ -3413,7 +3414,7 @@ PokemaniacGroup:
 		db LICK
 		db SUPERSONIC
 		db CUT
-		db NONE
+		db 0
 
 	db $ff ; end
 
@@ -6934,7 +6935,7 @@ PsychicGroup:
 		db HYPNOSIS
 		db DISABLE
 		db DREAM_EATER
-		db NONE
+		db 0
 
 	db $ff ; end
 
@@ -6950,7 +6951,7 @@ PsychicGroup:
 		db TACKLE
 		db GROWL
 		db WATER_GUN
-		db NONE
+		db 0
 
 	db 20, SLOWPOKE
 		db CURSE
@@ -6971,20 +6972,20 @@ PsychicGroup:
 	db 13, ABRA
 		db TELEPORT
 		db FLASH
-		db NONE
-		db NONE
+		db 0
+		db 0
 
 	db 13, ABRA
 		db TELEPORT
 		db FLASH
-		db NONE
-		db NONE
+		db 0
+		db 0
 
 	db 15, KADABRA
 		db TELEPORT
 		db KINESIS
 		db CONFUSION
-		db NONE
+		db 0
 
 	db $ff ; end
 
@@ -7803,7 +7804,7 @@ ExecutiveFGroup:
 		db PECK
 		db PURSUIT
 		db HAZE
-		db NONE
+		db 0
 
 	db $ff ; end
 
@@ -8826,4 +8827,3 @@ MysticalmanGroup:
 
 ; ================
 ; ================================
-

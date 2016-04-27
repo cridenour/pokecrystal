@@ -6,17 +6,17 @@ Serial:: ; 6ef
 	push de
 	push hl
 
-	ld a, [$ffc9]
+	ld a, [hMobileReceive]
 	and a
-	jr nz, .asm_71c
+	jr nz, .mobile
 
-	ld a, [$c2d4]
+	ld a, [wc2d4]
 	bit 0, a
-	jr nz, .asm_721
+	jr nz, .printer
 
-	ld a, [$ffcb]
-	inc a
-	jr z, .asm_726
+	ld a, [hLinkPlayerNumber]
+	inc a ; is it equal to -1?
+	jr z, .init_player_number
 
 	ld a, [rSB]
 	ld [hSerialReceive], a
@@ -24,64 +24,64 @@ Serial:: ; 6ef
 	ld a, [hSerialSend]
 	ld [rSB], a
 
-	ld a, [$ffcb]
+	ld a, [hLinkPlayerNumber]
 	cp $2
-	jr z, .asm_752
+	jr z, .player2
 
 	ld a, 0 << rSC_ON
 	ld [rSC], a
 	ld a, 1 << rSC_ON
 	ld [rSC], a
-	jr .asm_752
+	jr .player2
 
-.asm_71c
-	call Function3e80
-	jr .asm_75a
+.mobile
+	call MobileReceive
+	jr .end
 
-.asm_721
-	call Function2057
-	jr .asm_75a
+.printer
+	call PrinterReceive
+	jr .end
 
-.asm_726
+.init_player_number
 	ld a, [rSB]
 	cp $1
-	jr z, .asm_730
+	jr z, .player1
 	cp $2
-	jr nz, .asm_752
+	jr nz, .player2
 
-.asm_730
+.player1
 	ld [hSerialReceive], a
-	ld [$ffcb], a
+	ld [hLinkPlayerNumber], a
 	cp $2
-	jr z, .asm_74f
+	jr z, ._player2
 
 	xor a
 	ld [rSB], a
 	ld a, $3
 	ld [rDIV], a
 
-.asm_73f
+.wait_bit_7
 	ld a, [rDIV]
 	bit 7, a
-	jr nz, .asm_73f
+	jr nz, .wait_bit_7
 
 	ld a, 0 << rSC_ON
 	ld [rSC], a
 	ld a, 1 << rSC_ON
 	ld [rSC], a
-	jr .asm_752
+	jr .player2
 
-.asm_74f
+._player2
 	xor a
 	ld [rSB], a
 
-.asm_752
+.player2
 	ld a, $1
-	ld [$ffca], a
-	ld a, $fe
+	ld [hFFCA], a
+	ld a, -2
 	ld [hSerialSend], a
 
-.asm_75a
+.end
 	pop hl
 	pop de
 	pop bc
@@ -91,8 +91,8 @@ Serial:: ; 6ef
 
 Function75f:: ; 75f
 	ld a, $1
-	ld [$ffcc], a
-.asm_763
+	ld [hFFCC], a
+.loop
 	ld a, [hl]
 	ld [hSerialSend], a
 	call Function78a
@@ -100,35 +100,35 @@ Function75f:: ; 75f
 	ld b, a
 	inc hl
 	ld a, $30
-.asm_76e
+.wait
 	dec a
-	jr nz, .asm_76e
-	ld a, [$ffcc]
+	jr nz, .wait
+	ld a, [hFFCC]
 	and a
 	ld a, b
 	pop bc
-	jr z, .asm_782
+	jr z, .load
 	dec hl
 	cp $fd
-	jr nz, .asm_763
+	jr nz, .loop
 	xor a
-	ld [$ffcc], a
-	jr .asm_763
+	ld [hFFCC], a
+	jr .loop
 
-.asm_782
+.load
 	ld [de], a
 	inc de
 	dec bc
 	ld a, b
 	or c
-	jr nz, .asm_763
+	jr nz, .loop
 	ret
 ; 78a
 
 Function78a:: ; 78a
 	xor a
-	ld [$ffca], a
-	ld a, [$ffcb]
+	ld [hFFCA], a
+	ld a, [hLinkPlayerNumber]
 	cp $2
 	jr nz, .asm_79b
 	ld a, $1
@@ -137,17 +137,17 @@ Function78a:: ; 78a
 	ld [rSC], a
 
 .asm_79b
-	ld a, [$ffca]
+	ld a, [hFFCA]
 	and a
 	jr nz, .asm_7e5
-	ld a, [$ffcb]
+	ld a, [hLinkPlayerNumber]
 	cp $1
 	jr nz, .asm_7c0
 	call Function82b
 	jr z, .asm_7c0
 	call .asm_825
 	push hl
-	ld hl, $cf5c
+	ld hl, wcf5c
 	inc [hl]
 	jr nz, .asm_7b7
 	dec hl
@@ -164,15 +164,15 @@ Function78a:: ; 78a
 	and $f
 	cp $8
 	jr nz, .asm_79b
-	ld a, [$cf5d]
+	ld a, [wcf5d]
 	dec a
-	ld [$cf5d], a
+	ld [wcf5d], a
 	jr nz, .asm_79b
-	ld a, [$cf5e]
+	ld a, [wcf5d + 1]
 	dec a
-	ld [$cf5e], a
+	ld [wcf5d + 1], a
 	jr nz, .asm_79b
-	ld a, [$ffcb]
+	ld a, [hLinkPlayerNumber]
 	cp $1
 	jr z, .asm_7e5
 	ld a, $ff
@@ -182,14 +182,14 @@ Function78a:: ; 78a
 
 .asm_7e5
 	xor a
-	ld [$ffca], a
+	ld [hFFCA], a
 	ld a, [rIE]
 	and $f
 	sub $8
 	jr nz, .asm_7f8
-	ld [$cf5d], a
+	ld [wcf5d], a
 	ld a, $50
-	ld [$cf5e], a
+	ld [wcf5d + 1], a
 
 .asm_7f8
 	ld a, [hSerialReceive]
@@ -198,7 +198,7 @@ Function78a:: ; 78a
 	call Function82b
 	jr z, .asm_813
 	push hl
-	ld hl, $cf5c
+	ld hl, wcf5c
 	ld a, [hl]
 	dec a
 	ld [hld], a
@@ -232,7 +232,7 @@ Function78a:: ; 78a
 
 Function82b:: ; 82b
 	push hl
-	ld hl, $cf5b
+	ld hl, wcf5b
 	ld a, [hli]
 	or [hl]
 	pop hl
@@ -241,17 +241,17 @@ Function82b:: ; 82b
 
 Function833:: ; 833
 	dec a
-	ld [$cf5b], a
-	ld [$cf5c], a
+	ld [wcf5b], a
+	ld [wcf5c], a
 	ret
 ; 83b
 
 Function83b:: ; 83b
-	ld hl, $cf56
-	ld de, $cf51
+	ld hl, wPlayerLinkAction
+	ld de, wOtherPlayerLinkMode
 	ld c, $2
 	ld a, $1
-	ld [$ffcc], a
+	ld [hFFCC], a
 .asm_847
 	call DelayFrame
 	ld a, [hl]
@@ -259,10 +259,10 @@ Function83b:: ; 83b
 	call Function78a
 	ld b, a
 	inc hl
-	ld a, [$ffcc]
+	ld a, [hFFCC]
 	and a
 	ld a, $0
-	ld [$ffcc], a
+	ld [hFFCC], a
 	jr nz, .asm_847
 	ld a, b
 	ld [de], a
@@ -273,114 +273,118 @@ Function83b:: ; 83b
 ; 862
 
 Function862:: ; 862
-	call Function309d
-	callab Function4000
+	call LoadTileMapToTempTileMap
+	callab PlaceWaitingText
 	call Function87d
-	jp Function30b4
+	jp Call_LoadTempTileMapToTileMap
 ; 871
 
 
 Function871:: ; 871
-	call Function309d
-	callab Function4000
+	call LoadTileMapToTempTileMap
+	callab PlaceWaitingText
 	jp Function87d
 ; 87d
 
-
+; One "giant" leap for machinekind
 
 Function87d:: ; 87d
 	ld a, $ff
-	ld [$cf52], a
-.asm_882
-	call Function8c1
+	ld [wOtherPlayerLinkAction], a
+.loop
+	call LinkTransfer
 	call DelayFrame
 	call Function82b
-	jr z, .asm_89e
+	jr z, .check
 	push hl
-	ld hl, $cf5c
+	ld hl, wcf5c
 	dec [hl]
-	jr nz, .asm_89d
+	jr nz, .skip
 	dec hl
 	dec [hl]
-	jr nz, .asm_89d
+	jr nz, .skip
 	pop hl
 	xor a
 	jp Function833
 
-.asm_89d
+.skip
 	pop hl
 
-.asm_89e
-	ld a, [$cf52]
+.check
+	ld a, [wOtherPlayerLinkAction]
 	inc a
-	jr z, .asm_882
-	ld b, $a
-.asm_8a6
+	jr z, .loop
+
+	ld b, 10
+.receive
 	call DelayFrame
-	call Function8c1
+	call LinkTransfer
 	dec b
-	jr nz, .asm_8a6
-	ld b, $a
-.asm_8b1
+	jr nz, .receive
+
+	ld b, 10
+.acknowledge
 	call DelayFrame
-	call Function908
+	call LinkDataReceived
 	dec b
-	jr nz, .asm_8b1
-	ld a, [$cf52]
-	ld [$cf51], a
+	jr nz, .acknowledge
+
+	ld a, [wOtherPlayerLinkAction]
+	ld [wOtherPlayerLinkMode], a
 	ret
 ; 8c1
 
-Function8c1:: ; 8c1
+LinkTransfer:: ; 8c1
 	push bc
-	ld b, $60
-	ld a, [InLinkBattle]
-	cp $1
-	jr z, .asm_8d7
-	ld b, $60
-	jr c, .asm_8d7
-	cp $2
-	ld b, $70
-	jr z, .asm_8d7
-	ld b, $80
+	ld b, SERIAL_TIMECAPSULE
+	ld a, [wLinkMode]
+	cp LINK_TIMECAPSULE
+	jr z, .got_high_nybble
+	ld b, SERIAL_TIMECAPSULE
+	jr c, .got_high_nybble
+	cp LINK_TRADECENTER
+	ld b, SERIAL_TRADECENTER
+	jr z, .got_high_nybble
+	ld b, SERIAL_BATTLE
 
-.asm_8d7
-	call Function8f3
-	ld a, [$cf56]
+.got_high_nybble
+	call .Receive
+	ld a, [wPlayerLinkAction]
 	add b
 	ld [hSerialSend], a
-	ld a, [$ffcb]
+	ld a, [hLinkPlayerNumber]
 	cp $2
-	jr nz, .asm_8ee
+	jr nz, .player_1
 	ld a, $1
 	ld [rSC], a
 	ld a, $81
 	ld [rSC], a
 
-.asm_8ee
-	call Function8f3
+.player_1
+	call .Receive
 	pop bc
 	ret
 ; 8f3
 
-Function8f3:: ; 8f3
+.Receive: ; 8f3
 	ld a, [hSerialReceive]
-	ld [$cf51], a
+	ld [wOtherPlayerLinkMode], a
 	and $f0
 	cp b
 	ret nz
 	xor a
 	ld [hSerialReceive], a
-	ld a, [$cf51]
+	ld a, [wOtherPlayerLinkMode]
 	and $f
-	ld [$cf52], a
+	ld [wOtherPlayerLinkAction], a
 	ret
 ; 908
 
-Function908:: ; 908
+LinkDataReceived:: ; 908
+; Let the other system know that the data has been received.
 	xor a
 	ld [hSerialSend], a
-	ld a, [$ffcb]
+	ld a, [hLinkPlayerNumber]
 	cp $2
 	ret nz
 	ld a, $1
@@ -391,7 +395,7 @@ Function908:: ; 908
 ; 919
 
 Function919:: ; 919
-	ld a, [InLinkBattle]
+	ld a, [wLinkMode]
 	and a
 	ret nz
 	ld a, $2
@@ -404,5 +408,3 @@ Function919:: ; 919
 	ld [rSC], a
 	ret
 ; 92e
-
-

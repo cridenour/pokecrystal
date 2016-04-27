@@ -1,100 +1,91 @@
-Colosseum_MapScriptHeader: ; 0x19345d
-	; trigger count
+const_value set 2
+	const COLOSSEUM_CHRIS1
+	const COLOSSEUM_CHRIS2
+
+Colosseum_MapScriptHeader:
+.MapTriggers:
 	db 3
 
 	; triggers
-	dw UnknownScript_0x193471, $0000
-	dw UnknownScript_0x193475, $0000
-	dw UnknownScript_0x193476, $0000
+	maptrigger .Trigger0
+	maptrigger .Trigger1
+	maptrigger .Trigger2
 
-	; callback count
+.MapCallbacks:
 	db 2
 
 	; callbacks
 
-	dbw 2, UnknownScript_0x193477
+	dbw MAPCALLBACK_OBJECTS, ColosseumScript_SetWhichChris
 
-	dbw 5, UnknownScript_0x193487
-; 0x193471
+	dbw MAPCALLBACK_NEWMAP, ColosseumScript_InitializeCB
 
-UnknownScript_0x193471: ; 0x193471
-	priorityjump UnknownScript_0x19348c
+.Trigger0:
+	priorityjump ColosseumScript_Initialize
 	end
-; 0x193475
 
-UnknownScript_0x193475: ; 0x193475
+.Trigger1:
 	end
-; 0x193476
 
-UnknownScript_0x193476: ; 0x193476
+.Trigger2:
 	end
-; 0x193477
 
-UnknownScript_0x193477: ; 0x193477
-	special $0010
-	iffalse UnknownScript_0x193482
-	disappear $3
-	appear $2
+ColosseumScript_SetWhichChris:
+	special Special_CableClubCheckWhichChris
+	iffalse .Chris2
+	disappear COLOSSEUM_CHRIS2
+	appear COLOSSEUM_CHRIS1
 	return
-; 0x193482
 
-UnknownScript_0x193482: ; 0x193482
-	disappear $2
-	appear $3
+.Chris2:
+	disappear COLOSSEUM_CHRIS1
+	appear COLOSSEUM_CHRIS2
 	return
-; 0x193487
 
-UnknownScript_0x193487: ; 0x193487
-	domaptrigger GROUP_POKECENTER_2F, MAP_POKECENTER_2F, $2
+ColosseumScript_InitializeCB:
+	domaptrigger POKECENTER_2F, $2
 	return
-; 0x19348c
 
-UnknownScript_0x19348c: ; 0x19348c
+ColosseumScript_Initialize:
 	dotrigger $1
-	domaptrigger GROUP_POKECENTER_2F, MAP_POKECENTER_2F, $2
+	domaptrigger POKECENTER_2F, $2
 	end
-; 0x193493
 
-MapColosseumSignpost1Script: ; 0x193493
-	special $000e
-	newloadmap $f8
+MapColosseumSignpost1Script:
+	special Special_Colosseum
+	newloadmap MAPSETUP_LINKRETURN
 	end
-; 0x193499
 
-ChrisScript_0x193499: ; 0x193499
-	loadfont
-	2writetext UnknownText_0x1934a0
+ChrisScript_0x193499:
+	opentext
+	writetext .FriendReadyText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1934a0
 
-UnknownText_0x1934a0: ; 0x1934a0
+.FriendReadyText:
 	text "Your friend is"
 	line "ready."
 	done
-; 0x1934b7
 
-Colosseum_MapEventHeader: ; 0x1934b7
+Colosseum_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $4, 3, GROUP_POKECENTER_2F, MAP_POKECENTER_2F
-	warp_def $7, $5, 3, GROUP_POKECENTER_2F, MAP_POKECENTER_2F
+	warp_def $7, $4, 3, POKECENTER_2F
+	warp_def $7, $5, 3, POKECENTER_2F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 4, 4, $3, MapColosseumSignpost1Script
-	signpost 4, 5, $4, MapColosseumSignpost1Script
+	signpost 4, 4, SIGNPOST_RIGHT, MapColosseumSignpost1Script
+	signpost 4, 5, SIGNPOST_LEFT, MapColosseumSignpost1Script
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_CHRIS, 8, 7, $9, $0, 255, 255, $0, 0, ChrisScript_0x193499, $0000
-	person_event SPRITE_CHRIS, 8, 10, $8, $0, 255, 255, $0, 0, ChrisScript_0x193499, $0001
-; 0x1934eb
-
+	person_event SPRITE_CHRIS, 4, 3, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ChrisScript_0x193499, EVENT_GAVE_KURT_APRICORNS
+	person_event SPRITE_CHRIS, 4, 6, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ChrisScript_0x193499, EVENT_RECEIVED_BALLS_FROM_KURT

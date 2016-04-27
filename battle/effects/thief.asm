@@ -1,4 +1,4 @@
-BattleCommand50: ; 37492
+BattleCommand_Thief: ; 37492
 ; thief
 
 	ld a, [hBattleTurn]
@@ -21,7 +21,7 @@ BattleCommand50: ; 37492
 
 ; Can't steal mail.
 
-	ld [$d265], a
+	ld [wd265], a
 	ld d, a
 	callba ItemIsMail
 	ret c
@@ -30,11 +30,11 @@ BattleCommand50: ; 37492
 	and a
 	ret nz
 
-	ld a, [InLinkBattle]
+	ld a, [wLinkMode]
 	and a
 	jr z, .stealenemyitem
 
-	ld a, [IsInBattle]
+	ld a, [wBattleMode]
 	dec a
 	ret z
 
@@ -45,7 +45,7 @@ BattleCommand50: ; 37492
 	ld [de], a
 
 	call .playeritem
-	ld a, [$d265]
+	ld a, [wd265]
 	ld [hl], a
 	ld [de], a
 	jr .stole
@@ -69,7 +69,7 @@ BattleCommand50: ; 37492
 
 ; Can't steal mail!
 
-	ld [$d265], a
+	ld [wd265], a
 	ld d, a
 	callba ItemIsMail
 	ret c
@@ -87,7 +87,7 @@ BattleCommand50: ; 37492
 	ld [de], a
 
 	call .enemyitem
-	ld a, [$d265]
+	ld a, [wd265]
 	ld [hl], a
 	ld [de], a
 
@@ -114,4 +114,3 @@ BattleCommand50: ; 37492
 	ld hl, EnemyMonItem
 	ret
 ; 37517
-

@@ -1,12 +1,10 @@
 Music_KantoWildBattle: ; ed06d
-	dbw $80, Music_KantoWildBattle_Ch1
-	dbw $01, Music_KantoWildBattle_Ch2
-	dbw $02, Music_KantoWildBattle_Ch3
+	musicheader 3, 1, Music_KantoWildBattle_Ch1
+	musicheader 1, 2, Music_KantoWildBattle_Ch2
+	musicheader 1, 3, Music_KantoWildBattle_Ch3
 ; ed076
 
-
-INCBIN "baserom.gbc", $ed076, $ed077 - $ed076
-
+	db $3
 
 Music_KantoWildBattle_Ch1: ; ed077
 	tempo 112
@@ -327,22 +325,25 @@ Music_KantoWildBattle_branch_ed1c8: ; ed1c8
 	note F_, 1
 	note F#, 1
 	notetype $6, $b7
+rept 2
 	callchannel Music_KantoWildBattle_branch_ed307
-	callchannel Music_KantoWildBattle_branch_ed307
+endr
 	forceoctave $1
+rept 2
 	callchannel Music_KantoWildBattle_branch_ed307
-	callchannel Music_KantoWildBattle_branch_ed307
+endr
 	forceoctave $0
+rept 4
 	callchannel Music_KantoWildBattle_branch_ed307
-	callchannel Music_KantoWildBattle_branch_ed307
-	callchannel Music_KantoWildBattle_branch_ed307
-	callchannel Music_KantoWildBattle_branch_ed307
+endr
 	forceoctave $1
+rept 2
 	callchannel Music_KantoWildBattle_branch_ed307
-	callchannel Music_KantoWildBattle_branch_ed307
+endr
 	forceoctave $0
+rept 2
 	callchannel Music_KantoWildBattle_branch_ed307
-	callchannel Music_KantoWildBattle_branch_ed307
+endr
 	note __, 16
 	octave 3
 	note A#, 16
@@ -1226,5 +1227,3 @@ Music_KantoWildBattle_branch_ed39e: ; ed39e
 	note G_, 16
 	loopchannel 0, Music_KantoWildBattle_branch_ed39e
 ; ed5c6
-
-

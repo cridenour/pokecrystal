@@ -1,8 +1,8 @@
 Music_MagnetTrain: ; ef5f0
-	dbw $c0, Music_MagnetTrain_Ch1
-	dbw $01, Music_MagnetTrain_Ch2
-	dbw $02, Music_MagnetTrain_Ch3
-	dbw $03, Music_MagnetTrain_Ch4
+	musicheader 4, 1, Music_MagnetTrain_Ch1
+	musicheader 1, 2, Music_MagnetTrain_Ch2
+	musicheader 1, 3, Music_MagnetTrain_Ch3
+	musicheader 1, 4, Music_MagnetTrain_Ch4
 ; ef5fc
 
 Music_MagnetTrain_Ch1: ; ef5fc
@@ -251,7 +251,22 @@ Music_MagnetTrain_Ch4: ; ef6f4
 ; ef711
 
 
-INCBIN "baserom.gbc", $ef711, $ef71e - $ef711
+; unused
+Music_MagnetTrain_branch_ef711: ; ef711
+	note G#, 1
+	note G_, 1
+	note G_, 1
+	note G#, 1
+	note G_, 1
+	note G_, 1
+	note G#, 1
+	note G_, 1
+	note G_, 1
+	note G#, 1
+	note G_, 1
+	note G_, 1
+	endchannel
+; ef71e
 
 
 Music_MagnetTrain_branch_ef71e: ; ef71e
@@ -273,5 +288,3 @@ Music_MagnetTrain_branch_ef71e: ; ef71e
 	note G_, 2
 	endchannel
 ; ef72f
-
-

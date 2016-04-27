@@ -1,103 +1,66 @@
-OlivineLighthouse5F_MapScriptHeader: ; 0x60980
-	; trigger count
+const_value set 2
+	const OLIVINELIGHTHOUSE5F_SAILOR
+	const OLIVINELIGHTHOUSE5F_YOUNGSTER
+	const OLIVINELIGHTHOUSE5F_POKE_BALL1
+	const OLIVINELIGHTHOUSE5F_POKE_BALL2
+	const OLIVINELIGHTHOUSE5F_POKE_BALL3
+
+OlivineLighthouse5F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x60982
 
-TrainerBird_keeperDenis: ; 0x60982
-	; bit/flag number
-	dw $400
+TrainerBird_keeperDenis:
+	trainer EVENT_BEAT_BIRD_KEEPER_DENIS, BIRD_KEEPER, DENIS, Bird_keeperDenisSeenText, Bird_keeperDenisBeatenText, 0, Bird_keeperDenisScript
 
-	; trainer group && trainer id
-	db BIRD_KEEPER, DENIS
-
-	; text when seen
-	dw Bird_keeperDenisSeenText
-
-	; text when trainer beaten
-	dw Bird_keeperDenisBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw Bird_keeperDenisScript
-; 0x6098e
-
-Bird_keeperDenisScript: ; 0x6098e
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x60ac3
+Bird_keeperDenisScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x60ac3
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x60996
 
-TrainerSailorErnest: ; 0x60996
-	; bit/flag number
-	dw $579
+TrainerSailorErnest:
+	trainer EVENT_BEAT_SAILOR_ERNEST, SAILOR, ERNEST, SailorErnestSeenText, SailorErnestBeatenText, 0, SailorErnestScript
 
-	; trainer group && trainer id
-	db SAILOR, ERNEST
-
-	; text when seen
-	dw SailorErnestSeenText
-
-	; text when trainer beaten
-	dw SailorErnestBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SailorErnestScript
-; 0x609a2
-
-SailorErnestScript: ; 0x609a2
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x60a1f
+SailorErnestScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x60a1f
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x609aa
 
-ItemFragment_0x609aa: ; 0x609aa
-	db RARE_CANDY, 1
-; 0x609ac
+OlivineLighthouse5FRareCandy:
+	itemball RARE_CANDY
 
-ItemFragment_0x609ac: ; 0x609ac
-	db SUPER_REPEL, 1
-; 0x609ae
+OlivineLighthouse5FSuperRepel:
+	itemball SUPER_REPEL
 
-ItemFragment_0x609ae: ; 0x609ae
-	db TM_34, 1
-; 0x609b0
+OlivineLighthouse5FTMSwagger:
+	itemball TM_SWAGGER
 
-MapOlivineLighthouse5FSignpostItem0: ; 0x609b0
-	dw $0085
-	db HYPER_POTION
-	
-; 0x609b3
+OlivineLighthouse5FHiddenHyperPotion:
+	dwb EVENT_OLIVINE_LIGHTHOUSE_5F_HIDDEN_HYPER_POTION, HYPER_POTION
 
-SailorErnestSeenText: ; 0x609b3
+
+SailorErnestSeenText:
 	text "I wanted to battle"
 	line "JASMINE, but she's"
 
 	para "not up to it now."
 	line "So, how about you?"
 	done
-; 0x609fe
 
-SailorErnestBeatenText: ; 0x609fe
+SailorErnestBeatenText:
 	text "Whoa, whoa. You're"
 	line "overwhelming!"
 	done
-; 0x60a1f
 
-UnknownText_0x60a1f: ; 0x60a1f
+UnknownText_0x60a1f:
 	text "A GYM LEADER isn't"
 	line "just about being"
 
@@ -105,23 +68,20 @@ UnknownText_0x60a1f: ; 0x60a1f
 	line "also needs to be"
 	cont "compassionate."
 	done
-; 0x60a74
 
-Bird_keeperDenisSeenText: ; 0x60a74
+Bird_keeperDenisSeenText:
 	text "We're pretty high"
 	line "up here. My bird"
 
 	para "#MON are in"
 	line "prime form."
 	done
-; 0x60aaf
 
-Bird_keeperDenisBeatenText: ; 0x60aaf
+Bird_keeperDenisBeatenText:
 	text "Oops…They crashed…"
 	done
-; 0x60ac3
 
-UnknownText_0x60ac3: ; 0x60ac3
+UnknownText_0x60ac3:
 	text "My #MON learned"
 	line "how to use FLY in"
 	cont "CIANWOOD."
@@ -130,35 +90,32 @@ UnknownText_0x60ac3: ; 0x60ac3
 	line "loser, I'll FLY"
 	cont "across the sea…"
 	done
-; 0x60b20
 
-OlivineLighthouse5F_MapEventHeader: ; 0x60b20
+OlivineLighthouse5F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 7
-	warp_def $f, $9, 1, GROUP_OLIVINE_LIGHTHOUSE_6F, MAP_OLIVINE_LIGHTHOUSE_6F
-	warp_def $5, $3, 2, GROUP_OLIVINE_LIGHTHOUSE_4F, MAP_OLIVINE_LIGHTHOUSE_4F
-	warp_def $7, $9, 3, GROUP_OLIVINE_LIGHTHOUSE_4F, MAP_OLIVINE_LIGHTHOUSE_4F
-	warp_def $7, $10, 9, GROUP_OLIVINE_LIGHTHOUSE_4F, MAP_OLIVINE_LIGHTHOUSE_4F
-	warp_def $7, $11, 10, GROUP_OLIVINE_LIGHTHOUSE_4F, MAP_OLIVINE_LIGHTHOUSE_4F
-	warp_def $5, $10, 2, GROUP_OLIVINE_LIGHTHOUSE_6F, MAP_OLIVINE_LIGHTHOUSE_6F
-	warp_def $5, $11, 3, GROUP_OLIVINE_LIGHTHOUSE_6F, MAP_OLIVINE_LIGHTHOUSE_6F
+	warp_def $f, $9, 1, OLIVINE_LIGHTHOUSE_6F
+	warp_def $5, $3, 2, OLIVINE_LIGHTHOUSE_4F
+	warp_def $7, $9, 3, OLIVINE_LIGHTHOUSE_4F
+	warp_def $7, $10, 9, OLIVINE_LIGHTHOUSE_4F
+	warp_def $7, $11, 10, OLIVINE_LIGHTHOUSE_4F
+	warp_def $5, $10, 2, OLIVINE_LIGHTHOUSE_6F
+	warp_def $5, $11, 3, OLIVINE_LIGHTHOUSE_6F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 1
-	signpost 13, 3, $7, MapOlivineLighthouse5FSignpostItem0
+	signpost 13, 3, SIGNPOST_ITEM, OlivineLighthouse5FHiddenHyperPotion
 
-	; people-events
+.PersonEvents:
 	db 5
-	person_event SPRITE_SAILOR, 15, 12, $a, $0, 255, 255, $92, 3, TrainerSailorErnest, $ffff
-	person_event SPRITE_YOUNGSTER, 7, 12, $8, $0, 255, 255, $92, 4, TrainerBird_keeperDenis, $ffff
-	person_event SPRITE_POKE_BALL, 16, 19, $1, $0, 255, 255, $1, 0, ItemFragment_0x609aa, $0665
-	person_event SPRITE_POKE_BALL, 19, 10, $1, $0, 255, 255, $1, 0, ItemFragment_0x609ac, $0666
-	person_event SPRITE_POKE_BALL, 17, 6, $1, $0, 255, 255, $1, 0, ItemFragment_0x609ae, $0667
-; 0x60b8f
-
+	person_event SPRITE_SAILOR, 11, 8, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 3, TrainerSailorErnest, -1
+	person_event SPRITE_YOUNGSTER, 3, 8, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 4, TrainerBird_keeperDenis, -1
+	person_event SPRITE_POKE_BALL, 12, 15, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, OlivineLighthouse5FRareCandy, EVENT_OLIVINE_LIGHTHOUSE_5F_RARE_CANDY
+	person_event SPRITE_POKE_BALL, 15, 6, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, OlivineLighthouse5FSuperRepel, EVENT_OLIVINE_LIGHTHOUSE_5F_SUPER_REPEL
+	person_event SPRITE_POKE_BALL, 13, 2, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, OlivineLighthouse5FTMSwagger, EVENT_OLIVINE_LIGHTHOUSE_5F_TM_SWAGGER

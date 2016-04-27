@@ -1,128 +1,124 @@
-CeladonCafe_MapScriptHeader: ; 0x73047
-	; trigger count
+const_value set 2
+	const CELADONCAFE_SUPER_NERD
+	const CELADONCAFE_FISHER1
+	const CELADONCAFE_FISHER2
+	const CELADONCAFE_FISHER3
+	const CELADONCAFE_TEACHER
+
+CeladonCafe_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x73049
 
-SuperNerdScript_0x73049: ; 0x73049
+SuperNerdScript_0x73049:
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x730de
+	opentext
+	writetext UnknownText_0x730de
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x73051
 
-FisherScript_0x73051: ; 0x73051
-	loadfont
-	2writetext UnknownText_0x73129
+FisherScript_0x73051:
+	opentext
+	writetext UnknownText_0x73129
+	waitbutton
 	closetext
-	loadmovesprites
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x7313a
+	opentext
+	writetext UnknownText_0x7313a
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $3, $2
+	spriteface CELADONCAFE_FISHER1, LEFT
 	end
-; 0x73062
 
-FisherScript_0x73062: ; 0x73062
-	loadfont
-	2writetext UnknownText_0x7316a
+FisherScript_0x73062:
+	opentext
+	writetext UnknownText_0x7316a
+	waitbutton
 	closetext
-	loadmovesprites
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x73178
+	opentext
+	writetext UnknownText_0x73178
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $4, $3
+	spriteface CELADONCAFE_FISHER2, RIGHT
 	end
-; 0x73073
 
-FisherScript_0x73073: ; 0x73073
-	loadfont
-	2writetext UnknownText_0x731ae
+FisherScript_0x73073:
+	opentext
+	writetext UnknownText_0x731ae
+	waitbutton
 	closetext
-	loadmovesprites
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x731bd
+	opentext
+	writetext UnknownText_0x731bd
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $5, $3
+	spriteface CELADONCAFE_FISHER3, RIGHT
 	end
-; 0x73084
 
-TeacherScript_0x73084: ; 0x73084
+TeacherScript_0x73084:
 	checkitem COIN_CASE
 	iftrue UnknownScript_0x7309a
-	loadfont
-	2writetext UnknownText_0x73201
-	closetext
-	loadmovesprites
-	faceplayer
-	loadfont
-	2writetext UnknownText_0x73212
-	closetext
-	loadmovesprites
-	spriteface $6, $2
-	end
-; 0x7309a
-
-UnknownScript_0x7309a: ; 0x7309a
-	loadfont
-	2writetext UnknownText_0x73254
-	closetext
-	loadmovesprites
-	spriteface $6, $3
-	loadfont
-	2writetext UnknownText_0x73278
-	closetext
-	loadmovesprites
-	spriteface $6, $2
-	end
-; 0x730ad
-
-MapCeladonCafeSignpost0Script: ; 0x730ad
-	jumptext UnknownText_0x73285
-; 0x730b0
-
-MapCeladonCafeSignpost1Script: ; 0x730b0
-	checkevent EVENT_FOUND_LEFTOVERS_IN_CELADON_CAFE
-	iftrue UnknownScript_0x730db
-	giveitem LEFTOVERS, $1
-	iffalse UnknownScript_0x730cd
-	loadfont
-	itemtotext LEFTOVERS, $0
-	2writetext UnknownText_0x732e7
-	playsound SFX_ITEM
+	opentext
+	writetext UnknownText_0x73201
 	waitbutton
+	closetext
+	faceplayer
+	opentext
+	writetext UnknownText_0x73212
+	waitbutton
+	closetext
+	spriteface CELADONCAFE_TEACHER, LEFT
+	end
+
+UnknownScript_0x7309a:
+	opentext
+	writetext UnknownText_0x73254
+	waitbutton
+	closetext
+	spriteface CELADONCAFE_TEACHER, RIGHT
+	opentext
+	writetext UnknownText_0x73278
+	waitbutton
+	closetext
+	spriteface CELADONCAFE_TEACHER, LEFT
+	end
+
+EatathonContestPoster:
+	jumptext EatathonContestPosterText
+
+CeladonCafeTrashcan:
+	checkevent EVENT_FOUND_LEFTOVERS_IN_CELADON_CAFE
+	iftrue .TrashEmpty
+	giveitem LEFTOVERS
+	iffalse .PackFull
+	opentext
+	itemtotext LEFTOVERS, $0
+	writetext FoundLeftoversText
+	playsound SFX_ITEM
+	waitsfx
 	itemnotify
-	loadmovesprites
+	closetext
 	setevent EVENT_FOUND_LEFTOVERS_IN_CELADON_CAFE
 	end
-; 0x730cd
 
-UnknownScript_0x730cd: ; 0x730cd
-	loadfont
+.PackFull:
+	opentext
 	itemtotext LEFTOVERS, $0
-	2writetext UnknownText_0x732e7
-	keeptextopen
-	2writetext UnknownText_0x732f7
+	writetext FoundLeftoversText
+	buttonsound
+	writetext NoRoomForLeftoversText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x730db
 
-UnknownScript_0x730db: ; 0x730db
-	jumpstd $000d
-; 0x730de
+.TrashEmpty:
+	jumpstd trashcan
 
-UnknownText_0x730de: ; 0x730de
+UnknownText_0x730de:
 	text "Hi!"
 
 	para "We're holding an"
@@ -131,75 +127,64 @@ UnknownText_0x730de: ; 0x730de
 	para "We can't serve you"
 	line "right now. Sorry."
 	done
-; 0x73129
 
-UnknownText_0x73129: ; 0x73129
+UnknownText_0x73129:
 	text "…Snarfle, chew…"
 	done
-; 0x7313a
 
-UnknownText_0x7313a: ; 0x7313a
+UnknownText_0x7313a:
 	text "Don't talk to me!"
 
 	para "You'll break my"
 	line "concentration!"
 	done
-; 0x7316a
 
-UnknownText_0x7316a: ; 0x7316a
+UnknownText_0x7316a:
 	text "…Gulp… Chew…"
 	done
-; 0x73178
 
-UnknownText_0x73178: ; 0x73178
+UnknownText_0x73178:
 	text "I take quantity"
 	line "over quality!"
 
 	para "I'm happy when I'm"
 	line "full!"
 	done
-; 0x731ae
 
-UnknownText_0x731ae: ; 0x731ae
+UnknownText_0x731ae:
 	text "Munch, munch…"
 	done
-; 0x731bd
 
-UnknownText_0x731bd: ; 0x731bd
+UnknownText_0x731bd:
 	text "The food is good"
 	line "here, but GOLDEN-"
 	cont "ROD has the best"
 	cont "food anywhere."
 	done
-; 0x73201
 
-UnknownText_0x73201: ; 0x73201
+UnknownText_0x73201:
 	text "Crunch… Crunch…"
 	done
-; 0x73212
 
-UnknownText_0x73212: ; 0x73212
+UnknownText_0x73212:
 	text "Nobody here will"
 	line "give you a COIN"
 
 	para "CASE. You should"
 	line "look in JOHTO."
 	done
-; 0x73254
 
-UnknownText_0x73254: ; 0x73254
+UnknownText_0x73254:
 	text "Crunch… Crunch…"
 
 	para "I can keep eating!"
 	done
-; 0x73278
 
-UnknownText_0x73278: ; 0x73278
+UnknownText_0x73278:
 	text "More, CHEF!"
 	done
-; 0x73285
 
-UnknownText_0x73285: ; 0x73285
+EatathonContestPosterText:
 	text "Eatathon Contest!"
 	line "No time limit!"
 
@@ -209,45 +194,40 @@ UnknownText_0x73285: ; 0x73285
 	para "muncher gets it"
 	line "all for free!"
 	done
-; 0x732e7
 
-UnknownText_0x732e7: ; 0x732e7
-	text $52, " found"
+FoundLeftoversText:
+	text "<PLAYER> found"
 	line "@"
-	text_from_ram $d099
+	text_from_ram StringBuffer3
 	text "!"
 	done
-; 0x732f7
 
-UnknownText_0x732f7: ; 0x732f7
-	text "But ", $52, " can't"
+NoRoomForLeftoversText:
+	text "But <PLAYER> can't"
 	line "hold another item…"
 	done
-; 0x73316
 
-CeladonCafe_MapEventHeader: ; 0x73316
+CeladonCafe_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $6, 9, GROUP_CELADON_CITY, MAP_CELADON_CITY
-	warp_def $7, $7, 9, GROUP_CELADON_CITY, MAP_CELADON_CITY
+	warp_def $7, $6, 9, CELADON_CITY
+	warp_def $7, $7, 9, CELADON_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 0, 5, $0, MapCeladonCafeSignpost0Script
-	signpost 1, 7, $0, MapCeladonCafeSignpost1Script
+	signpost 0, 5, SIGNPOST_READ, EatathonContestPoster
+	signpost 1, 7, SIGNPOST_READ, CeladonCafeTrashcan
 
-	; people-events
+.PersonEvents:
 	db 5
-	person_event SPRITE_SUPER_NERD, 7, 13, $8, $0, 255, 255, $b0, 0, SuperNerdScript_0x73049, $ffff
-	person_event SPRITE_FISHER, 10, 8, $8, $0, 255, 255, $0, 0, FisherScript_0x73051, $ffff
-	person_event SPRITE_FISHER, 11, 5, $9, $0, 255, 255, $a0, 0, FisherScript_0x73062, $ffff
-	person_event SPRITE_FISHER, 6, 5, $9, $0, 255, 255, $0, 0, FisherScript_0x73073, $ffff
-	person_event SPRITE_TEACHER, 7, 8, $8, $0, 255, 255, $0, 0, TeacherScript_0x73084, $ffff
-; 0x73371
-
+	person_event SPRITE_SUPER_NERD, 3, 9, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_SCRIPT, 0, SuperNerdScript_0x73049, -1
+	person_event SPRITE_FISHER, 6, 4, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FisherScript_0x73051, -1
+	person_event SPRITE_FISHER, 7, 1, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, FisherScript_0x73062, -1
+	person_event SPRITE_FISHER, 2, 1, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FisherScript_0x73073, -1
+	person_event SPRITE_TEACHER, 3, 4, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, TeacherScript_0x73084, -1

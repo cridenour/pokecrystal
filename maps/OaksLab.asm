@@ -1,95 +1,86 @@
-OaksLab_MapScriptHeader: ; 0x19b3c5
-	; trigger count
+const_value set 2
+	const OAKSLAB_OAK
+	const OAKSLAB_SCIENTIST1
+	const OAKSLAB_SCIENTIST2
+	const OAKSLAB_SCIENTIST3
+
+OaksLab_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x19b3c7
 
-UnknownScript_0x19b3c7: ; 0x19b3c7
+.DummyTrigger:
 	end
-; 0x19b3c8
 
-OakScript_0x19b3c8: ; 0x19b3c8
+Oak:
 	faceplayer
-	loadfont
-	checkevent $074f
-	iftrue UnknownScript_0x19b3ea
-	checkevent $00e1
-	iftrue UnknownScript_0x19b3dd
-	2writetext UnknownText_0x19b427
-	keeptextopen
-	setevent $00e1
-UnknownScript_0x19b3dd: ; 0x19b3dd
-	checkcode $7
-	if_equal $10, UnknownScript_0x19b3f7
-	if_equal $8, UnknownScript_0x19b401
-	2jump UnknownScript_0x19b408
-; 0x19b3ea
+	opentext
+	checkevent EVENT_OPENED_MT_SILVER
+	iftrue .CheckPokedex
+	checkevent EVENT_TALKED_TO_OAK_IN_KANTO
+	iftrue .CheckBadges
+	writetext OakWelcomeKantoText
+	buttonsound
+	setevent EVENT_TALKED_TO_OAK_IN_KANTO
+.CheckBadges:
+	checkcode VAR_BADGES
+	if_equal 16, .OpenMtSilver
+	if_equal  8, .Complain
+	jump .AhGood
 
-UnknownScript_0x19b3ea: ; 0x19b3ea
-	2writetext UnknownText_0x19b4a2
+.CheckPokedex:
+	writetext OakLabDexCheckText
+	waitbutton
+	special ProfOaksPCBoot
+	writetext OakLabGoodbyeText
+	waitbutton
 	closetext
-	special $0065
-	2writetext UnknownText_0x19b4c8
-	closetext
-	loadmovesprites
 	end
-; 0x19b3f7
 
-UnknownScript_0x19b3f7: ; 0x19b3f7
-	2writetext UnknownText_0x19b4fc
-	keeptextopen
-	setevent $074f
-	2jump UnknownScript_0x19b3ea
-; 0x19b401
+.OpenMtSilver:
+	writetext OakOpenMtSilverText
+	buttonsound
+	setevent EVENT_OPENED_MT_SILVER
+	jump .CheckPokedex
 
-UnknownScript_0x19b401: ; 0x19b401
-	2writetext UnknownText_0x19b6a2
-	keeptextopen
-	2jump UnknownScript_0x19b3ea
-; 0x19b408
+.Complain:
+	writetext OakNoKantoBadgesText
+	buttonsound
+	jump .CheckPokedex
 
-UnknownScript_0x19b408: ; 0x19b408
-	2writetext UnknownText_0x19b73c
-	keeptextopen
-	2jump UnknownScript_0x19b3ea
-; 0x19b40f
+.AhGood:
+	writetext OakYesKantoBadgesText
+	buttonsound
+	jump .CheckPokedex
 
-ScientistScript_0x19b40f: ; 0x19b40f
-	jumptextfaceplayer UnknownText_0x19b7fb
-; 0x19b412
+OaksAssistant1Script:
+	jumptextfaceplayer OaksAssistant1Text
 
-ScientistScript_0x19b412: ; 0x19b412
-	jumptextfaceplayer UnknownText_0x19b859
-; 0x19b415
+OaksAssistant2Script:
+	jumptextfaceplayer OaksAssistant2Text
 
-ScientistScript_0x19b415: ; 0x19b415
-	jumptextfaceplayer UnknownText_0x19b8a7
-; 0x19b418
+OaksAssistant3Script:
+	jumptextfaceplayer OaksAssistant3Text
 
-MapOaksLabSignpost11Script: ; 0x19b418
-	jumpstd $0001
-; 0x19b41b
+OaksLabBookshelf:
+	jumpstd difficultbookshelf
 
-MapOaksLabSignpost12Script: ; 0x19b41b
-	jumptext UnknownText_0x19b8ea
-; 0x19b41e
+OaksLabPoster1:
+	jumptext OaksLabPoster1Text
 
-MapOaksLabSignpost13Script: ; 0x19b41e
-	jumptext UnknownText_0x19b909
-; 0x19b421
+OaksLabPoster2:
+	jumptext OaksLabPoster2Text
 
-MapOaksLabSignpost14Script: ; 0x19b421
-	jumptext UnknownText_0x19b945
-; 0x19b424
+OaksLabTrashcan:
+	jumptext OaksLabTrashcanText
 
-MapOaksLabSignpost15Script: ; 0x19b424
-	jumptext UnknownText_0x19b95e
-; 0x19b427
+OaksLabPC:
+	jumptext OaksLabPCText
 
-UnknownText_0x19b427: ; 0x19b427
-	text "OAK: Ah, ", $14, "!"
+OakWelcomeKantoText:
+	text "OAK: Ah, <PLAY_G>!"
 	line "It's good of you"
 
 	para "to come all this"
@@ -101,24 +92,21 @@ UnknownText_0x19b427: ; 0x19b427
 	para "out here?"
 	line "Pretty tough, huh?"
 	done
-; 0x19b4a2
 
-UnknownText_0x19b4a2: ; 0x19b4a2
+OakLabDexCheckText:
 	text "How is your #-"
 	line "DEX coming?"
 
 	para "Let's see…"
 	done
-; 0x19b4c8
 
-UnknownText_0x19b4c8: ; 0x19b4c8
+OakLabGoodbyeText:
 	text "If you're in the"
 	line "area, I hope you"
 	cont "come visit again."
 	done
-; 0x19b4fc
 
-UnknownText_0x19b4fc: ; 0x19b4fc
+OakOpenMtSilverText:
 	text "OAK: Wow! That's"
 	line "excellent!"
 
@@ -130,7 +118,7 @@ UnknownText_0x19b4fc: ; 0x19b4fc
 	line "assessment of you."
 
 	para "Tell you what,"
-	line $14, ". I'll make"
+	line "<PLAY_G>. I'll make"
 
 	para "arrangements so"
 	line "that you can go to"
@@ -150,7 +138,7 @@ UnknownText_0x19b4fc: ; 0x19b4fc
 
 	para "we can make an"
 	line "exception in your"
-	cont "case, ", $14, "."
+	cont "case, <PLAY_G>."
 
 	para "Go up to INDIGO"
 	line "PLATEAU. You can"
@@ -158,9 +146,8 @@ UnknownText_0x19b4fc: ; 0x19b4fc
 	para "reach MT.SILVER"
 	line "from there."
 	done
-; 0x19b6a2
 
-UnknownText_0x19b6a2: ; 0x19b6a2
+OakNoKantoBadgesText:
 	text "OAK: Hmm? You're"
 	line "not collecting"
 	cont "KANTO GYM BADGES?"
@@ -175,9 +162,8 @@ UnknownText_0x19b6a2: ; 0x19b6a2
 	line "you challenge"
 	cont "them."
 	done
-; 0x19b73c
 
-UnknownText_0x19b73c: ; 0x19b73c
+OakYesKantoBadgesText:
 	text "OAK: Ah, you're"
 	line "collecting KANTO"
 	cont "GYM BADGES."
@@ -195,11 +181,10 @@ UnknownText_0x19b73c: ; 0x19b73c
 	line "for you."
 
 	para "Keep trying hard,"
-	line $14, "!"
+	line "<PLAY_G>!"
 	done
-; 0x19b7fb
 
-UnknownText_0x19b7fb: ; 0x19b7fb
+OaksAssistant1Text:
 	text "The PROF's #MON"
 	line "TALK radio program"
 
@@ -209,9 +194,8 @@ UnknownText_0x19b7fb: ; 0x19b7fb
 	para "It's a shame--I'd"
 	line "like to hear it."
 	done
-; 0x19b859
 
-UnknownText_0x19b859: ; 0x19b859
+OaksAssistant2Text:
 	text "Thanks to your"
 	line "work on the #-"
 	cont "DEX, the PROF's"
@@ -219,39 +203,34 @@ UnknownText_0x19b859: ; 0x19b859
 	para "research is coming"
 	line "along great."
 	done
-; 0x19b8a7
 
-UnknownText_0x19b8a7: ; 0x19b8a7
+OaksAssistant3Text:
 	text "Don't tell anyone,"
 	line "but PROF.OAK'S"
 
 	para "#MON TALK isn't"
 	line "a live broadcast."
 	done
-; 0x19b8ea
 
-UnknownText_0x19b8ea: ; 0x19b8ea
+OaksLabPoster1Text:
 	text "Press START to"
 	line "open the MENU."
 	done
-; 0x19b909
 
-UnknownText_0x19b909: ; 0x19b909
+OaksLabPoster2Text:
 	text "The SAVE option is"
 	line "on the MENU."
 
 	para "Use it in a timely"
 	line "manner."
 	done
-; 0x19b945
 
-UnknownText_0x19b945: ; 0x19b945
+OaksLabTrashcanText
 	text "There's nothing in"
 	line "here…"
 	done
-; 0x19b95e
 
-UnknownText_0x19b95e: ; 0x19b95e
+OaksLabPCText:
 	text "There's an e-mail"
 	line "message on the PC."
 
@@ -265,7 +244,7 @@ UnknownText_0x19b95e: ; 0x19b95e
 	line "away."
 
 	para "I heard rumors"
-	line "that ", $14, " is"
+	line "that <PLAY_G> is"
 
 	para "getting quite a"
 	line "reputation."
@@ -276,46 +255,41 @@ UnknownText_0x19b95e: ; 0x19b95e
 	para "ELM in NEW BARK"
 	line "TOWN 8-)"
 	done
-; 0x19ba33
 
-OaksLab_MapEventHeader: ; 0x19ba33
+OaksLab_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $b, $4, 3, GROUP_PALLET_TOWN, MAP_PALLET_TOWN
-	warp_def $b, $5, 3, GROUP_PALLET_TOWN, MAP_PALLET_TOWN
+	warp_def $b, $4, 3, PALLET_TOWN
+	warp_def $b, $5, 3, PALLET_TOWN
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 16
-	signpost 1, 6, $0, MapOaksLabSignpost11Script
-	signpost 1, 7, $0, MapOaksLabSignpost11Script
-	signpost 1, 8, $0, MapOaksLabSignpost11Script
-	signpost 1, 9, $0, MapOaksLabSignpost11Script
-	signpost 7, 0, $0, MapOaksLabSignpost11Script
-	signpost 7, 1, $0, MapOaksLabSignpost11Script
-	signpost 7, 2, $0, MapOaksLabSignpost11Script
-	signpost 7, 3, $0, MapOaksLabSignpost11Script
-	signpost 7, 6, $0, MapOaksLabSignpost11Script
-	signpost 7, 7, $0, MapOaksLabSignpost11Script
-	signpost 7, 8, $0, MapOaksLabSignpost11Script
-	signpost 7, 9, $0, MapOaksLabSignpost11Script
-	signpost 0, 4, $0, MapOaksLabSignpost12Script
-	signpost 0, 5, $0, MapOaksLabSignpost13Script
-	signpost 3, 9, $0, MapOaksLabSignpost14Script
-	signpost 1, 0, $0, MapOaksLabSignpost15Script
+	signpost 1, 6, SIGNPOST_READ, OaksLabBookshelf
+	signpost 1, 7, SIGNPOST_READ, OaksLabBookshelf
+	signpost 1, 8, SIGNPOST_READ, OaksLabBookshelf
+	signpost 1, 9, SIGNPOST_READ, OaksLabBookshelf
+	signpost 7, 0, SIGNPOST_READ, OaksLabBookshelf
+	signpost 7, 1, SIGNPOST_READ, OaksLabBookshelf
+	signpost 7, 2, SIGNPOST_READ, OaksLabBookshelf
+	signpost 7, 3, SIGNPOST_READ, OaksLabBookshelf
+	signpost 7, 6, SIGNPOST_READ, OaksLabBookshelf
+	signpost 7, 7, SIGNPOST_READ, OaksLabBookshelf
+	signpost 7, 8, SIGNPOST_READ, OaksLabBookshelf
+	signpost 7, 9, SIGNPOST_READ, OaksLabBookshelf
+	signpost 0, 4, SIGNPOST_READ, OaksLabPoster1
+	signpost 0, 5, SIGNPOST_READ, OaksLabPoster2
+	signpost 3, 9, SIGNPOST_READ, OaksLabTrashcan
+	signpost 1, 0, SIGNPOST_READ, OaksLabPC
 
-	; people-events
+.PersonEvents:
 	db 4
-	person_event SPRITE_OAK, 6, 8, $6, $0, 255, 255, $0, 0, OakScript_0x19b3c8, $ffff
-	person_event SPRITE_SCIENTIST, 12, 5, $5, $1, 255, 255, $90, 0, ScientistScript_0x19b40f, $ffff
-	person_event SPRITE_SCIENTIST, 13, 12, $4, $10, 255, 255, $90, 0, ScientistScript_0x19b412, $ffff
-	person_event SPRITE_SCIENTIST, 8, 5, $2, $11, 255, 255, $90, 0, ScientistScript_0x19b415, $ffff
-; 0x19bac7
-
-
-
+	person_event SPRITE_OAK, 2, 4, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, Oak, -1
+	person_event SPRITE_SCIENTIST, 8, 1, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, OaksAssistant1Script, -1
+	person_event SPRITE_SCIENTIST, 9, 8, SPRITEMOVEDATA_WALK_UP_DOWN, 1, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, OaksAssistant2Script, -1
+	person_event SPRITE_SCIENTIST, 4, 1, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, OaksAssistant3Script, -1

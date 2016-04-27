@@ -1,112 +1,104 @@
-BattleTowerHallway_MapScriptHeader: ; 0x9f5b1
-	; trigger count
+const_value set 2
+	const BATTLETOWERHALLWAY_RECEPTIONIST
+
+BattleTowerHallway_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x9f5bb, $0000
-	dw UnknownScript_0x9f5c0, $0000
+	maptrigger .Trigger0
+	maptrigger .Trigger1
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x9f5bb
 
-UnknownScript_0x9f5bb: ; 0x9f5bb
-	priorityjump UnknownScript_0x9f5c1
+.Trigger0:
+	priorityjump .ChooseBattleRoom
 	dotrigger $1
-; 0x9f5c0
-
-UnknownScript_0x9f5c0: ; 0x9f5c0
+.Trigger1:
 	end
-; 0x9f5c1
 
-UnknownScript_0x9f5c1: ; 0x9f5c1
-	follow $2, $0
-	3callasm Function_0x9f5cb
-	2jump UnknownScript_0x9f5dc
-; 0x9f5cb
+.ChooseBattleRoom:
+	follow BATTLETOWERHALLWAY_RECEPTIONIST, PLAYER
+	callasm .asm_load_battle_room
+	jump .WalkToChosenBattleRoom
 
 
-Function_0x9f5cb: ; 0x9f5cb
+.asm_load_battle_room
 	ld a, [rSVBK]
 	push af
 
-	ld a, 3
+	ld a, BANK(wBTChoiceOfLvlGroup)
 	ld [rSVBK], a
-	ld a, [$d800]
+	ld a, [wBTChoiceOfLvlGroup]
 	ld [ScriptVar], a
 
 	pop af
 	ld [rSVBK], a
 	ret
-; 0x9f5dc
 
 
-UnknownScript_0x9f5dc: ; 0x9f5dc
-	if_equal $3, UnknownScript_0x9f603
-	if_equal $4, UnknownScript_0x9f603
-	if_equal $5, UnknownScript_0x9f60a
-	if_equal $6, UnknownScript_0x9f60a
-	if_equal $7, UnknownScript_0x9f611
-	if_equal $8, UnknownScript_0x9f611
-	if_equal $9, UnknownScript_0x9f618
-	if_equal $a, UnknownScript_0x9f618
-	applymovement $2, MovementData_0x9e57a
-	2jump UnknownScript_0x9f61f
-; 0x9f603
+; enter different rooms for different levels to battle against
+; at least it should look like that
+; because all warps lead to the same room
+.WalkToChosenBattleRoom: ; 0x9f5dc
+	if_equal 3, .L30L40
+	if_equal 4, .L30L40
+	if_equal 5, .L50L60
+	if_equal 6, .L50L60
+	if_equal 7, .L70L80
+	if_equal 8, .L70L80
+	if_equal 9, .L90L100
+	if_equal 10, .L90L100
+	applymovement BATTLETOWERHALLWAY_RECEPTIONIST, MovementData_BattleTowerHallwayWalkTo1020Room
+	jump .EnterBattleRoom
 
-UnknownScript_0x9f603: ; 0x9f603
-	applymovement $2, MovementData_0x9e57c
-	2jump UnknownScript_0x9f61f
-; 0x9f60a
+.L30L40: ; 0x9f603
+	applymovement BATTLETOWERHALLWAY_RECEPTIONIST, MovementData_BattleTowerHallwayWalkTo3040Room
+	jump .EnterBattleRoom
 
-UnknownScript_0x9f60a: ; 0x9f60a
-	applymovement $2, MovementData_0x9e586
-	2jump UnknownScript_0x9f61f
-; 0x9f611
+.L50L60: ; 0x9f60a
+	applymovement BATTLETOWERHALLWAY_RECEPTIONIST, MovementData_BattleTowerHallwayWalkTo5060Room
+	jump .EnterBattleRoom
 
-UnknownScript_0x9f611: ; 0x9f611
-	applymovement $2, MovementData_0x9e584
-	2jump UnknownScript_0x9f61f
-; 0x9f618
+.L70L80: ; 0x9f611
+	applymovement BATTLETOWERHALLWAY_RECEPTIONIST, MovementData_BattleTowerHallwayWalkTo7080Room
+	jump .EnterBattleRoom
 
-UnknownScript_0x9f618: ; 0x9f618
-	applymovement $2, MovementData_0x9e582
-	2jump UnknownScript_0x9f61f
-; 0x9f61f
+.L90L100: ; 0x9f618
+	applymovement BATTLETOWERHALLWAY_RECEPTIONIST, MovementData_BattleTowerHallwayWalkTo90100Room
+	jump .EnterBattleRoom
 
-UnknownScript_0x9f61f: ; 0x9f61f
-	faceperson $0, $2
-	loadfont
-	2writetext UnknownText_0x9ec26
+.EnterBattleRoom: ; 0x9f61f
+	faceperson PLAYER, BATTLETOWERHALLWAY_RECEPTIONIST
+	opentext
+	writetext Text_PleaseStepThisWay
+	waitbutton
 	closetext
-	loadmovesprites
 	stopfollow
-	applymovement $0, MovementData_0x9e576
+	applymovement PLAYER, MovementData_BattleTowerHallwayPlayerEntersBattleRoom
 	warpcheck
 	end
-; 0x9f62f
 
-BattleTowerHallway_MapEventHeader: ; 0x9f62f
+BattleTowerHallway_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 6
-	warp_def $1, $b, 1, GROUP_BATTLE_TOWER_ELEVATOR, MAP_BATTLE_TOWER_ELEVATOR
-	warp_def $0, $5, 1, GROUP_BATTLE_TOWER_BATTLE_ROOM, MAP_BATTLE_TOWER_BATTLE_ROOM
-	warp_def $0, $7, 1, GROUP_BATTLE_TOWER_BATTLE_ROOM, MAP_BATTLE_TOWER_BATTLE_ROOM
-	warp_def $0, $9, 1, GROUP_BATTLE_TOWER_BATTLE_ROOM, MAP_BATTLE_TOWER_BATTLE_ROOM
-	warp_def $0, $d, 1, GROUP_BATTLE_TOWER_BATTLE_ROOM, MAP_BATTLE_TOWER_BATTLE_ROOM
-	warp_def $0, $f, 1, GROUP_BATTLE_TOWER_BATTLE_ROOM, MAP_BATTLE_TOWER_BATTLE_ROOM
+	warp_def $1, $b, 1, BATTLE_TOWER_ELEVATOR
+	warp_def $0, $5, 1, BATTLE_TOWER_BATTLE_ROOM
+	warp_def $0, $7, 1, BATTLE_TOWER_BATTLE_ROOM
+	warp_def $0, $9, 1, BATTLE_TOWER_BATTLE_ROOM
+	warp_def $0, $d, 1, BATTLE_TOWER_BATTLE_ROOM
+	warp_def $0, $f, 1, BATTLE_TOWER_BATTLE_ROOM
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_RECEPTIONIST, 6, 15, $6, $0, 255, 255, $0, 0, BattleTowerHallway_MapEventHeader, $ffff
-; 0x9f660
-
+	person_event SPRITE_RECEPTIONIST, 2, 11, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, BattleTowerHallway_MapEventHeader, -1

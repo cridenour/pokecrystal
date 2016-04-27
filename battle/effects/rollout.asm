@@ -1,56 +1,58 @@
-BattleCommand5b: ; 37718
+MAX_ROLLOUT_COUNT EQU 5
+
+
+BattleCommand_CheckCurl: ; 37718
 ; checkcurl
 
 	ld de, PlayerRolloutCount
 	ld a, [hBattleTurn]
 	and a
-	jr z, .asm_37723
+	jr z, .ok
 	ld de, EnemyRolloutCount
-
-.asm_37723
+.ok
 	ld a, BATTLE_VARS_SUBSTATUS1
 	call GetBattleVar
-	bit SUBSTATUS_ENCORED, a
-	jr z, .asm_37731
+	bit SUBSTATUS_ROLLOUT, a
+	jr z, .reset
 
 	ld b, $4 ; doturn
 	jp SkipToBattleCommand
 
-.asm_37731
+.reset
 	xor a
 	ld [de], a
 	ret
 ; 37734
 
 
-BattleCommand5c: ; 37734
+BattleCommand_RolloutPower: ; 37734
 ; rolloutpower
 
 	ld a, BATTLE_VARS_STATUS
 	call GetBattleVar
-	and 7
+	and SLP
 	ret nz
 
 	ld hl, PlayerRolloutCount
 	ld a, [hBattleTurn]
 	and a
-	jr z, .asm_37747
+	jr z, .got_rollout_count
 	ld hl, EnemyRolloutCount
 
-.asm_37747
+.got_rollout_count
 	ld a, [hl]
 	and a
-	jr nz, .asm_37750
+	jr nz, .skip_set_rampage
 	ld a, 1
-	ld [$c73e], a
+	ld [wSomeoneIsRampaging], a
 
-.asm_37750
+.skip_set_rampage
 	ld a, [AttackMissed]
 	and a
 	jr z, .hit
 
 	ld a, BATTLE_VARS_SUBSTATUS1
-	call _GetBattleVar
+	call GetBattleVarAddr
 	res 6, [hl]
 	ret
 
@@ -58,40 +60,40 @@ BattleCommand5c: ; 37734
 	inc [hl]
 	ld a, [hl]
 	ld b, a
-	cp $5
-	jr c, .asm_3776e
+	cp MAX_ROLLOUT_COUNT
+	jr c, .not_done_with_rollout
 
 	ld a, BATTLE_VARS_SUBSTATUS1
-	call _GetBattleVar
-	res 6, [hl]
-	jr .asm_37775
+	call GetBattleVarAddr
+	res SUBSTATUS_ROLLOUT, [hl]
+	jr .done_with_substatus_flag
 
-.asm_3776e
+.not_done_with_rollout
 	ld a, BATTLE_VARS_SUBSTATUS1
-	call _GetBattleVar
-	set 6, [hl]
+	call GetBattleVarAddr
+	set SUBSTATUS_ROLLOUT, [hl]
 
-.asm_37775
+.done_with_substatus_flag
 	ld a, BATTLE_VARS_SUBSTATUS2
 	call GetBattleVar
-	bit 0, a
-	jr z, .asm_3777f
+	bit SUBSTATUS_CURLED, a
+	jr z, .not_curled
 	inc b
-.asm_3777f
+.not_curled
+.loop
 	dec b
-	jr z, .asm_37790
+	jr z, .done_damage
 
 	ld hl, CurDamage + 1
 	sla [hl]
 	dec hl
 	rl [hl]
-	jr nc, .asm_3777f
+	jr nc, .loop
 
 	ld a, $ff
 	ld [hli], a
 	ld [hl], a
 
-.asm_37790
+.done_damage
 	ret
 ; 37791
-

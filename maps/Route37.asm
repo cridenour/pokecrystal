@@ -1,227 +1,162 @@
-Route37_MapScriptHeader: ; 0x1a8d72
-	; trigger count
+const_value set 2
+	const ROUTE37_WEIRD_TREE1
+	const ROUTE37_WEIRD_TREE2
+	const ROUTE37_YOUNGSTER
+	const ROUTE37_FRUIT_TREE1
+	const ROUTE37_SUNNY
+	const ROUTE37_FRUIT_TREE2
+	const ROUTE37_FRUIT_TREE3
+
+Route37_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
 
-	dbw 2, UnknownScript_0x1a8d77
-; 0x1a8d77
+	dbw MAPCALLBACK_OBJECTS, SunnyCallback
 
-UnknownScript_0x1a8d77: ; 0x1a8d77
-	checkcode $b
-	if_equal SUNDAY, UnknownScript_0x1a8d80
-	disappear $6
+SunnyCallback:
+	checkcode VAR_WEEKDAY
+	if_equal SUNDAY, .SunnyAppears
+	disappear ROUTE37_SUNNY
 	return
-; 0x1a8d80
 
-UnknownScript_0x1a8d80: ; 0x1a8d80
-	appear $6
+.SunnyAppears:
+	appear ROUTE37_SUNNY
 	return
-; 0x1a8d83
 
-TrainerTwinsAnnandanne1: ; 0x1a8d83
-	; bit/flag number
-	dw $465
+TrainerTwinsAnnandanne1:
+	trainer EVENT_BEAT_TWINS_ANN_AND_ANNE, TWINS, ANNANDANNE1, TwinsAnnandanne1SeenText, TwinsAnnandanne1BeatenText, 0, TwinsAnnandanne1Script
 
-	; trainer group && trainer id
-	db TWINS, ANNANDANNE1
-
-	; text when seen
-	dw TwinsAnnandanne1SeenText
-
-	; text when trainer beaten
-	dw TwinsAnnandanne1BeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw TwinsAnnandanne1Script
-; 0x1a8d8f
-
-TwinsAnnandanne1Script: ; 0x1a8d8f
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a8e62
+TwinsAnnandanne1Script:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a8e62
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a8d97
 
-TrainerTwinsAnnandanne2: ; 0x1a8d97
-	; bit/flag number
-	dw $465
+TrainerTwinsAnnandanne2:
+	trainer EVENT_BEAT_TWINS_ANN_AND_ANNE, TWINS, ANNANDANNE2, TwinsAnnandanne2SeenText, TwinsAnnandanne2BeatenText, 0, TwinsAnnandanne2Script
 
-	; trainer group && trainer id
-	db TWINS, ANNANDANNE2
-
-	; text when seen
-	dw TwinsAnnandanne2SeenText
-
-	; text when trainer beaten
-	dw TwinsAnnandanne2BeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw TwinsAnnandanne2Script
-; 0x1a8da3
-
-TwinsAnnandanne2Script: ; 0x1a8da3
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a8eec
+TwinsAnnandanne2Script:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a8eec
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a8dab
 
-TrainerPsychicGreg: ; 0x1a8dab
-	; bit/flag number
-	dw $43e
+TrainerPsychicGreg:
+	trainer EVENT_BEAT_PSYCHIC_GREG, PSYCHIC_T, GREG, PsychicGregSeenText, PsychicGregBeatenText, 0, PsychicGregScript
 
-	; trainer group && trainer id
-	db PSYCHIC_T, GREG
-
-	; text when seen
-	dw PsychicGregSeenText
-
-	; text when trainer beaten
-	dw PsychicGregBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw PsychicGregScript
-; 0x1a8db7
-
-PsychicGregScript: ; 0x1a8db7
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a8f80
+PsychicGregScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a8f80
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a8dbf
 
-BugCatcherScript_0x1a8dbf: ; 0x1a8dbf
+SunnyScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_MAGNET_FROM_SUNNY
-	iftrue UnknownScript_0x1a8dfa
-	checkcode $b
-	if_not_equal SUNDAY, UnknownScript_0x1a8e00
+	iftrue SunnySundayScript
+	checkcode VAR_WEEKDAY
+	if_not_equal SUNDAY, SunnyNotSundayScript
 	checkevent EVENT_MET_SUNNY_OF_SUNDAY
-	iftrue UnknownScript_0x1a8dda
-	2writetext UnknownText_0x1a8fc8
-	keeptextopen
+	iftrue .MetSunny
+	writetext MeetSunnyText
+	buttonsound
 	setevent EVENT_MET_SUNNY_OF_SUNDAY
-UnknownScript_0x1a8dda: ; 0x1a8dda
-	checkflag $0063
-	iftrue UnknownScript_0x1a8de7
-	2writetext UnknownText_0x1a9004
-	keeptextopen
-	2jump UnknownScript_0x1a8deb
-; 0x1a8de7
-
-UnknownScript_0x1a8de7: ; 0x1a8de7
-	2writetext UnknownText_0x1a902f
-	keeptextopen
-UnknownScript_0x1a8deb: ; 0x1a8deb
-	verbosegiveitem MAGNET, 1
-	iffalse UnknownScript_0x1a8dfe
+.MetSunny:
+	checkflag ENGINE_PLAYER_IS_FEMALE
+	iftrue .Kris
+	writetext SunnyGivesGiftText1
+	buttonsound
+	jump .next
+.Kris:
+	writetext SunnyGivesGiftText2
+	buttonsound
+.next
+	verbosegiveitem MAGNET
+	iffalse SunnyDoneScript
 	setevent EVENT_GOT_MAGNET_FROM_SUNNY
-	2writetext UnknownText_0x1a905a
+	writetext SunnyGaveGiftText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a8dfa
 
-UnknownScript_0x1a8dfa: ; 0x1a8dfa
-	2writetext UnknownText_0x1a90fc
+SunnySundayScript:
+	writetext SunnySundayText
+	waitbutton
+SunnyDoneScript:
 	closetext
-UnknownScript_0x1a8dfe: ; 0x1a8dfe
-	loadmovesprites
 	end
-; 0x1a8e00
 
-UnknownScript_0x1a8e00: ; 0x1a8e00
-	2writetext UnknownText_0x1a916e
+SunnyNotSundayScript:
+	writetext SunnyNotSundayText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a8e06
 
-MapRoute37Signpost0Script: ; 0x1a8e06
-	jumptext UnknownText_0x1a9197
-; 0x1a8e09
+Route37Sign:
+	jumptext Route37SignText
 
-FruitTreeScript_0x1a8e09: ; 0x1a8e09
-	fruittree $11
-; 0x1a8e0b
+FruitTreeScript_0x1a8e09:
+	fruittree FRUITTREE_ROUTE_37_1
 
-FruitTreeScript_0x1a8e0b: ; 0x1a8e0b
-	fruittree $12
-; 0x1a8e0d
+FruitTreeScript_0x1a8e0b:
+	fruittree FRUITTREE_ROUTE_37_2
 
-FruitTreeScript_0x1a8e0d: ; 0x1a8e0d
-	fruittree $13
-; 0x1a8e0f
+FruitTreeScript_0x1a8e0d:
+	fruittree FRUITTREE_ROUTE_37_3
 
-MapRoute37SignpostItem1: ; 0x1a8e0f
-	dw $00a9
-	db ETHER
-	
-; 0x1a8e12
+Route37HiddenEther:
+	dwb EVENT_ROUTE_37_HIDDEN_ETHER, ETHER
 
-TwinsAnnandanne1SeenText: ; 0x1a8e12
+
+TwinsAnnandanne1SeenText:
 	text "ANN: ANNE and I"
 	line "are in this to-"
 	cont "gether!"
 	done
-; 0x1a8e3b
 
-TwinsAnnandanne1BeatenText: ; 0x1a8e3b
+TwinsAnnandanne1BeatenText:
 	text "ANN & ANNE: Nnn… A"
 	line "little too strong."
 	done
-; 0x1a8e62
 
-UnknownText_0x1a8e62: ; 0x1a8e62
+UnknownText_0x1a8e62:
 	text "ANN: I can tell"
 	line "what my sister and"
 
 	para "my #MON are"
 	line "thinking."
 	done
-; 0x1a8e9c
 
-TwinsAnnandanne2SeenText: ; 0x1a8e9c
+TwinsAnnandanne2SeenText:
 	text "ANNE: ANN and I"
 	line "are in this to-"
 	cont "gether!"
 	done
-; 0x1a8ec5
 
-TwinsAnnandanne2BeatenText: ; 0x1a8ec5
+TwinsAnnandanne2BeatenText:
 	text "ANN & ANNE: Nnn… A"
 	line "little too strong."
 	done
-; 0x1a8eec
 
-UnknownText_0x1a8eec: ; 0x1a8eec
+UnknownText_0x1a8eec:
 	text "ANNE: We share the"
 	line "same feelings as"
 	cont "our #MON."
 	done
-; 0x1a8f1b
 
-PsychicGregSeenText: ; 0x1a8f1b
+PsychicGregSeenText:
 	text "#MON can't do a"
 	line "thing if they are"
 	cont "asleep."
@@ -229,46 +164,40 @@ PsychicGregSeenText: ; 0x1a8f1b
 	para "I'll show you how"
 	line "scary that is!"
 	done
-; 0x1a8f65
 
-PsychicGregBeatenText: ; 0x1a8f65
+PsychicGregBeatenText:
 	text "I lost. That's"
 	line "pretty sad…"
 	done
-; 0x1a8f80
 
-UnknownText_0x1a8f80: ; 0x1a8f80
+UnknownText_0x1a8f80:
 	text "Putting #MON to"
 	line "sleep or paralyz-"
 	cont "ing them are good"
 	cont "battle techniques."
 	done
-; 0x1a8fc8
 
-UnknownText_0x1a8fc8: ; 0x1a8fc8
+MeetSunnyText:
 	text "SUNNY: Hi!"
 
 	para "I'm SUNNY of Sun-"
 	line "day, meaning it's"
 	cont "Sunday today!"
 	done
-; 0x1a9004
 
-UnknownText_0x1a9004: ; 0x1a9004
+SunnyGivesGiftText1:
 	text "I was told to give"
 	line "you this if I saw"
 	cont "you!"
 	done
-; 0x1a902f
 
-UnknownText_0x1a902f: ; 0x1a902f
+SunnyGivesGiftText2:
 	text "I was told to give"
 	line "you this if I saw"
 	cont "you!"
 	done
-; 0x1a905a
 
-UnknownText_0x1a905a: ; 0x1a905a
+SunnyGaveGiftText:
 	text "SUNNY: That thing…"
 
 	para "Um…"
@@ -290,9 +219,8 @@ UnknownText_0x1a905a: ; 0x1a905a
 	line "it powers up"
 	cont "electric moves!"
 	done
-; 0x1a90fc
 
-UnknownText_0x1a90fc: ; 0x1a90fc
+SunnySundayText:
 	text "SUNNY: My sisters"
 	line "and brothers are"
 	cont "MONICA, TUSCANY,"
@@ -302,43 +230,38 @@ UnknownText_0x1a90fc: ; 0x1a90fc
 	para "They're all older"
 	line "than me!"
 	done
-; 0x1a916e
 
-UnknownText_0x1a916e: ; 0x1a916e
+SunnyNotSundayText:
 	text "SUNNY: Isn't today"
 	line "Sunday?"
 	cont "Um… I forgot!"
 	done
-; 0x1a9197
 
-UnknownText_0x1a9197: ; 0x1a9197
+Route37SignText:
 	text "ROUTE 37"
 	done
-; 0x1a91a1
 
-Route37_MapEventHeader: ; 0x1a91a1
+Route37_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 0
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 3, 5, $0, MapRoute37Signpost0Script
-	signpost 2, 4, $7, MapRoute37SignpostItem1
+	signpost 3, 5, SIGNPOST_READ, Route37Sign
+	signpost 2, 4, SIGNPOST_ITEM, Route37HiddenEther
 
-	; people-events
+.PersonEvents:
 	db 7
-	person_event SPRITE_WEIRD_TREE, 16, 10, $6, $0, 255, 255, $82, 1, TrainerTwinsAnnandanne1, $ffff
-	person_event SPRITE_WEIRD_TREE, 16, 11, $6, $0, 255, 255, $82, 1, TrainerTwinsAnnandanne2, $ffff
-	person_event SPRITE_YOUNGSTER, 10, 10, $a, $0, 255, 255, $92, 1, TrainerPsychicGreg, $ffff
-	person_event SPRITE_FRUIT_TREE, 9, 17, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x1a8e09, $ffff
-	person_event SPRITE_BUG_CATCHER, 12, 20, $2, $11, 255, 255, $0, 0, BugCatcherScript_0x1a8dbf, $075b
-	person_event SPRITE_FRUIT_TREE, 9, 20, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x1a8e0b, $ffff
-	person_event SPRITE_FRUIT_TREE, 11, 19, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x1a8e0d, $ffff
-; 0x1a920c
-
+	person_event SPRITE_WEIRD_TREE, 12, 6, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 1, TrainerTwinsAnnandanne1, -1
+	person_event SPRITE_WEIRD_TREE, 12, 7, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 1, TrainerTwinsAnnandanne2, -1
+	person_event SPRITE_YOUNGSTER, 6, 6, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 1, TrainerPsychicGreg, -1
+	person_event SPRITE_FRUIT_TREE, 5, 13, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FruitTreeScript_0x1a8e09, -1
+	person_event SPRITE_BUG_CATCHER, 8, 16, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, 0, PERSONTYPE_SCRIPT, 0, SunnyScript, EVENT_ROUTE_37_SUNNY_OF_SUNDAY
+	person_event SPRITE_FRUIT_TREE, 5, 16, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FruitTreeScript_0x1a8e0b, -1
+	person_event SPRITE_FRUIT_TREE, 7, 15, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FruitTreeScript_0x1a8e0d, -1

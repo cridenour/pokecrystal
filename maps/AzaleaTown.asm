@@ -1,242 +1,224 @@
-AzaleaTown_MapScriptHeader: ; 0x198000
-	; trigger count
+const_value set 2
+	const AZALEATOWN_AZALEA_ROCKET1
+	const AZALEATOWN_GRAMPS
+	const AZALEATOWN_TEACHER
+	const AZALEATOWN_YOUNGSTER
+	const AZALEATOWN_SLOWPOKE1
+	const AZALEATOWN_SLOWPOKE2
+	const AZALEATOWN_SLOWPOKE3
+	const AZALEATOWN_SLOWPOKE4
+	const AZALEATOWN_FRUIT_TREE
+	const AZALEATOWN_SILVER
+	const AZALEATOWN_AZALEA_ROCKET3
+	const AZALEATOWN_KURT_OUTSIDE
+
+AzaleaTown_MapScriptHeader:
+.MapTriggers:
 	db 3
 
 	; triggers
-	dw UnknownScript_0x198011, $0000
-	dw UnknownScript_0x198012, $0000
-	dw UnknownScript_0x198013, $0000
+	maptrigger .Trigger0
+	maptrigger .Trigger1
+	maptrigger .Trigger2
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
+	dbw MAPCALLBACK_NEWMAP, .Flypoint
 
-	dbw 5, UnknownScript_0x198014
-; 0x198011
-
-UnknownScript_0x198011: ; 0x198011
+.Trigger0:
 	end
-; 0x198012
 
-UnknownScript_0x198012: ; 0x198012
+.Trigger1:
 	end
-; 0x198013
 
-UnknownScript_0x198013: ; 0x198013
+.Trigger2:
 	end
-; 0x198014
 
-UnknownScript_0x198014: ; 0x198014
-	setflag $0044
+.Flypoint:
+	setflag ENGINE_FLYPOINT_AZALEA
 	return
-; 0x198018
 
-UnknownScript_0x198018: ; 0x198018
-	moveperson $b, $b, $b
-	spriteface $0, $3
-	showemote $0, $0, 15
-	special $006a
+AzaleaTownRivalBattleTrigger1:
+	moveperson AZALEATOWN_SILVER, $b, $b
+	spriteface PLAYER, RIGHT
+	showemote EMOTE_SHOCK, PLAYER, 15
+	special Special_FadeOutMusic
 	pause 15
-	appear $b
-	applymovement $b, MovementData_0x198134
-	spriteface $0, $0
-	2jump UnknownScript_0x198049
-; 0x198034
+	appear AZALEATOWN_SILVER
+	applymovement AZALEATOWN_SILVER, AzaleaTownRivalBattleApproachMovement1
+	spriteface PLAYER, DOWN
+	jump AzaleaTownRivalBattleScript
 
-UnknownScript_0x198034: ; 0x198034
-	spriteface $0, $3
-	showemote $0, $0, 15
-	special $006a
+AzaleaTownRivalBattleTrigger2:
+	spriteface PLAYER, RIGHT
+	showemote EMOTE_SHOCK, PLAYER, 15
+	special Special_FadeOutMusic
 	pause 15
-	appear $b
-	applymovement $b, MovementData_0x19813c
-	spriteface $0, $1
-UnknownScript_0x198049: ; 0x198049
+	appear AZALEATOWN_SILVER
+	applymovement AZALEATOWN_SILVER, AzaleaTownRivalBattleApproachMovement2
+	spriteface PLAYER, UP
+AzaleaTownRivalBattleScript:
 	playmusic MUSIC_RIVAL_ENCOUNTER
-	loadfont
-	2writetext UnknownText_0x19814d
+	opentext
+	writetext AzaleaTownRivalBeforeText
+	waitbutton
 	closetext
-	loadmovesprites
-	setevent $06bf
+	setevent EVENT_RIVAL_AZALEA_TOWN
 	checkevent EVENT_GOT_TOTODILE_FROM_ELM
-	iftrue UnknownScript_0x198071
+	iftrue .Totodile
 	checkevent EVENT_GOT_CHIKORITA_FROM_ELM
-	iftrue UnknownScript_0x198081
-	winlosstext UnknownText_0x1981e6, UnknownText_0x19835b
-	setlasttalked $b
+	iftrue .Chikorita
+	winlosstext AzaleaTownRivalWinText, AzaleaTownRivalLossText
+	setlasttalked AZALEATOWN_SILVER
 	loadtrainer RIVAL1, RIVAL1_6
 	startbattle
-	reloadmapmusic
-	returnafterbattle
-	2jump UnknownScript_0x198091
-; 0x198071
+	dontrestartmapmusic
+	reloadmapafterbattle
+	jump .AfterBattle
 
-UnknownScript_0x198071: ; 0x198071
-	winlosstext UnknownText_0x1981e6, UnknownText_0x19835b
-	setlasttalked $b
+.Totodile:
+	winlosstext AzaleaTownRivalWinText, AzaleaTownRivalLossText
+	setlasttalked AZALEATOWN_SILVER
 	loadtrainer RIVAL1, RIVAL1_4
 	startbattle
-	reloadmapmusic
-	returnafterbattle
-	2jump UnknownScript_0x198091
-; 0x198081
+	dontrestartmapmusic
+	reloadmapafterbattle
+	jump .AfterBattle
 
-UnknownScript_0x198081: ; 0x198081
-	winlosstext UnknownText_0x1981e6, UnknownText_0x19835b
-	setlasttalked $b
+.Chikorita:
+	winlosstext AzaleaTownRivalWinText, AzaleaTownRivalLossText
+	setlasttalked AZALEATOWN_SILVER
 	loadtrainer RIVAL1, RIVAL1_5
 	startbattle
-	reloadmapmusic
-	returnafterbattle
-	2jump UnknownScript_0x198091
-; 0x198091
+	dontrestartmapmusic
+	reloadmapafterbattle
+	jump .AfterBattle
 
-UnknownScript_0x198091: ; 0x198091
+.AfterBattle:
 	playmusic MUSIC_RIVAL_AFTER
-	loadfont
-	2writetext UnknownText_0x198233
-	closetext
-	loadmovesprites
-	spriteface $0, $2
-	applymovement $b, MovementData_0x198144
-	playsound SFX_EXIT_BUILDING
-	disappear $b
-	dotrigger $0
+	opentext
+	writetext AzaleaTownRivalAfterText
 	waitbutton
+	closetext
+	spriteface PLAYER, LEFT
+	applymovement AZALEATOWN_SILVER, AzaleaTownRivalBattleExitMovement
+	playsound SFX_EXIT_BUILDING
+	disappear AZALEATOWN_SILVER
+	dotrigger $0
+	waitsfx
 	playmapmusic
 	end
-; 0x1980ab
 
-AzaleaRocketScript_0x1980ab: ; 0x1980ab
-	jumptextfaceplayer UnknownText_0x19837b
-; 0x1980ae
+AzaleaTownRocket1Script:
+	jumptextfaceplayer GoodSamaritanRocketText
 
-AzaleaRocketScript_0x1980ae: ; 0x1980ae
-	jumptextfaceplayer UnknownText_0x1983c7
-; 0x1980b1
+AzaleaTownRocket2Script:
+	jumptextfaceplayer TastySlowpokeTailRocketText
 
-GrampsScript_0x1980b1: ; 0x1980b1
+AzaleaTownGrampsScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_CLEARED_SLOWPOKE_WELL
-	iftrue UnknownScript_0x1980bf
-	2writetext UnknownText_0x19841b
+	iftrue .ClearedWell
+	writetext AzaleaTownGrampsTextBefore
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1980bf
 
-UnknownScript_0x1980bf: ; 0x1980bf
-	2writetext UnknownText_0x198473
+.ClearedWell:
+	writetext AzaleaTownGrampsTextAfter
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1980c5
 
-TeacherScript_0x1980c5: ; 0x1980c5
-	jumptextfaceplayer UnknownText_0x1984ce
-; 0x1980c8
+AzaleaTownTeacherScript:
+	jumptextfaceplayer AzaleaTownTeacherText
 
-YoungsterScript_0x1980c8: ; 0x1980c8
-	jumptextfaceplayer UnknownText_0x19851a
-; 0x1980cb
+AzaleaTownYoungsterScript:
+	jumptextfaceplayer AzaleaTownYoungsterText
 
-SlowpokeScript_0x1980cb: ; 0x1980cb
-	loadfont
-	2writetext UnknownText_0x1985b0
+AzaleaTownSlowpokeScript:
+	opentext
+	writetext AzaleaTownSlowpokeText1
 	pause 60
-	2writetext UnknownText_0x1985c3
+	writetext AzaleaTownSlowpokeText2
 	cry SLOWPOKE
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1980da
 
-WoosterScript: ; 0x1980da
+WoosterScript:
 ; unused
 	faceplayer
-	loadfont
-	2writetext WoosterText
+	opentext
+	writetext WoosterText
 	cry QUAGSIRE
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1980e5
 
-UnknownScript_0x1980e5: ; 0x1980e5
-	applymovement $0, MovementData_0x198148
-	loadfont
-	2writetext UnknownText_0x1985df
-	keeptextopen
-	spriteface $d, $3
-	2writetext UnknownText_0x19860b
-	keeptextopen
-	2writetext UnknownText_0x198628
-	closetext
-	verbosegiveitem GS_BALL, 1
-	spriteface $d, $2
-	setflag $0064
-	clearevent $06ed
-	setevent $06eb
+AzaleaTown_CelebiEventScript:
+	applymovement PLAYER, Movement_PlayerWalksOutOfKurtsHouse
+	opentext
+	writetext IlexForestIsRestlessText
+	buttonsound
+	spriteface AZALEATOWN_KURT_OUTSIDE, RIGHT
+	writetext HeresTheGSBallBackText
+	buttonsound
+	writetext PleaseInvestigateIlexForestText
+	waitbutton
+	verbosegiveitem GS_BALL
+	spriteface AZALEATOWN_KURT_OUTSIDE, LEFT
+	setflag ENGINE_HAVE_EXAMINED_GS_BALL
+	clearevent EVENT_ILEX_FOREST_LASS
+	setevent EVENT_ROUTE_34_ILEX_FOREST_GATE_LASS
 	dotrigger $0
-	loadmovesprites
-	end
-; 0x19810c
-
-KurtOutsideScript_0x19810c: ; 0x19810c
-	faceplayer
-	loadfont
-	2writetext UnknownText_0x198628
 	closetext
-	spriteface $d, $2
-	loadmovesprites
 	end
-; 0x198117
 
-MapAzaleaTownSignpost0Script: ; 0x198117
-	jumptext UnknownText_0x19865a
-; 0x19811a
+AzaleaTownKurtScript:
+	faceplayer
+	opentext
+	writetext PleaseInvestigateIlexForestText
+	waitbutton
+	spriteface AZALEATOWN_KURT_OUTSIDE, LEFT
+	closetext
+	end
 
-MapAzaleaTownSignpost1Script: ; 0x19811a
-	jumptext UnknownText_0x198693
-; 0x19811d
+AzaleaTownSign:
+	jumptext AzaleaTownSignText
 
-MapAzaleaTownSignpost2Script: ; 0x19811d
-	jumptext UnknownText_0x1986a1
-; 0x198120
+KurtsHouseSign:
+	jumptext KurtsHouseSignText
 
-MapAzaleaTownSignpost3Script: ; 0x198120
-	jumptext UnknownText_0x1986e7
-; 0x198123
+AzaleaGymSign:
+	jumptext AzaleaGymSignText
 
-MapAzaleaTownSignpost4Script: ; 0x198123
-	jumptext UnknownText_0x19878d
-; 0x198126
+SlowpokeWellSign:
+	jumptext SlowpokeWellSignText
 
-MapAzaleaTownSignpost7Script: ; 0x198126
-	jumptext UnknownText_0x19879c
-; 0x198129
+CharcoalKilnSign:
+	jumptext CharcoalKilnSignText
 
-MapAzaleaTownSignpost5Script: ; 0x198129
-	jumpstd $0010
-; 0x19812c
+AzaleaTownIlextForestSign:
+	jumptext AzaleaTownIlexForestSignText
 
-MapAzaleaTownSignpost6Script: ; 0x19812c
-	jumpstd $0011
-; 0x19812f
+AzaleaTownPokeCenterSign:
+	jumpstd pokecentersign
 
-FruitTreeScript_0x19812f: ; 0x19812f
-	fruittree $14
-; 0x198131
+AzaleaTownMartSign:
+	jumpstd martsign
 
-MapAzaleaTownSignpostItem8: ; 0x198131
-	dw $00b1
-	db FULL_HEAL
-	
-; 0x198134
+WhiteApricornTree:
+	fruittree FRUITTREE_AZALEA_TOWN
 
-MovementData_0x198134: ; 0x198134
+AzaleaTownHiddenFullHeal:
+	dwb EVENT_AZALEA_TOWN_HIDDEN_FULL_HEAL, FULL_HEAL
+
+
+AzaleaTownRivalBattleApproachMovement1:
 	step_left
 	step_left
 	step_left
@@ -245,9 +227,8 @@ MovementData_0x198134: ; 0x198134
 	step_left
 	turn_head_up
 	step_end
-; 0x19813c
 
-MovementData_0x19813c: ; 0x19813c
+AzaleaTownRivalBattleApproachMovement2:
 	step_left
 	step_left
 	step_left
@@ -256,24 +237,21 @@ MovementData_0x19813c: ; 0x19813c
 	step_left
 	turn_head_down
 	step_end
-; 0x198144
 
-MovementData_0x198144: ; 0x198144
+AzaleaTownRivalBattleExitMovement:
 	step_left
 	step_left
 	step_left
 	step_end
-; 0x198148
 
-MovementData_0x198148: ; 0x198148
+Movement_PlayerWalksOutOfKurtsHouse:
 	step_left
 	step_left
 	step_up
 	turn_head_left
 	step_end
-; 0x19814d
 
-UnknownText_0x19814d: ; 0x19814d
+AzaleaTownRivalBeforeText:
 	text "…Tell me some-"
 	line "thing."
 
@@ -289,9 +267,8 @@ UnknownText_0x19814d: ; 0x19814d
 	line "Then let's see how"
 	cont "good you are."
 	done
-; 0x1981e6
 
-UnknownText_0x1981e6: ; 0x1981e6
+AzaleaTownRivalWinText:
 	text "… Humph! Useless"
 	line "#MON!"
 
@@ -301,9 +278,8 @@ UnknownText_0x1981e6: ; 0x1981e6
 	para "my #MON were"
 	line "weak."
 	done
-; 0x198233
 
-UnknownText_0x198233: ; 0x198233
+AzaleaTownRivalAfterText:
 	text "I hate the weak."
 
 	para "#MON, trainers."
@@ -332,15 +308,13 @@ UnknownText_0x198233: ; 0x198233
 	para "like you is only a"
 	line "distraction."
 	done
-; 0x19835b
 
-UnknownText_0x19835b: ; 0x19835b
+AzaleaTownRivalLossText:
 	text "…Humph! I knew"
 	line "you were lying."
 	done
-; 0x19837b
 
-UnknownText_0x19837b: ; 0x19837b
+GoodSamaritanRocketText:
 	text "It's unsafe to go"
 	line "in there, so I'm"
 	cont "standing guard."
@@ -348,9 +322,8 @@ UnknownText_0x19837b: ; 0x19837b
 	para "Aren't I a good"
 	line "Samaritan?"
 	done
-; 0x1983c7
 
-UnknownText_0x1983c7: ; 0x1983c7
+TastySlowpokeTailRocketText:
 	text "Do you know about"
 	line "SLOWPOKETAIL? I"
 	cont "heard it's tasty!"
@@ -358,9 +331,8 @@ UnknownText_0x1983c7: ; 0x1983c7
 	para "Aren't you glad I"
 	line "told you that?"
 	done
-; 0x19841b
 
-UnknownText_0x19841b: ; 0x19841b
+AzaleaTownGrampsTextBefore:
 	text "The SLOWPOKE have"
 	line "disappeared from"
 	cont "town…"
@@ -369,9 +341,8 @@ UnknownText_0x19841b: ; 0x19841b
 	line "TAILS are being"
 	cont "sold somewhere."
 	done
-; 0x198473
 
-UnknownText_0x198473: ; 0x198473
+AzaleaTownGrampsTextAfter:
 	text "The SLOWPOKE have"
 	line "returned."
 
@@ -381,9 +352,8 @@ UnknownText_0x198473: ; 0x198473
 	para "goofing off some-"
 	line "where."
 	done
-; 0x1984ce
 
-UnknownText_0x1984ce: ; 0x1984ce
+AzaleaTownTeacherText:
 	text "Did you come to"
 	line "get KURT to make"
 	cont "some BALLS?"
@@ -391,9 +361,8 @@ UnknownText_0x1984ce: ; 0x1984ce
 	para "A lot of people do"
 	line "just that."
 	done
-; 0x19851a
 
-UnknownText_0x19851a: ; 0x19851a
+AzaleaTownYoungsterText:
 	text "Cut through AZALEA"
 	line "and you'll be in"
 	cont "ILEX FOREST."
@@ -408,61 +377,52 @@ UnknownText_0x19851a: ; 0x19851a
 	line "#MON can CUT"
 	cont "down trees."
 	done
-; 0x1985b0
 
-UnknownText_0x1985b0: ; 0x1985b0
+AzaleaTownSlowpokeText1:
 	text "SLOWPOKE: …"
 
-	para $56, " ", $56, " ", $56
+	para "<......> <......> <......>"
 	done
-; 0x1985c3
 
-UnknownText_0x1985c3: ; 0x1985c3
-	text $56, " ", $56, "Yawn?"
+AzaleaTownSlowpokeText2:
+	text "<......> <......>Yawn?"
 	done
-; 0x1985cd
 
-WoosterText: ; 0x1985cd
+WoosterText:
 	text "WOOSTER: Gugyoo…"
 	done
-; 0x1985df
 
-UnknownText_0x1985df: ; 0x1985df
+IlexForestIsRestlessText:
 	text "ILEX FOREST is"
 	line "restless!"
 
 	para "What is going on?"
 	done
-; 0x19860b
 
-UnknownText_0x19860b: ; 0x19860b
-	text $52, ", here's"
+HeresTheGSBallBackText:
+	text "<PLAYER>, here's"
 	line "your GS BALL back!"
 	done
-; 0x198628
 
-UnknownText_0x198628: ; 0x198628
+PleaseInvestigateIlexForestText:
 	text "Could you go see"
 	line "why ILEX FOREST is"
 	cont "so restless?"
 	done
-; 0x19865a
 
-UnknownText_0x19865a: ; 0x19865a
+AzaleaTownSignText:
 	text "AZALEA TOWN"
 	line "Where People and"
 
 	para "#MON Live in"
 	line "Happy Harmony"
 	done
-; 0x198693
 
-UnknownText_0x198693: ; 0x198693
+KurtsHouseSignText:
 	text "KURT'S HOUSE"
 	done
-; 0x1986a1
 
-UnknownText_0x1986a1: ; 0x1986a1
+AzaleaGymSignText:
 	text "AZALEA TOWN"
 	line "#MON GYM"
 	cont "LEADER: BUGSY"
@@ -471,9 +431,8 @@ UnknownText_0x1986a1: ; 0x1986a1
 	line "Bug #MON"
 	cont "Encyclopedia"
 	done
-; 0x1986e7
 
-UnknownText_0x1986e7: ; 0x1986e7
+SlowpokeWellSignText:
 	text "SLOWPOKE WELL"
 
 	para "Also known as the"
@@ -489,67 +448,62 @@ UnknownText_0x1986e7: ; 0x1986e7
 	para "ended a drought"
 	line "400 years ago."
 	done
-; 0x19878d
 
-UnknownText_0x19878d: ; 0x19878d
+CharcoalKilnSignText:
 	text "CHARCOAL KILN"
 	done
-; 0x19879c
 
-UnknownText_0x19879c: ; 0x19879c
+AzaleaTownIlexForestSignText:
 	text "ILEX FOREST"
 
 	para "Enter through the"
 	line "gate."
 	done
-; 0x1987c1
 
-AzaleaTown_MapEventHeader: ; 0x1987c1
+AzaleaTown_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 8
-	warp_def $9, $f, 1, GROUP_AZALEA_POKECENTER_1F, MAP_AZALEA_POKECENTER_1F
-	warp_def $d, $15, 1, GROUP_CHARCOAL_KILN, MAP_CHARCOAL_KILN
-	warp_def $5, $15, 2, GROUP_AZALEA_MART, MAP_AZALEA_MART
-	warp_def $5, $9, 1, GROUP_KURTS_HOUSE, MAP_KURTS_HOUSE
-	warp_def $f, $a, 1, GROUP_AZALEA_GYM, MAP_AZALEA_GYM
-	warp_def $7, $1f, 1, GROUP_SLOWPOKE_WELL_B1F, MAP_SLOWPOKE_WELL_B1F
-	warp_def $a, $2, 3, GROUP_ILEX_FOREST_AZALEA_GATE, MAP_ILEX_FOREST_AZALEA_GATE
-	warp_def $b, $2, 4, GROUP_ILEX_FOREST_AZALEA_GATE, MAP_ILEX_FOREST_AZALEA_GATE
+	warp_def $9, $f, 1, AZALEA_POKECENTER_1F
+	warp_def $d, $15, 1, CHARCOAL_KILN
+	warp_def $5, $15, 2, AZALEA_MART
+	warp_def $5, $9, 1, KURTS_HOUSE
+	warp_def $f, $a, 1, AZALEA_GYM
+	warp_def $7, $1f, 1, SLOWPOKE_WELL_B1F
+	warp_def $a, $2, 3, ILEX_FOREST_AZALEA_GATE
+	warp_def $b, $2, 4, ILEX_FOREST_AZALEA_GATE
 
-	; xy triggers
+.XYTriggers:
 	db 3
-	xy_trigger 1, $a, $5, $0, UnknownScript_0x198018, $0, $0
-	xy_trigger 1, $b, $5, $0, UnknownScript_0x198034, $0, $0
-	xy_trigger 2, $6, $9, $0, UnknownScript_0x1980e5, $0, $0
+	xy_trigger 1, $a, $5, $0, AzaleaTownRivalBattleTrigger1, $0, $0
+	xy_trigger 1, $b, $5, $0, AzaleaTownRivalBattleTrigger2, $0, $0
+	xy_trigger 2, $6, $9, $0, AzaleaTown_CelebiEventScript, $0, $0
 
-	; signposts
+.Signposts:
 	db 9
-	signpost 9, 19, $0, MapAzaleaTownSignpost0Script
-	signpost 9, 10, $0, MapAzaleaTownSignpost1Script
-	signpost 15, 14, $0, MapAzaleaTownSignpost2Script
-	signpost 7, 29, $0, MapAzaleaTownSignpost3Script
-	signpost 13, 19, $0, MapAzaleaTownSignpost4Script
-	signpost 9, 16, $0, MapAzaleaTownSignpost5Script
-	signpost 5, 22, $0, MapAzaleaTownSignpost6Script
-	signpost 9, 3, $0, MapAzaleaTownSignpost7Script
-	signpost 6, 31, $7, MapAzaleaTownSignpostItem8
+	signpost 9, 19, SIGNPOST_READ, AzaleaTownSign
+	signpost 9, 10, SIGNPOST_READ, KurtsHouseSign
+	signpost 15, 14, SIGNPOST_READ, AzaleaGymSign
+	signpost 7, 29, SIGNPOST_READ, SlowpokeWellSign
+	signpost 13, 19, SIGNPOST_READ, CharcoalKilnSign
+	signpost 9, 16, SIGNPOST_READ, AzaleaTownPokeCenterSign
+	signpost 5, 22, SIGNPOST_READ, AzaleaTownMartSign
+	signpost 9, 3, SIGNPOST_READ, AzaleaTownIlextForestSign
+	signpost 6, 31, SIGNPOST_ITEM, AzaleaTownHiddenFullHeal
 
-	; people-events
+.PersonEvents:
 	db 12
-	person_event SPRITE_AZALEA_ROCKET, 13, 35, $6, $0, 255, 255, $0, 0, AzaleaRocketScript_0x1980ab, $06fa
-	person_event SPRITE_GRAMPS, 13, 25, $2, $21, 255, 255, $0, 0, GrampsScript_0x1980b1, $ffff
-	person_event SPRITE_TEACHER, 17, 19, $4, $20, 255, 255, $90, 0, TeacherScript_0x1980c5, $ffff
-	person_event SPRITE_YOUNGSTER, 13, 11, $5, $1, 255, 255, $a0, 0, YoungsterScript_0x1980c8, $ffff
-	person_event SPRITE_SLOWPOKE, 21, 12, $1, $0, 255, 255, $0, 0, SlowpokeScript_0x1980cb, $06f9
-	person_event SPRITE_SLOWPOKE, 13, 22, $1, $0, 255, 255, $0, 0, SlowpokeScript_0x1980cb, $06f9
-	person_event SPRITE_SLOWPOKE, 13, 33, $1, $0, 255, 255, $0, 0, SlowpokeScript_0x1980cb, $06f9
-	person_event SPRITE_SLOWPOKE, 19, 19, $1, $0, 255, 255, $0, 0, SlowpokeScript_0x1980cb, $06f9
-	person_event SPRITE_FRUIT_TREE, 6, 12, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x19812f, $ffff
-	person_event SPRITE_AZALEA_ROCKET, 14, 15, $8, $0, 255, 255, $0, 0, ObjectEvent, $06bf
-	person_event SPRITE_AZALEA_ROCKET, 20, 14, $6, $0, 255, 255, $0, 0, AzaleaRocketScript_0x1980ae, $06fc
-	person_event SPRITE_KURT_OUTSIDE, 9, 10, $8, $0, 255, 255, $0, 0, KurtOutsideScript_0x19810c, $07a4
-; 0x1988d0
-
+	person_event SPRITE_AZALEA_ROCKET, 9, 31, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, AzaleaTownRocket1Script, EVENT_AZALEA_TOWN_SLOWPOKETAIL_ROCKET
+	person_event SPRITE_GRAMPS, 9, 21, SPRITEMOVEDATA_WANDER, 2, 1, -1, -1, 0, PERSONTYPE_SCRIPT, 0, AzaleaTownGrampsScript, -1
+	person_event SPRITE_TEACHER, 13, 15, SPRITEMOVEDATA_WALK_UP_DOWN, 2, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, AzaleaTownTeacherScript, -1
+	person_event SPRITE_YOUNGSTER, 9, 7, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, AzaleaTownYoungsterScript, -1
+	person_event SPRITE_SLOWPOKE, 17, 8, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, AzaleaTownSlowpokeScript, EVENT_AZALEA_TOWN_SLOWPOKES
+	person_event SPRITE_SLOWPOKE, 9, 18, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, AzaleaTownSlowpokeScript, EVENT_AZALEA_TOWN_SLOWPOKES
+	person_event SPRITE_SLOWPOKE, 9, 29, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, AzaleaTownSlowpokeScript, EVENT_AZALEA_TOWN_SLOWPOKES
+	person_event SPRITE_SLOWPOKE, 15, 15, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, AzaleaTownSlowpokeScript, EVENT_AZALEA_TOWN_SLOWPOKES
+	person_event SPRITE_FRUIT_TREE, 2, 8, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, WhiteApricornTree, -1
+	person_event SPRITE_AZALEA_ROCKET, 10, 11, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ObjectEvent, EVENT_RIVAL_AZALEA_TOWN
+	person_event SPRITE_AZALEA_ROCKET, 16, 10, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, AzaleaTownRocket2Script, EVENT_SLOWPOKE_WELL_ROCKETS
+	person_event SPRITE_KURT_OUTSIDE, 5, 6, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, AzaleaTownKurtScript, EVENT_AZALEA_TOWN_KURT

@@ -20,10 +20,10 @@ DMATransfer:: ; 15d8
 
 
 UpdateBGMapBuffer:: ; 15e3
-; Copy [$ffdc] 16x8 tiles from BGMapBuffer
+; Copy [hFFDC] 16x8 tiles from BGMapBuffer
 ; to bg map addresses in BGMapBufferPtrs.
 
-; [$ffdc] must be even since this is done in pairs.
+; [hFFDC] must be even since this is done in pairs.
 
 ; Return carry on success.
 
@@ -76,10 +76,10 @@ rept 2
 endr
 
 ; We've done 2 16x8 blocks
-	ld a, [$ffdc]
+	ld a, [hFFDC]
 	dec a
 	dec a
-	ld [$ffdc], a
+	ld [hFFDC], a
 
 	jr nz, .next
 
@@ -164,11 +164,11 @@ UpdateBGMap:: ; 164c
 	ret
 
 
-.Attr
+.Attr:
 	ld a, 1
 	ld [rVBK], a
 
-	ld hl, AttrMap
+	hlcoord 0, 0, AttrMap
 	call .update
 
 	ld a, 0
@@ -176,13 +176,13 @@ UpdateBGMap:: ; 164c
 	ret
 
 
-.Tiles
-	ld hl, TileMap
+.Tiles:
+	hlcoord 0, 0
 
 
 .update
 	ld [hSPBuffer], sp
-	
+
 ; Which third?
 	ld a, [hBGMapThird]
 	and a ; 0
@@ -306,13 +306,13 @@ Serve1bppRequest:: ; 170a
 	ld h, [hl]
 	ld l, a
 	ld sp, hl
-	
+
 ; Destination
 	ld hl, Requested1bppDest
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	
+
 ; # tiles to copy
 	ld a, [Requested1bpp]
 	ld b, a
@@ -389,27 +389,27 @@ _Serve2bppRequest:: ; 177d
 ; Copy [Requested2bpp] 2bpp tiles from [Requested2bppSource] to [Requested2bppDest]
 
 	ld [hSPBuffer], sp
-	
+
 ; Source
 	ld hl, Requested2bppSource
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
 	ld sp, hl
-	
+
 ; Destination
 	ld hl, Requested2bppDest
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	
+
 ; # tiles to copy
 	ld a, [Requested2bpp]
 	ld b, a
 
 	xor a
 	ld [Requested2bpp], a
-	
+
 .next
 
 rept 7
@@ -448,10 +448,10 @@ endr
 AnimateTileset:: ; 17d3
 ; Only call during the first fifth of VBlank
 
-	ld a, [$ffde]
+	ld a, [hMapAnims]
 	and a
 	ret z
-	
+
 ; Back out if we're too far into VBlank
 	ld a, [rLY]
 	cp 144
@@ -484,4 +484,3 @@ AnimateTileset:: ; 17d3
 	rst Bankswitch
 	ret
 ; 17ff
-

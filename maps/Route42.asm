@@ -1,297 +1,223 @@
-Route42_MapScriptHeader: ; 0x1a920c
-	; trigger count
+const_value set 2
+	const ROUTE42_FISHER
+	const ROUTE42_POKEFAN_M
+	const ROUTE42_SUPER_NERD
+	const ROUTE42_FRUIT_TREE1
+	const ROUTE42_FRUIT_TREE2
+	const ROUTE42_FRUIT_TREE3
+	const ROUTE42_POKE_BALL1
+	const ROUTE42_POKE_BALL2
+	const ROUTE42_SUICUNE
+
+Route42_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x1a9216, $0000
-	dw UnknownScript_0x1a9217, $0000
+	dw UnknownScript_0x1a9216, 0
+	dw UnknownScript_0x1a9217, 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1a9216
 
-UnknownScript_0x1a9216: ; 0x1a9216
+UnknownScript_0x1a9216:
 	end
-; 0x1a9217
 
-UnknownScript_0x1a9217: ; 0x1a9217
+UnknownScript_0x1a9217:
 	end
-; 0x1a9218
 
-UnknownScript_0x1a9218: ; 0x1a9218
-	showemote $0, $0, 15
+Route42SuicuneScript:
+	showemote EMOTE_SHOCK, PLAYER, 15
 	pause 15
 	playsound SFX_WARP_FROM
-	applymovement $a, MovementData_0x1a9356
-	disappear $a
+	applymovement ROUTE42_SUICUNE, MovementData_0x1a9356
+	disappear ROUTE42_SUICUNE
 	pause 10
 	dotrigger $0
 	clearevent EVENT_SAW_SUICUNE_ON_ROUTE_36
-	domaptrigger GROUP_ROUTE_36, MAP_ROUTE_36, $1
+	domaptrigger ROUTE_36, $1
 	end
-; 0x1a9233
 
-TrainerFisherTully1: ; 0x1a9233
-	; bit/flag number
-	dw $454
+TrainerFisherTully1:
+	trainer EVENT_BEAT_FISHER_TULLY, FISHER, TULLY1, FisherTully1SeenText, FisherTully1BeatenText, 0, FisherTully1Script
 
-	; trainer group && trainer id
-	db FISHER, TULLY1
-
-	; text when seen
-	dw FisherTully1SeenText
-
-	; text when trainer beaten
-	dw FisherTully1BeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw FisherTully1Script
-; 0x1a923f
-
-FisherTully1Script: ; 0x1a923f
-	writecode $17, $1d
-	talkaftercancel
-	loadfont
-	checkflag $0076
+FisherTully1Script:
+	writecode VAR_CALLERID, PHONE_FISHER_TULLY
+	end_if_just_battled
+	opentext
+	checkflag ENGINE_TULLY
 	iftrue UnknownScript_0x1a927f
-	checkflag $0084
+	checkflag ENGINE_TULLY_HAS_WATER_STONE
 	iftrue UnknownScript_0x1a92dc
-	checkcellnum $1d
+	checkcellnum PHONE_FISHER_TULLY
 	iftrue UnknownScript_0x1a92fd
-	checkevent $028f
+	checkevent EVENT_TULLY_ASKED_FOR_PHONE_NUMBER
 	iftrue UnknownScript_0x1a9268
-	2writetext UnknownText_0x1a93ab
-	keeptextopen
-	setevent $028f
-	2call UnknownScript_0x1a92f1
-	2jump UnknownScript_0x1a926b
-; 0x1a9268
+	writetext UnknownText_0x1a93ab
+	buttonsound
+	setevent EVENT_TULLY_ASKED_FOR_PHONE_NUMBER
+	scall UnknownScript_0x1a92f1
+	jump UnknownScript_0x1a926b
 
-UnknownScript_0x1a9268: ; 0x1a9268
-	2call UnknownScript_0x1a92f5
-UnknownScript_0x1a926b: ; 0x1a926b
-	askforphonenumber $1d
+UnknownScript_0x1a9268:
+	scall UnknownScript_0x1a92f5
+UnknownScript_0x1a926b:
+	askforphonenumber PHONE_FISHER_TULLY
 	if_equal $1, UnknownScript_0x1a9305
 	if_equal $2, UnknownScript_0x1a9301
 	trainertotext FISHER, TULLY1, $0
-	2call UnknownScript_0x1a92f9
-	2jump UnknownScript_0x1a92fd
-; 0x1a927f
+	scall UnknownScript_0x1a92f9
+	jump UnknownScript_0x1a92fd
 
-UnknownScript_0x1a927f: ; 0x1a927f
-	2call UnknownScript_0x1a9309
-	winlosstext FisherTully1BeatenText, $0000
-	copybytetovar $da06
-	if_equal $3, UnknownScript_0x1a929a
-	if_equal $2, UnknownScript_0x1a92a0
-	if_equal $1, UnknownScript_0x1a92a6
-	if_equal $0, UnknownScript_0x1a92ac
-UnknownScript_0x1a929a: ; 0x1a929a
+UnknownScript_0x1a927f:
+	scall UnknownScript_0x1a9309
+	winlosstext FisherTully1BeatenText, 0
+	copybytetovar wTullyFightCount
+	if_equal 3, .Fight3
+	if_equal 2, .Fight2
+	if_equal 1, .Fight1
+	if_equal 0, .LoadFight0
+.Fight3:
 	checkevent EVENT_RESTORED_POWER_TO_KANTO
-	iftrue UnknownScript_0x1a92d3
-UnknownScript_0x1a92a0: ; 0x1a92a0
-	checkevent $0044
-	iftrue UnknownScript_0x1a92c6
-UnknownScript_0x1a92a6: ; 0x1a92a6
+	iftrue .LoadFight3
+.Fight2:
+	checkevent EVENT_BEAT_ELITE_FOUR
+	iftrue .LoadFight2
+.Fight1:
 	checkevent EVENT_CLEARED_ROCKET_HIDEOUT
-	iftrue UnknownScript_0x1a92b9
-UnknownScript_0x1a92ac: ; 0x1a92ac
+	iftrue .LoadFight1
+.LoadFight0:
 	loadtrainer FISHER, TULLY1
 	startbattle
-	returnafterbattle
-	loadvar $da06, $1
-	clearflag $0076
+	reloadmapafterbattle
+	loadvar wTullyFightCount, 1
+	clearflag ENGINE_TULLY
 	end
-; 0x1a92b9
 
-UnknownScript_0x1a92b9: ; 0x1a92b9
+.LoadFight1:
 	loadtrainer FISHER, TULLY2
 	startbattle
-	returnafterbattle
-	loadvar $da06, $2
-	clearflag $0076
+	reloadmapafterbattle
+	loadvar wTullyFightCount, 2
+	clearflag ENGINE_TULLY
 	end
-; 0x1a92c6
 
-UnknownScript_0x1a92c6: ; 0x1a92c6
+.LoadFight2:
 	loadtrainer FISHER, TULLY3
 	startbattle
-	returnafterbattle
-	loadvar $da06, $3
-	clearflag $0076
+	reloadmapafterbattle
+	loadvar wTullyFightCount, 3
+	clearflag ENGINE_TULLY
 	end
-; 0x1a92d3
 
-UnknownScript_0x1a92d3: ; 0x1a92d3
+.LoadFight3:
 	loadtrainer FISHER, TULLY4
 	startbattle
-	returnafterbattle
-	clearflag $0076
+	reloadmapafterbattle
+	clearflag ENGINE_TULLY
 	end
-; 0x1a92dc
 
-UnknownScript_0x1a92dc: ; 0x1a92dc
-	2call UnknownScript_0x1a930d
-	verbosegiveitem WATER_STONE, 1
+UnknownScript_0x1a92dc:
+	scall UnknownScript_0x1a930d
+	verbosegiveitem WATER_STONE
 	iffalse UnknownScript_0x1a92ee
-	clearflag $0084
-	setevent $0103
-	2jump UnknownScript_0x1a92fd
-; 0x1a92ee
+	clearflag ENGINE_TULLY_HAS_WATER_STONE
+	setevent EVENT_TULLY_GAVE_WATER_STONE
+	jump UnknownScript_0x1a92fd
 
-UnknownScript_0x1a92ee: ; 0x1a92ee
-	2jump UnknownScript_0x1a9311
-; 0x1a92f1
+UnknownScript_0x1a92ee:
+	jump UnknownScript_0x1a9311
 
-UnknownScript_0x1a92f1: ; 0x1a92f1
-	jumpstd $0019
+UnknownScript_0x1a92f1:
+	jumpstd asknumber1m
 	end
-; 0x1a92f5
 
-UnknownScript_0x1a92f5: ; 0x1a92f5
-	jumpstd $001a
+UnknownScript_0x1a92f5:
+	jumpstd asknumber2m
 	end
-; 0x1a92f9
 
-UnknownScript_0x1a92f9: ; 0x1a92f9
-	jumpstd $001b
+UnknownScript_0x1a92f9:
+	jumpstd registerednumberm
 	end
-; 0x1a92fd
 
-UnknownScript_0x1a92fd: ; 0x1a92fd
-	jumpstd $001c
+UnknownScript_0x1a92fd:
+	jumpstd numberacceptedm
 	end
-; 0x1a9301
 
-UnknownScript_0x1a9301: ; 0x1a9301
-	jumpstd $001d
+UnknownScript_0x1a9301:
+	jumpstd numberdeclinedm
 	end
-; 0x1a9305
 
-UnknownScript_0x1a9305: ; 0x1a9305
-	jumpstd $001e
+UnknownScript_0x1a9305:
+	jumpstd phonefullm
 	end
-; 0x1a9309
 
-UnknownScript_0x1a9309: ; 0x1a9309
-	jumpstd $001f
+UnknownScript_0x1a9309:
+	jumpstd rematchm
 	end
-; 0x1a930d
 
-UnknownScript_0x1a930d: ; 0x1a930d
-	jumpstd $0020
+UnknownScript_0x1a930d:
+	jumpstd giftm
 	end
-; 0x1a9311
 
-UnknownScript_0x1a9311: ; 0x1a9311
-	jumpstd $0021
+UnknownScript_0x1a9311:
+	jumpstd packfullm
 	end
-; 0x1a9315
 
-TrainerPokemaniacShane: ; 0x1a9315
-	; bit/flag number
-	dw $4e7
+TrainerPokemaniacShane:
+	trainer EVENT_BEAT_POKEMANIAC_SHANE, POKEMANIAC, SHANE, PokemaniacShaneSeenText, PokemaniacShaneBeatenText, 0, PokemaniacShaneScript
 
-	; trainer group && trainer id
-	db POKEMANIAC, SHANE
-
-	; text when seen
-	dw PokemaniacShaneSeenText
-
-	; text when trainer beaten
-	dw PokemaniacShaneBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw PokemaniacShaneScript
-; 0x1a9321
-
-PokemaniacShaneScript: ; 0x1a9321
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a94d6
+PokemaniacShaneScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a94d6
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a9329
 
-TrainerHikerBenjamin: ; 0x1a9329
-	; bit/flag number
-	dw $529
+TrainerHikerBenjamin:
+	trainer EVENT_BEAT_HIKER_BENJAMIN, HIKER, BENJAMIN, HikerBenjaminSeenText, HikerBenjaminBeatenText, 0, HikerBenjaminScript
 
-	; trainer group && trainer id
-	db HIKER, BENJAMIN
-
-	; text when seen
-	dw HikerBenjaminSeenText
-
-	; text when trainer beaten
-	dw HikerBenjaminBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw HikerBenjaminScript
-; 0x1a9335
-
-HikerBenjaminScript: ; 0x1a9335
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a943f
+HikerBenjaminScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a943f
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a933d
 
-MapRoute42Signpost0Script: ; 0x1a933d
-	jumptext UnknownText_0x1a9537
-; 0x1a9340
+Route42Sign1:
+	jumptext Route42Sign1Text
 
-MapRoute42Signpost1Script: ; 0x1a9340
-	jumptext UnknownText_0x1a955f
-; 0x1a9343
+MtMortarSign1:
+	jumptext MtMortarSign1Text
 
-MapRoute42Signpost2Script: ; 0x1a9343
-	jumptext UnknownText_0x1a9580
-; 0x1a9346
+MtMortarSign2:
+	jumptext MtMortarSign2Text
 
-MapRoute42Signpost3Script: ; 0x1a9346
-	jumptext UnknownText_0x1a95a1
-; 0x1a9349
+Route42Sign2:
+	jumptext Route42Sign2Text
 
-ItemFragment_0x1a9349: ; 0x1a9349
-	db ULTRA_BALL, 1
-; 0x1a934b
+Route42UltraBall:
+	itemball ULTRA_BALL
 
-ItemFragment_0x1a934b: ; 0x1a934b
-	db SUPER_POTION, 1
-; 0x1a934d
+Route42SuperPotion:
+	itemball SUPER_POTION
 
-FruitTreeScript_0x1a934d: ; 0x1a934d
-	fruittree $15
-; 0x1a934f
+FruitTreeScript_0x1a934d:
+	fruittree FRUITTREE_ROUTE_42_1
 
-FruitTreeScript_0x1a934f: ; 0x1a934f
-	fruittree $16
-; 0x1a9351
+FruitTreeScript_0x1a934f:
+	fruittree FRUITTREE_ROUTE_42_2
 
-FruitTreeScript_0x1a9351: ; 0x1a9351
-	fruittree $17
-; 0x1a9353
+FruitTreeScript_0x1a9351:
+	fruittree FRUITTREE_ROUTE_42_3
 
-MapRoute42SignpostItem4: ; 0x1a9353
-	dw $00ad
-	db MAX_POTION
-	
-; 0x1a9356
+Route42HiddenMaxPotion:
+	dwb EVENT_ROUTE_42_HIDDEN_MAX_POTION, MAX_POTION
 
-MovementData_0x1a9356: ; 0x1a9356
+
+MovementData_0x1a9356:
 	db $39 ; movement
 	fast_jump_step_up
 	fast_jump_step_up
@@ -301,22 +227,19 @@ MovementData_0x1a9356: ; 0x1a9356
 	fast_jump_step_right
 	db $38 ; movement
 	step_end
-; 0x1a935f
 
-FisherTully1SeenText: ; 0x1a935f
+FisherTully1SeenText:
 	text "Let me demonstrate"
 	line "the power of the"
 	cont "#MON I caught!"
 	done
-; 0x1a9393
 
-FisherTully1BeatenText: ; 0x1a9393
+FisherTully1BeatenText:
 	text "What? That's not"
 	line "right."
 	done
-; 0x1a93ab
 
-UnknownText_0x1a93ab: ; 0x1a93ab
+UnknownText_0x1a93ab:
 	text "I want to become"
 	line "the trainer CHAMP"
 
@@ -326,45 +249,39 @@ UnknownText_0x1a93ab: ; 0x1a93ab
 	para "That's the best"
 	line "part of fishing!"
 	done
-; 0x1a9408
 
-HikerBenjaminSeenText: ; 0x1a9408
+HikerBenjaminSeenText:
 	text "Ah, it's good to"
 	line "be outside!"
 	cont "I feel so free!"
 	done
-; 0x1a9435
 
-HikerBenjaminBeatenText: ; 0x1a9435
+HikerBenjaminBeatenText:
 	text "Gahahah!"
 	done
-; 0x1a943f
 
-UnknownText_0x1a943f: ; 0x1a943f
+UnknownText_0x1a943f:
 	text "Losing feels in-"
 	line "significant if you"
 
 	para "look up at the big"
 	line "sky!"
 	done
-; 0x1a947c
 
-PokemaniacShaneSeenText: ; 0x1a947c
+PokemaniacShaneSeenText:
 	text "HEY!"
 
 	para "This is my secret"
 	line "place! Get lost,"
 	cont "you outsider!"
 	done
-; 0x1a94b3
 
-PokemaniacShaneBeatenText: ; 0x1a94b3
+PokemaniacShaneBeatenText:
 	text "I should have used"
 	line "my MOON STONE…"
 	done
-; 0x1a94d6
 
-UnknownText_0x1a94d6: ; 0x1a94d6
+UnknownText_0x1a94d6:
 	text "You're working on"
 	line "a #DEX?"
 
@@ -375,74 +292,67 @@ UnknownText_0x1a94d6: ; 0x1a94d6
 	para "May I please see"
 	line "it. Please?"
 	done
-; 0x1a9537
 
-UnknownText_0x1a9537: ; 0x1a9537
+Route42Sign1Text:
 	text "ROUTE 42"
 
 	para "ECRUTEAK CITY -"
 	line "MAHOGANY TOWN"
 	done
-; 0x1a955f
 
-UnknownText_0x1a955f: ; 0x1a955f
+MtMortarSign1Text:
 	text "MT.MORTAR"
 
 	para "WATERFALL CAVE"
 	line "INSIDE"
 	done
-; 0x1a9580
 
-UnknownText_0x1a9580: ; 0x1a9580
+MtMortarSign2Text:
 	text "MT.MORTAR"
 
 	para "WATERFALL CAVE"
 	line "INSIDE"
 	done
-; 0x1a95a1
 
-UnknownText_0x1a95a1: ; 0x1a95a1
+Route42Sign2Text:
 	text "ROUTE 42"
 
 	para "ECRUTEAK CITY -"
 	line "MAHOGANY TOWN"
 	done
-; 0x1a95c9
 
-Route42_MapEventHeader: ; 0x1a95c9
+Route42_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 5
-	warp_def $8, $0, 3, GROUP_ROUTE_42_ECRUTEAK_GATE, MAP_ROUTE_42_ECRUTEAK_GATE
-	warp_def $9, $0, 4, GROUP_ROUTE_42_ECRUTEAK_GATE, MAP_ROUTE_42_ECRUTEAK_GATE
-	warp_def $5, $a, 1, GROUP_MOUNT_MORTAR_1F_OUTSIDE, MAP_MOUNT_MORTAR_1F_OUTSIDE
-	warp_def $9, $1c, 2, GROUP_MOUNT_MORTAR_1F_OUTSIDE, MAP_MOUNT_MORTAR_1F_OUTSIDE
-	warp_def $7, $2e, 3, GROUP_MOUNT_MORTAR_1F_OUTSIDE, MAP_MOUNT_MORTAR_1F_OUTSIDE
+	warp_def $8, $0, 3, ROUTE_42_ECRUTEAK_GATE
+	warp_def $9, $0, 4, ROUTE_42_ECRUTEAK_GATE
+	warp_def $5, $a, 1, MOUNT_MORTAR_1F_OUTSIDE
+	warp_def $9, $1c, 2, MOUNT_MORTAR_1F_OUTSIDE
+	warp_def $7, $2e, 3, MOUNT_MORTAR_1F_OUTSIDE
 
-	; xy triggers
+.XYTriggers:
 	db 1
-	xy_trigger 1, $e, $18, $0, UnknownScript_0x1a9218, $0, $0
+	xy_trigger 1, $e, $18, $0, Route42SuicuneScript, $0, $0
 
-	; signposts
+.Signposts:
 	db 5
-	signpost 10, 4, $0, MapRoute42Signpost0Script
-	signpost 5, 7, $0, MapRoute42Signpost1Script
-	signpost 9, 45, $0, MapRoute42Signpost2Script
-	signpost 8, 54, $0, MapRoute42Signpost3Script
-	signpost 11, 16, $7, MapRoute42SignpostItem4
+	signpost 10, 4, SIGNPOST_READ, Route42Sign1
+	signpost 5, 7, SIGNPOST_READ, MtMortarSign1
+	signpost 9, 45, SIGNPOST_READ, MtMortarSign2
+	signpost 8, 54, SIGNPOST_READ, Route42Sign2
+	signpost 11, 16, SIGNPOST_ITEM, Route42HiddenMaxPotion
 
-	; people-events
+.PersonEvents:
 	db 9
-	person_event SPRITE_FISHER, 14, 44, $8, $0, 255, 255, $a2, 1, TrainerFisherTully1, $ffff
-	person_event SPRITE_POKEFAN_M, 13, 55, $a, $0, 255, 255, $b2, 3, TrainerHikerBenjamin, $ffff
-	person_event SPRITE_SUPER_NERD, 12, 51, $6, $0, 255, 255, $92, 3, TrainerPokemaniacShane, $ffff
-	person_event SPRITE_FRUIT_TREE, 20, 31, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x1a934d, $ffff
-	person_event SPRITE_FRUIT_TREE, 20, 32, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x1a934f, $ffff
-	person_event SPRITE_FRUIT_TREE, 20, 33, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x1a9351, $ffff
-	person_event SPRITE_POKE_BALL, 8, 10, $1, $0, 255, 255, $1, 0, ItemFragment_0x1a9349, $06b3
-	person_event SPRITE_POKE_BALL, 12, 37, $1, $0, 255, 255, $1, 0, ItemFragment_0x1a934b, $06b4
-	person_event SPRITE_SUICUNE, 20, 30, $1, $0, 255, 255, $90, 0, ObjectEvent, $07af
-; 0x1a967e
-
+	person_event SPRITE_FISHER, 10, 40, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_TRAINER, 1, TrainerFisherTully1, -1
+	person_event SPRITE_POKEFAN_M, 9, 51, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 3, TrainerHikerBenjamin, -1
+	person_event SPRITE_SUPER_NERD, 8, 47, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 3, TrainerPokemaniacShane, -1
+	person_event SPRITE_FRUIT_TREE, 16, 27, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FruitTreeScript_0x1a934d, -1
+	person_event SPRITE_FRUIT_TREE, 16, 28, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FruitTreeScript_0x1a934f, -1
+	person_event SPRITE_FRUIT_TREE, 16, 29, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FruitTreeScript_0x1a9351, -1
+	person_event SPRITE_POKE_BALL, 4, 6, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, Route42UltraBall, EVENT_ROUTE_42_ULTRA_BALL
+	person_event SPRITE_POKE_BALL, 8, 33, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, Route42SuperPotion, EVENT_ROUTE_42_SUPER_POTION
+	person_event SPRITE_SUICUNE, 16, 26, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, ObjectEvent, EVENT_SAW_SUICUNE_ON_ROUTE_42

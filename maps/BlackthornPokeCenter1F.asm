@@ -1,28 +1,29 @@
-BlackthornPokeCenter1F_MapScriptHeader: ; 0x195b77
-	; trigger count
+const_value set 2
+	const BLACKTHORNPOKECENTER1F_NURSE
+	const BLACKTHORNPOKECENTER1F_GENTLEMAN
+	const BLACKTHORNPOKECENTER1F_TWIN
+	const BLACKTHORNPOKECENTER1F_COOLTRAINER_M
+
+BlackthornPokeCenter1F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x195b79
 
-NurseScript_0x195b79: ; 0x195b79
-	jumpstd $0000
-; 0x195b7c
+NurseScript_0x195b79:
+	jumpstd pokecenternurse
 
-GentlemanScript_0x195b7c: ; 0x195b7c
+GentlemanScript_0x195b7c:
 	jumptextfaceplayer UnknownText_0x195b85
-; 0x195b7f
 
-TwinScript_0x195b7f: ; 0x195b7f
+TwinScript_0x195b7f:
 	jumptextfaceplayer UnknownText_0x195bfd
-; 0x195b82
 
-CooltrainerMScript_0x195b82: ; 0x195b82
-	jumpstd $0033
-; 0x195b85
+CooltrainerMScript_0x195b82:
+	jumpstd happinesschecknpc
 
-UnknownText_0x195b85: ; 0x195b85
+UnknownText_0x195b85:
 	text "Deep inside far-"
 	line "off INDIGO PLATEAU"
 
@@ -35,9 +36,8 @@ UnknownText_0x195b85: ; 0x195b85
 	para "there from around"
 	line "the country."
 	done
-; 0x195bfd
 
-UnknownText_0x195bfd: ; 0x195bfd
+UnknownText_0x195bfd:
 	text "There was this"
 	line "move I just had"
 
@@ -48,29 +48,26 @@ UnknownText_0x195bfd: ; 0x195bfd
 	line "DELETER to make it"
 	cont "forget an HM move."
 	done
-; 0x195c69
 
-BlackthornPokeCenter1F_MapEventHeader: ; 0x195c69
+BlackthornPokeCenter1F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 3
-	warp_def $7, $3, 5, GROUP_BLACKTHORN_CITY, MAP_BLACKTHORN_CITY
-	warp_def $7, $4, 5, GROUP_BLACKTHORN_CITY, MAP_BLACKTHORN_CITY
-	warp_def $7, $0, 1, GROUP_POKECENTER_2F, MAP_POKECENTER_2F
+	warp_def $7, $3, 5, BLACKTHORN_CITY
+	warp_def $7, $4, 5, BLACKTHORN_CITY
+	warp_def $7, $0, 1, POKECENTER_2F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 4
-	person_event SPRITE_NURSE, 5, 7, $6, $0, 255, 255, $0, 0, NurseScript_0x195b79, $ffff
-	person_event SPRITE_GENTLEMAN, 7, 9, $6, $0, 255, 255, $0, 0, GentlemanScript_0x195b7c, $ffff
-	person_event SPRITE_TWIN, 8, 5, $3, $0, 255, 255, $a0, 0, TwinScript_0x195b7f, $ffff
-	person_event SPRITE_COOLTRAINER_M, 10, 11, $5, $1, 255, 255, $80, 0, CooltrainerMScript_0x195b82, $ffff
-; 0x195cb2
-
+	person_event SPRITE_NURSE, 1, 3, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, NurseScript_0x195b79, -1
+	person_event SPRITE_GENTLEMAN, 3, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, GentlemanScript_0x195b7c, -1
+	person_event SPRITE_TWIN, 4, 1, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, TwinScript_0x195b7f, -1
+	person_event SPRITE_COOLTRAINER_M, 6, 7, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, CooltrainerMScript_0x195b82, -1

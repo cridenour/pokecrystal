@@ -1,20 +1,17 @@
-Route7_MapScriptHeader: ; 0x1ad380
-	; trigger count
+Route7_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1ad382
 
-MapRoute7Signpost0Script: ; 0x1ad382
-	jumptext UnknownText_0x1ad388
-; 0x1ad385
+Route7UndergroundPathSign:
+	jumptext Route7UndergroundPathSignText
 
-MapRoute7Signpost1Script: ; 0x1ad385
-	jumptext UnknownText_0x1ad456
-; 0x1ad388
+Route7LockedDoor:
+	jumptext Route7LockedDoorText
 
-UnknownText_0x1ad388: ; 0x1ad388
+Route7UndergroundPathSignText:
 	text "What's this flyer?"
 
 	para "… Uncouth trainers"
@@ -32,31 +29,27 @@ UnknownText_0x1ad388: ; 0x1ad388
 
 	para "CELADON POLICE"
 	done
-; 0x1ad456
 
-UnknownText_0x1ad456: ; 0x1ad456
+Route7LockedDoorText:
 	text "It's locked…"
 	done
-; 0x1ad463
 
-Route7_MapEventHeader: ; 0x1ad463
+Route7_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $6, $f, 1, GROUP_ROUTE_7_SAFFRON_GATE, MAP_ROUTE_7_SAFFRON_GATE
-	warp_def $7, $f, 2, GROUP_ROUTE_7_SAFFRON_GATE, MAP_ROUTE_7_SAFFRON_GATE
+	warp_def $6, $f, 1, ROUTE_7_SAFFRON_GATE
+	warp_def $7, $f, 2, ROUTE_7_SAFFRON_GATE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 11, 5, $0, MapRoute7Signpost0Script
-	signpost 9, 6, $0, MapRoute7Signpost1Script
+	signpost 11, 5, SIGNPOST_READ, Route7UndergroundPathSign
+	signpost 9, 6, SIGNPOST_READ, Route7LockedDoor
 
-	; people-events
+.PersonEvents:
 	db 0
-; 0x1ad47d
-

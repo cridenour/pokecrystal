@@ -1,66 +1,63 @@
-EcruteakItemfinderHouse_MapScriptHeader: ; 0x9a5f9
-	; trigger count
+const_value set 2
+	const ECRUTEAKITEMFINDERHOUSE_COOLTRAINER_M
+	const ECRUTEAKITEMFINDERHOUSE_POKEDEX
+
+EcruteakItemfinderHouse_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x9a5fb
 
-CooltrainerMScript_0x9a5fb: ; 0x9a5fb
+CooltrainerMScript_0x9a5fb:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_ITEMFINDER
 	iftrue UnknownScript_0x9a614
-	2writetext UnknownText_0x9a63c
+	writetext UnknownText_0x9a63c
 	yesorno
 	iffalse UnknownScript_0x9a61a
-	2writetext UnknownText_0x9a6b5
-	keeptextopen
-	verbosegiveitem ITEMFINDER, 1
+	writetext UnknownText_0x9a6b5
+	buttonsound
+	verbosegiveitem ITEMFINDER
 	setevent EVENT_GOT_ITEMFINDER
-UnknownScript_0x9a614: ; 0x9a614
-	2writetext UnknownText_0x9a70e
+UnknownScript_0x9a614:
+	writetext UnknownText_0x9a70e
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9a61a
 
-UnknownScript_0x9a61a: ; 0x9a61a
-	2writetext UnknownText_0x9a805
+UnknownScript_0x9a61a:
+	writetext UnknownText_0x9a805
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9a620
 
-PokedexScript_0x9a620: ; 0x9a620
-	loadfont
-	2writetext UnknownText_0x9a826
+PokedexScript_0x9a620:
+	opentext
+	writetext UnknownText_0x9a826
 	yesorno
 	iftrue UnknownScript_0x9a62a
-	loadmovesprites
+	closetext
 	end
-; 0x9a62a
 
-UnknownScript_0x9a62a: ; 0x9a62a
-	2writetext UnknownText_0x9a84c
+UnknownScript_0x9a62a:
+	writetext UnknownText_0x9a84c
 	yesorno
 	iftrue UnknownScript_0x9a633
-	loadmovesprites
-	end
-; 0x9a633
-
-UnknownScript_0x9a633: ; 0x9a633
-	2writetext UnknownText_0x9a902
 	closetext
-	loadmovesprites
 	end
-; 0x9a639
 
-MapEcruteakItemfinderHouseSignpost0Script: ; 0x9a639
-	jumpstd $000c
-; 0x9a63c
+UnknownScript_0x9a633:
+	writetext UnknownText_0x9a902
+	waitbutton
+	closetext
+	end
 
-UnknownText_0x9a63c: ; 0x9a63c
+ItemFinderHouseRadio:
+	jumpstd radio2
+
+UnknownText_0x9a63c:
 	text "Ah. You're on an"
 	line "adventure with"
 	cont "your #MON?"
@@ -72,9 +69,8 @@ UnknownText_0x9a63c: ; 0x9a63c
 	para "Am I right, or am"
 	line "I right?"
 	done
-; 0x9a6b5
 
-UnknownText_0x9a6b5: ; 0x9a6b5
+UnknownText_0x9a6b5:
 	text "Good! You under-"
 	line "stand the true"
 
@@ -84,9 +80,8 @@ UnknownText_0x9a6b5: ; 0x9a6b5
 	para "I like that! Take"
 	line "this with you."
 	done
-; 0x9a70e
 
-UnknownText_0x9a70e: ; 0x9a70e
+UnknownText_0x9a70e:
 	text "There are many"
 	line "items lying about"
 
@@ -111,23 +106,20 @@ UnknownText_0x9a70e: ; 0x9a70e
 	para "in ECRUTEAK's"
 	line "BURNED TOWER."
 	done
-; 0x9a805
 
-UnknownText_0x9a805: ; 0x9a805
+UnknownText_0x9a805:
 	text "Oh… To each his"
 	line "own, I suppose…"
 	done
-; 0x9a826
 
-UnknownText_0x9a826: ; 0x9a826
+UnknownText_0x9a826:
 	text "HISTORY OF"
 	line "ECRUTEAK"
 
 	para "Want to read it?"
 	done
-; 0x9a84c
 
-UnknownText_0x9a84c: ; 0x9a84c
+UnknownText_0x9a84c:
 	text "In ECRUTEAK, there"
 	line "were two towers."
 
@@ -145,9 +137,8 @@ UnknownText_0x9a84c: ; 0x9a84c
 
 	para "Keep reading?"
 	done
-; 0x9a902
 
-UnknownText_0x9a902: ; 0x9a902
+UnknownText_0x9a902:
 	text "ECRUTEAK was also"
 	line "home to three"
 
@@ -170,27 +161,24 @@ UnknownText_0x9a902: ; 0x9a902
 	para "wind off into the"
 	line "grassland."
 	done
-; 0x9a9f5
 
-EcruteakItemfinderHouse_MapEventHeader: ; 0x9a9f5
+EcruteakItemfinderHouse_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $3, 11, GROUP_ECRUTEAK_CITY, MAP_ECRUTEAK_CITY
-	warp_def $7, $4, 11, GROUP_ECRUTEAK_CITY, MAP_ECRUTEAK_CITY
+	warp_def $7, $3, 11, ECRUTEAK_CITY
+	warp_def $7, $4, 11, ECRUTEAK_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 1
-	signpost 1, 2, $0, MapEcruteakItemfinderHouseSignpost0Script
+	signpost 1, 2, SIGNPOST_READ, ItemFinderHouseRadio
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_COOLTRAINER_M, 7, 6, $6, $0, 255, 255, $80, 0, CooltrainerMScript_0x9a5fb, $ffff
-	person_event SPRITE_POKEDEX, 7, 7, $1, $0, 255, 255, $0, 0, PokedexScript_0x9a620, $ffff
-; 0x9aa24
-
+	person_event SPRITE_COOLTRAINER_M, 3, 2, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, CooltrainerMScript_0x9a5fb, -1
+	person_event SPRITE_POKEDEX, 3, 3, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, PokedexScript_0x9a620, -1

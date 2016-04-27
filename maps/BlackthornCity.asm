@@ -1,167 +1,152 @@
-BlackthornCity_MapScriptHeader: ; 0x1a46d0
-	; trigger count
+const_value set 2
+	const BLACKTHORNCITY_SUPER_NERD1
+	const BLACKTHORNCITY_SUPER_NERD2
+	const BLACKTHORNCITY_GRAMPS1
+	const BLACKTHORNCITY_GRAMPS2
+	const BLACKTHORNCITY_BLACK_BELT
+	const BLACKTHORNCITY_COOLTRAINER_F1
+	const BLACKTHORNCITY_YOUNGSTER1
+	const BLACKTHORNCITY_SANTOS
+	const BLACKTHORNCITY_COOLTRAINER_F2
+
+BlackthornCity_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 2
 
 	; callbacks
+	dbw MAPCALLBACK_NEWMAP, .FlyPoint
+	dbw MAPCALLBACK_OBJECTS, .Santos
 
-	dbw 5, UnknownScript_0x1a46d8
-
-	dbw 2, UnknownScript_0x1a46dc
-; 0x1a46d8
-
-UnknownScript_0x1a46d8: ; 0x1a46d8
-	setflag $004b
+.FlyPoint:
+	setflag ENGINE_FLYPOINT_BLACKTHORN
 	return
-; 0x1a46dc
 
-UnknownScript_0x1a46dc: ; 0x1a46dc
-	checkcode $b
-	if_equal SATURDAY, UnknownScript_0x1a46e5
-	disappear $9
+.Santos:
+	checkcode VAR_WEEKDAY
+	if_equal SATURDAY, .SantosAppears
+	disappear BLACKTHORNCITY_SANTOS
 	return
-; 0x1a46e5
 
-UnknownScript_0x1a46e5: ; 0x1a46e5
-	appear $9
+.SantosAppears:
+	appear BLACKTHORNCITY_SANTOS
 	return
-; 0x1a46e8
 
-SuperNerdScript_0x1a46e8: ; 0x1a46e8
+BlackthornSuperNerdScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_BEAT_CLAIR
-	iftrue UnknownScript_0x1a4702
+	iftrue .BeatClair
 	checkevent EVENT_CLEARED_RADIO_TOWER
-	iftrue UnknownScript_0x1a46fc
-	2writetext UnknownText_0x1a477a
+	iftrue .ClearedRadioTower
+	writetext Text_ClairIsOut
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a46fc
 
-UnknownScript_0x1a46fc: ; 0x1a46fc
-	2writetext UnknownText_0x1a47f3
+.ClearedRadioTower:
+	writetext Text_ClairIsIn
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a4702
 
-UnknownScript_0x1a4702: ; 0x1a4702
-	2writetext UnknownText_0x1a4865
+.BeatClair:
+	writetext Text_ClairIsBeaten
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a4708
 
-GrampsScript_0x1a4708: ; 0x1a4708
-	jumptextfaceplayer UnknownText_0x1a48c3
-; 0x1a470b
+BlackthornGramps1Script:
+	jumptextfaceplayer BlackthornGrampsRefusesEntryText
 
-GrampsScript_0x1a470b: ; 0x1a470b
-	jumptextfaceplayer UnknownText_0x1a48fb
-; 0x1a470e
+BlackthornGramps2Script:
+	jumptextfaceplayer BlackthornGrampsGrantsEntryText
 
-BlackBeltScript_0x1a470e: ; 0x1a470e
+BlackthornBlackBeltScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_CLEARED_RADIO_TOWER
-	iftrue UnknownScript_0x1a471c
-	2writetext UnknownText_0x1a494a
+	iftrue .ClearedRadioTower
+	writetext BlackBeltText_WeirdRadio
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a471c
 
-UnknownScript_0x1a471c: ; 0x1a471c
-	2writetext UnknownText_0x1a4983
+.ClearedRadioTower:
+	writetext BlackBeltText_VoicesInMyHead
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a4722
 
-CooltrainerFScript_0x1a4722: ; 0x1a4722
-	jumptextfaceplayer UnknownText_0x1a49bd
-; 0x1a4725
+BlackthornCooltrainerF1Script:
+	jumptextfaceplayer BlackthornCooltrainerF1Text
 
-YoungsterScript_0x1a4725: ; 0x1a4725
-	jumptextfaceplayer UnknownText_0x1a49f1
-; 0x1a4728
+BlackthornYoungsterScript:
+	jumptextfaceplayer BlackthornYoungsterText
 
-CooltrainerFScript_0x1a4728: ; 0x1a4728
-	jumptextfaceplayer UnknownText_0x1a4b1e
-; 0x1a472b
+BlackthornCooltrainerF2Script:
+	jumptextfaceplayer BlackthornCooltrainerF2Text
 
-YoungsterScript_0x1a472b: ; 0x1a472b
+SantosScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_SPELL_TAG_FROM_SANTOS
-	iftrue UnknownScript_0x1a4759
-	checkcode $b
-	if_not_equal SATURDAY, UnknownScript_0x1a475f
+	iftrue .Saturday
+	checkcode VAR_WEEKDAY
+	if_not_equal SATURDAY, .NotSaturday
 	checkevent EVENT_MET_SANTOS_OF_SATURDAY
-	iftrue UnknownScript_0x1a4746
-	2writetext UnknownText_0x1a4a27
-	keeptextopen
+	iftrue .MetSantos
+	writetext MeetSantosText
+	buttonsound
 	setevent EVENT_MET_SANTOS_OF_SATURDAY
-UnknownScript_0x1a4746: ; 0x1a4746
-	2writetext UnknownText_0x1a4a57
-	keeptextopen
-	verbosegiveitem SPELL_TAG, 1
-	iffalse UnknownScript_0x1a475d
+.MetSantos:
+	writetext SantosGivesGiftText
+	buttonsound
+	verbosegiveitem SPELL_TAG
+	iffalse .Done
 	setevent EVENT_GOT_SPELL_TAG_FROM_SANTOS
-	2writetext UnknownText_0x1a4a6b
+	writetext SantosGaveGiftText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a4759
 
-UnknownScript_0x1a4759: ; 0x1a4759
-	2writetext UnknownText_0x1a4ab6
+.Saturday:
+	writetext SantosSaturdayText
+	waitbutton
+.Done:
 	closetext
-UnknownScript_0x1a475d: ; 0x1a475d
-	loadmovesprites
 	end
-; 0x1a475f
 
-UnknownScript_0x1a475f: ; 0x1a475f
-	2writetext UnknownText_0x1a4b00
+.NotSaturday:
+	writetext SantosNotSaturdayText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a4765
 
-MapBlackthornCitySignpost0Script: ; 0x1a4765
-	jumptext UnknownText_0x1a4b67
-; 0x1a4768
+BlackthornCitySign:
+	jumptext BlackthornCitySignText
 
-MapBlackthornCitySignpost1Script: ; 0x1a4768
-	jumptext UnknownText_0x1a4b91
-; 0x1a476b
+BlackthornGymSign:
+	jumptext BlackthornGymSignText
 
-MapBlackthornCitySignpost2Script: ; 0x1a476b
-	jumptext UnknownText_0x1a4bd9
-; 0x1a476e
+MoveDeletersHouseSign:
+	jumptext MoveDeletersHouseSignText
 
-MapBlackthornCitySignpost3Script: ; 0x1a476e
-	jumptext UnknownText_0x1a4bef
-; 0x1a4771
+DragonDensSign:
+	jumptext DragonDensSignText
 
-MapBlackthornCitySignpost4Script: ; 0x1a4771
-	jumptext UnknownText_0x1a4c03
-; 0x1a4774
+BlackthornCityTrainerTips:
+	jumptext BlackthornCityTrainerTipsText
 
-MapBlackthornCitySignpost6Script: ; 0x1a4774
-	jumpstd $0010
-; 0x1a4777
+BlackthornCityPokeCenterSign:
+	jumpstd pokecentersign
 
-MapBlackthornCitySignpost5Script: ; 0x1a4777
-	jumpstd $0011
-; 0x1a477a
+BlackthornCityMartSign:
+	jumpstd martsign
 
-UnknownText_0x1a477a: ; 0x1a477a
+Text_ClairIsOut:
 	text "I am sorry."
 
 	para "CLAIR, our GYM"
@@ -174,9 +159,8 @@ UnknownText_0x1a477a: ; 0x1a477a
 	line "when our LEADER"
 	cont "will return."
 	done
-; 0x1a47f3
 
-UnknownText_0x1a47f3: ; 0x1a47f3
+Text_ClairIsIn:
 	text "CLAIR, our GYM"
 	line "LEADER, is waiting"
 	cont "for you."
@@ -187,9 +171,8 @@ UnknownText_0x1a47f3: ; 0x1a47f3
 	para "a run-of-the-mill"
 	line "trainer to win."
 	done
-; 0x1a4865
 
-UnknownText_0x1a4865: ; 0x1a4865
+Text_ClairIsBeaten:
 	text "You defeated"
 	line "CLAIR?"
 
@@ -201,18 +184,16 @@ UnknownText_0x1a4865: ; 0x1a4865
 	para "anyone other than"
 	line "LANCE."
 	done
-; 0x1a48c3
 
-UnknownText_0x1a48c3: ; 0x1a48c3
+BlackthornGrampsRefusesEntryText:
 	text "No. Only chosen"
 	line "trainers may train"
 
 	para "here."
 	line "Please leave."
 	done
-; 0x1a48fb
 
-UnknownText_0x1a48fb: ; 0x1a48fb
+BlackthornGrampsGrantsEntryText:
 	text "If CLAIR allows"
 	line "it, her grand-"
 	cont "father--our MASTER"
@@ -220,39 +201,34 @@ UnknownText_0x1a48fb: ; 0x1a48fb
 
 	para "You may enter."
 	done
-; 0x1a494a
 
-UnknownText_0x1a494a: ; 0x1a494a
+BlackBeltText_WeirdRadio:
 	text "My radio's busted?"
 	line "Lately, I only get"
 	cont "this weird signal."
 	done
-; 0x1a4983
 
-UnknownText_0x1a4983: ; 0x1a4983
+BlackBeltText_VoicesInMyHead:
 	text "Arooo! Voices in"
 	line "my head!"
 
 	para "Huh? I'm listening"
 	line "to my radio!"
 	done
-; 0x1a49bd
 
-UnknownText_0x1a49bd: ; 0x1a49bd
+BlackthornCooltrainerF1Text:
 	text "Are you going to"
 	line "make your #MON"
 	cont "forget some moves?"
 	done
-; 0x1a49f1
 
-UnknownText_0x1a49f1: ; 0x1a49f1
+BlackthornYoungsterText:
 	text "Dragon masters all"
 	line "come from the city"
 	cont "of BLACKTHORN."
 	done
-; 0x1a4a27
 
-UnknownText_0x1a4a27: ; 0x1a4a27
+MeetSantosText:
 	text "SANTOS: …"
 
 	para "It's Saturday…"
@@ -260,14 +236,12 @@ UnknownText_0x1a4a27: ; 0x1a4a27
 	para "I'm SANTOS of"
 	line "Saturday…"
 	done
-; 0x1a4a57
 
-UnknownText_0x1a4a57: ; 0x1a4a57
+SantosGivesGiftText:
 	text "You can have this…"
 	done
-; 0x1a4a6b
 
-UnknownText_0x1a4a6b: ; 0x1a4a6b
+SantosGaveGiftText:
 	text "SANTOS: …"
 
 	para "SPELL TAG…"
@@ -278,9 +252,8 @@ UnknownText_0x1a4a6b: ; 0x1a4a6b
 	para "It will frighten"
 	line "you…"
 	done
-; 0x1a4ab6
 
-UnknownText_0x1a4ab6: ; 0x1a4ab6
+SantosSaturdayText:
 	text "SANTOS: …"
 
 	para "See you again on"
@@ -289,15 +262,13 @@ UnknownText_0x1a4ab6: ; 0x1a4ab6
 	para "I won't have any"
 	line "more gifts…"
 	done
-; 0x1a4b00
 
-UnknownText_0x1a4b00: ; 0x1a4b00
+SantosNotSaturdayText:
 	text "SANTOS: Today's"
 	line "not Saturday…"
 	done
-; 0x1a4b1e
 
-UnknownText_0x1a4b1e: ; 0x1a4b1e
+BlackthornCooltrainerF2Text:
 	text "Wow, you came"
 	line "through the ICE"
 	cont "PATH?"
@@ -305,17 +276,15 @@ UnknownText_0x1a4b1e: ; 0x1a4b1e
 	para "You must be a real"
 	line "hotshot trainer!"
 	done
-; 0x1a4b67
 
-UnknownText_0x1a4b67: ; 0x1a4b67
+BlackthornCitySignText:
 	text "BLACKTHORN CITY"
 
 	para "A Quiet Mountain"
 	line "Retreat"
 	done
-; 0x1a4b91
 
-UnknownText_0x1a4b91: ; 0x1a4b91
+BlackthornGymSignText:
 	text "BLACKTHORN CITY"
 	line "#MON GYM"
 	cont "LEADER: CLAIR"
@@ -323,21 +292,18 @@ UnknownText_0x1a4b91: ; 0x1a4b91
 	para "The Blessed User"
 	line "of Dragon #MON"
 	done
-; 0x1a4bd9
 
-UnknownText_0x1a4bd9: ; 0x1a4bd9
+MoveDeletersHouseSignText:
 	text "MOVE DELETER'S"
 	line "HOUSE"
 	done
-; 0x1a4bef
 
-UnknownText_0x1a4bef: ; 0x1a4bef
+DragonDensSignText:
 	text "DRAGON'S DEN"
 	line "AHEAD"
 	done
-; 0x1a4c03
 
-UnknownText_0x1a4c03: ; 0x1a4c03
+BlackthornCityTrainerTipsText:
 	text "TRAINER TIPS"
 
 	para "A #MON holding"
@@ -347,46 +313,43 @@ UnknownText_0x1a4c03: ; 0x1a4c03
 	line "of any status"
 	cont "problem."
 	done
-; 0x1a4c57
 
-BlackthornCity_MapEventHeader: ; 0x1a4c57
+BlackthornCity_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 8
-	warp_def $b, $12, 1, GROUP_BLACKTHORN_GYM_1F, MAP_BLACKTHORN_GYM_1F
-	warp_def $15, $d, 1, GROUP_BLACKTHORN_DRAGON_SPEECH_HOUSE, MAP_BLACKTHORN_DRAGON_SPEECH_HOUSE
-	warp_def $17, $1d, 1, GROUP_BLACKTHORN_DODRIO_TRADE_HOUSE, MAP_BLACKTHORN_DODRIO_TRADE_HOUSE
-	warp_def $1d, $f, 2, GROUP_BLACKTHORN_MART, MAP_BLACKTHORN_MART
-	warp_def $1d, $15, 1, GROUP_BLACKTHORN_POKECENTER_1F, MAP_BLACKTHORN_POKECENTER_1F
-	warp_def $1f, $9, 1, GROUP_MOVE_DELETERS_HOUSE, MAP_MOVE_DELETERS_HOUSE
-	warp_def $9, $24, 2, GROUP_ICE_PATH_1F, MAP_ICE_PATH_1F
-	warp_def $1, $14, 1, GROUP_DRAGONS_DEN_1F, MAP_DRAGONS_DEN_1F
+	warp_def $b, $12, 1, BLACKTHORN_GYM_1F
+	warp_def $15, $d, 1, BLACKTHORN_DRAGON_SPEECH_HOUSE
+	warp_def $17, $1d, 1, BLACKTHORN_EMYS_HOUSE
+	warp_def $1d, $f, 2, BLACKTHORN_MART
+	warp_def $1d, $15, 1, BLACKTHORN_POKECENTER_1F
+	warp_def $1f, $9, 1, MOVE_DELETERS_HOUSE
+	warp_def $9, $24, 2, ICE_PATH_1F
+	warp_def $1, $14, 1, DRAGONS_DEN_1F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 7
-	signpost 24, 34, $0, MapBlackthornCitySignpost0Script
-	signpost 13, 17, $0, MapBlackthornCitySignpost1Script
-	signpost 31, 7, $0, MapBlackthornCitySignpost2Script
-	signpost 3, 21, $0, MapBlackthornCitySignpost3Script
-	signpost 25, 5, $0, MapBlackthornCitySignpost4Script
-	signpost 29, 16, $0, MapBlackthornCitySignpost5Script
-	signpost 29, 22, $0, MapBlackthornCitySignpost6Script
+	signpost 24, 34, SIGNPOST_READ, BlackthornCitySign
+	signpost 13, 17, SIGNPOST_READ, BlackthornGymSign
+	signpost 31, 7, SIGNPOST_READ, MoveDeletersHouseSign
+	signpost 3, 21, SIGNPOST_READ, DragonDensSign
+	signpost 25, 5, SIGNPOST_READ, BlackthornCityTrainerTips
+	signpost 29, 16, SIGNPOST_READ, BlackthornCityMartSign
+	signpost 29, 22, SIGNPOST_READ, BlackthornCityPokeCenterSign
 
-	; people-events
+.PersonEvents:
 	db 9
-	person_event SPRITE_SUPER_NERD, 16, 22, $6, $0, 255, 255, $80, 0, SuperNerdScript_0x1a46e8, $06e3
-	person_event SPRITE_SUPER_NERD, 16, 23, $6, $0, 255, 255, $80, 0, SuperNerdScript_0x1a46e8, $06e4
-	person_event SPRITE_GRAMPS, 6, 24, $6, $0, 255, 255, $0, 0, GrampsScript_0x1a4708, $074c
-	person_event SPRITE_GRAMPS, 6, 25, $8, $0, 255, 255, $0, 0, GrampsScript_0x1a470b, $074d
-	person_event SPRITE_BLACK_BELT, 35, 28, $5, $1, 255, 255, $90, 0, BlackBeltScript_0x1a470e, $ffff
-	person_event SPRITE_COOLTRAINER_F, 29, 13, $5, $2, 255, 255, $80, 0, CooltrainerFScript_0x1a4722, $ffff
-	person_event SPRITE_YOUNGSTER, 19, 17, $5, $1, 255, 255, $0, 0, YoungsterScript_0x1a4725, $ffff
-	person_event SPRITE_YOUNGSTER, 24, 26, $6, $0, 255, 255, $0, 0, YoungsterScript_0x1a472b, $075d
-	person_event SPRITE_COOLTRAINER_F, 23, 39, $7, $0, 255, 255, $a0, 0, CooltrainerFScript_0x1a4728, $ffff
-; 0x1a4d1d
-
+	person_event SPRITE_SUPER_NERD, 12, 18, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, BlackthornSuperNerdScript, EVENT_BLACKTHORN_CITY_SUPER_NERD_BLOCKS_GYM
+	person_event SPRITE_SUPER_NERD, 12, 19, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, BlackthornSuperNerdScript, EVENT_BLACKTHORN_CITY_SUPER_NERD_DOES_NOT_BLOCK_GYM
+	person_event SPRITE_GRAMPS, 2, 20, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, BlackthornGramps1Script, EVENT_BLACKTHORN_CITY_GRAMPS_BLOCKS_DRAGONS_DEN
+	person_event SPRITE_GRAMPS, 2, 21, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, BlackthornGramps2Script, EVENT_BLACKTHORN_CITY_GRAMPS_NOT_BLOCKING_DRAGONS_DEN
+	person_event SPRITE_BLACK_BELT, 31, 24, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, BlackthornBlackBeltScript, -1
+	person_event SPRITE_COOLTRAINER_F, 25, 9, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 2, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, BlackthornCooltrainerF1Script, -1
+	person_event SPRITE_YOUNGSTER, 15, 13, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, 0, PERSONTYPE_SCRIPT, 0, BlackthornYoungsterScript, -1
+	person_event SPRITE_YOUNGSTER, 20, 22, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, SantosScript, EVENT_BLACKTHORN_CITY_SANTOS_OF_SATURDAY
+	person_event SPRITE_COOLTRAINER_F, 19, 35, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, BlackthornCooltrainerF2Script, -1

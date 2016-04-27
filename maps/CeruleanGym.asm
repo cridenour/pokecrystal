@@ -1,270 +1,206 @@
-CeruleanGym_MapScriptHeader: ; 0x1883cf
-	; trigger count
+const_value set 2
+	const CERULEANGYM_ROCKET
+	const CERULEANGYM_MISTY
+	const CERULEANGYM_SWIMMER_GIRL1
+	const CERULEANGYM_SWIMMER_GIRL2
+	const CERULEANGYM_SWIMMER_GUY
+	const CERULEANGYM_GYM_GUY
+
+CeruleanGym_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x1883d9, $0000
-	dw UnknownScript_0x1883da, $0000
+	dw UnknownScript_0x1883d9, 0
+	dw UnknownScript_0x1883da, 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1883d9
 
-UnknownScript_0x1883d9: ; 0x1883d9
+UnknownScript_0x1883d9:
 	end
-; 0x1883da
 
-UnknownScript_0x1883da: ; 0x1883da
+UnknownScript_0x1883da:
 	priorityjump UnknownScript_0x1883de
 	end
-; 0x1883de
 
-UnknownScript_0x1883de: ; 0x1883de
-	applymovement $2, MovementData_0x1884e3
+UnknownScript_0x1883de:
+	applymovement CERULEANGYM_ROCKET, MovementData_0x1884e3
 	playsound SFX_TACKLE
-	applymovement $2, MovementData_0x1884eb
+	applymovement CERULEANGYM_ROCKET, MovementData_0x1884eb
 	playmusic MUSIC_ROCKET_ENCOUNTER
-	loadfont
-	2writetext UnknownText_0x1884fb
-	closetext
-	loadmovesprites
-	showemote $0, $2, 15
-	applymovement $2, MovementData_0x1884f7
-	loadfont
-	2writetext UnknownText_0x188574
-	closetext
-	loadmovesprites
-	applymovement $2, MovementData_0x1884f5
-	loadfont
-	2writetext UnknownText_0x1885a5
-	closetext
-	loadmovesprites
-	applymovement $2, MovementData_0x1884e8
-	playsound SFX_EXIT_BUILDING
-	disappear $2
-	setevent EVENT_MET_ROCKET_GRUNT_AT_CERULEAN_GYM
-	clearevent $076c
-	clearevent $076e
-	dotrigger $0
-	domaptrigger GROUP_ROUTE_25, MAP_ROUTE_25, $1
-	domaptrigger GROUP_POWER_PLANT, MAP_POWER_PLANT, $0
+	opentext
+	writetext UnknownText_0x1884fb
 	waitbutton
-	special $003d
+	closetext
+	showemote EMOTE_SHOCK, CERULEANGYM_ROCKET, 15
+	applymovement CERULEANGYM_ROCKET, MovementData_0x1884f7
+	opentext
+	writetext UnknownText_0x188574
+	waitbutton
+	closetext
+	applymovement CERULEANGYM_ROCKET, MovementData_0x1884f5
+	opentext
+	writetext UnknownText_0x1885a5
+	waitbutton
+	closetext
+	applymovement CERULEANGYM_ROCKET, MovementData_0x1884e8
+	playsound SFX_EXIT_BUILDING
+	disappear CERULEANGYM_ROCKET
+	setevent EVENT_MET_ROCKET_GRUNT_AT_CERULEAN_GYM
+	clearevent EVENT_ROUTE_24_ROCKET
+	clearevent EVENT_ROUTE_25_MISTY_BOYFRIEND
+	dotrigger $0
+	domaptrigger ROUTE_25, $1
+	domaptrigger POWER_PLANT, $0
+	waitsfx
+	special RestartMapMusic
 	pause 15
-	spriteface $0, $0
+	spriteface PLAYER, DOWN
 	pause 15
 	end
-; 0x188432
 
-MistyScript_0x188432: ; 0x188432
+MistyScript_0x188432:
 	faceplayer
-	loadfont
-	checkflag $0024
-	iftrue UnknownScript_0x188460
-	2writetext UnknownText_0x188674
+	opentext
+	checkflag ENGINE_CASCADEBADGE
+	iftrue .FightDone
+	writetext UnknownText_0x188674
+	waitbutton
 	closetext
-	loadmovesprites
-	winlosstext UnknownText_0x18870c, $0000
+	winlosstext UnknownText_0x18870c, 0
 	loadtrainer MISTY, 1
 	startbattle
-	returnafterbattle
+	reloadmapafterbattle
 	setevent EVENT_BEAT_MISTY
 	setevent EVENT_BEAT_SWIMMERF_DIANA
 	setevent EVENT_BEAT_SWIMMERF_BRIANA
 	setevent EVENT_BEAT_SWIMMERM_PARKER
-	loadfont
-	2writetext UnknownText_0x188768
+	opentext
+	writetext UnknownText_0x188768
 	playsound SFX_GET_BADGE
+	waitsfx
+	setflag ENGINE_CASCADEBADGE
+.FightDone:
+	writetext UnknownText_0x188782
 	waitbutton
-	setflag $0024
-UnknownScript_0x188460: ; 0x188460
-	2writetext UnknownText_0x188782
 	closetext
-	loadmovesprites
 	end
-; 0x188466
 
-TrainerSwimmerfDiana: ; 0x188466
-	; bit/flag number
-	dw $3f9
+TrainerSwimmerfDiana:
+	trainer EVENT_BEAT_SWIMMERF_DIANA, SWIMMERF, DIANA, SwimmerfDianaSeenText, SwimmerfDianaBeatenText, 0, SwimmerfDianaScript
 
-	; trainer group && trainer id
-	db SWIMMERF, DIANA
-
-	; text when seen
-	dw SwimmerfDianaSeenText
-
-	; text when trainer beaten
-	dw SwimmerfDianaBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SwimmerfDianaScript
-; 0x188472
-
-SwimmerfDianaScript: ; 0x188472
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x188856
+SwimmerfDianaScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x188856
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18847a
 
-TrainerSwimmerfBriana: ; 0x18847a
-	; bit/flag number
-	dw $3fa
+TrainerSwimmerfBriana:
+	trainer EVENT_BEAT_SWIMMERF_BRIANA, SWIMMERF, BRIANA, SwimmerfBrianaSeenText, SwimmerfBrianaBeatenText, 0, SwimmerfBrianaScript
 
-	; trainer group && trainer id
-	db SWIMMERF, BRIANA
-
-	; text when seen
-	dw SwimmerfBrianaSeenText
-
-	; text when trainer beaten
-	dw SwimmerfBrianaBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SwimmerfBrianaScript
-; 0x188486
-
-SwimmerfBrianaScript: ; 0x188486
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1888c0
+SwimmerfBrianaScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1888c0
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18848e
 
-TrainerSwimmermParker: ; 0x18848e
-	; bit/flag number
-	dw $5a8
+TrainerSwimmermParker:
+	trainer EVENT_BEAT_SWIMMERM_PARKER, SWIMMERM, PARKER, SwimmermParkerSeenText, SwimmermParkerBeatenText, 0, SwimmermParkerScript
 
-	; trainer group && trainer id
-	db SWIMMERM, PARKER
-
-	; text when seen
-	dw SwimmermParkerSeenText
-
-	; text when trainer beaten
-	dw SwimmermParkerBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SwimmermParkerScript
-; 0x18849a
-
-SwimmermParkerScript: ; 0x18849a
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x188943
+SwimmermParkerScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x188943
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1884a2
 
-CeruleanGymGuyScript: ; 0x1884a2
+CeruleanGymGuyScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_BEAT_MISTY
 	iftrue .CeruleanGymGuyWinScript
-	2writetext CeruleanGymGuyText
+	writetext CeruleanGymGuyText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
 
-.CeruleanGymGuyWinScript
-	2writetext CeruleanGymGuyWinText
+.CeruleanGymGuyWinScript:
+	writetext CeruleanGymGuyWinText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1884b6
 
-MapCeruleanGymSignpostItem0: ; 0x1884b6
-	dw $00fb
-	db MACHINE_PART
-	
-; 0x1884b9
+CeruleanGymHiddenMachinePart:
+	dwb EVENT_FOUND_MACHINE_PART_IN_CERULEAN_GYM, MACHINE_PART
 
-MapCeruleanGymSignpost1Script: ; 0x1884b9
-	checkevent $076f
-	iffalse UnknownScript_0x1884d3
-	loadfont
-	2writetext UnknownText_0x188610
+
+CeruleanGymStatue1:
+	checkevent EVENT_TRAINERS_IN_CERULEAN_GYM
+	iffalse CeruleanGymStatue
+	opentext
+	writetext CeruleanGymNote1
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1884c6
 
-MapCeruleanGymSignpost2Script: ; 0x1884c6
-	checkevent $076f
-	iffalse UnknownScript_0x1884d3
-	loadfont
-	2writetext UnknownText_0x188642
+CeruleanGymStatue2:
+	checkevent EVENT_TRAINERS_IN_CERULEAN_GYM
+	iffalse CeruleanGymStatue
+	opentext
+	writetext CeruleanGymNote2
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1884d3
 
-UnknownScript_0x1884d3: ; 0x1884d3
-	checkflag $0024
-	iftrue UnknownScript_0x1884dc
-	jumpstd $002d
-; 0x1884dc
-
-UnknownScript_0x1884dc: ; 0x1884dc
+CeruleanGymStatue:
+	checkflag ENGINE_CASCADEBADGE
+	iftrue .Beaten
+	jumpstd gymstatue1
+.Beaten:
 	trainertotext MISTY, 1, $1
-	jumpstd $002e
-; 0x1884e3
+	jumpstd gymstatue2
 
-MovementData_0x1884e3: ; 0x1884e3
+MovementData_0x1884e3:
 	big_step_down
 	big_step_down
 	big_step_down
 	big_step_down
 	step_end
-; 0x1884e8
 
-MovementData_0x1884e8: ; 0x1884e8
+MovementData_0x1884e8:
 	big_step_right
 	big_step_down
 	step_end
-; 0x1884eb
 
-MovementData_0x1884eb: ; 0x1884eb
+MovementData_0x1884eb:
 	fix_facing
 	db $39 ; movement
 	jump_step_up
 	db $38 ; movement
 	remove_fixed_facing
-	accelerate_last
-	accelerate_last
+	step_sleep_8
+	step_sleep_8
 	step_down
 	step_down
 	step_end
-; 0x1884f5
 
-MovementData_0x1884f5: ; 0x1884f5
+MovementData_0x1884f5:
 	big_step_down
 	step_end
-; 0x1884f7
 
-MovementData_0x1884f7: ; 0x1884f7
+MovementData_0x1884f7:
 	fix_facing
 	slow_step_up
 	remove_fixed_facing
 	step_end
-; 0x1884fb
 
-UnknownText_0x1884fb: ; 0x1884fb
+UnknownText_0x1884fb:
 	text "Oops! I so sorry!"
 	line "You not hurt,"
 	cont "okay?"
@@ -275,16 +211,14 @@ UnknownText_0x1884fb: ; 0x1884fb
 	cont "good for me if"
 	cont "seen by somebody."
 	done
-; 0x188574
 
-UnknownText_0x188574: ; 0x188574
+UnknownText_0x188574:
 	text "Oh no! You seen"
 	line "me already! I make"
 	cont "big mistake!"
 	done
-; 0x1885a5
 
-UnknownText_0x1885a5: ; 0x1885a5
+UnknownText_0x1885a5:
 	text "Hey, you! Forget"
 	line "you see me, okay?"
 
@@ -296,23 +230,20 @@ UnknownText_0x1885a5: ; 0x1885a5
 
 	para "Bye-bye a go-go!"
 	done
-; 0x188610
 
-UnknownText_0x188610: ; 0x188610
+CeruleanGymNote1:
 	text "Sorry, I'll be out"
 	line "for a while."
 	cont "MISTY, GYM LEADER"
 	done
-; 0x188642
 
-UnknownText_0x188642: ; 0x188642
+CeruleanGymNote2:
 	text "Since MISTY's out,"
 	line "we'll be away too."
 	cont "GYM TRAINERS"
 	done
-; 0x188674
 
-UnknownText_0x188674: ; 0x188674
+UnknownText_0x188674:
 	text "MISTY: I was ex-"
 	line "pecting you, you"
 	cont "pest!"
@@ -327,9 +258,8 @@ UnknownText_0x188674: ; 0x188674
 	para "My water-type"
 	line "#MON are tough!"
 	done
-; 0x18870c
 
-UnknownText_0x18870c: ; 0x18870c
+UnknownText_0x18870c:
 	text "MISTY: You really"
 	line "are good…"
 
@@ -339,15 +269,13 @@ UnknownText_0x18870c: ; 0x18870c
 	para "Here you go. It's"
 	line "CASCADEBADGE."
 	done
-; 0x188768
 
-UnknownText_0x188768: ; 0x188768
-	text $52, " received"
+UnknownText_0x188768:
+	text "<PLAYER> received"
 	line "CASCADEBADGE."
 	done
-; 0x188782
 
-UnknownText_0x188782: ; 0x188782
+UnknownText_0x188782:
 	text "MISTY: Are there"
 	line "many strong train-"
 	cont "ers in JOHTO? Like"
@@ -359,41 +287,35 @@ UnknownText_0x188782: ; 0x188782
 	para "I can battle some"
 	line "skilled trainers."
 	done
-; 0x18880a
 
-SwimmerfDianaSeenText: ; 0x18880a
+SwimmerfDianaSeenText:
 	text "Sorry about being"
 	line "away. Let's get on"
 	cont "with it!"
 	done
-; 0x188838
 
-SwimmerfDianaBeatenText: ; 0x188838
+SwimmerfDianaBeatenText:
 	text "I give up! You're"
 	line "the winner!"
 	done
-; 0x188856
 
-UnknownText_0x188856: ; 0x188856
+UnknownText_0x188856:
 	text "I'll be swimming"
 	line "quietly."
 	done
-; 0x188870
 
-SwimmerfBrianaSeenText: ; 0x188870
+SwimmerfBrianaSeenText:
 	text "Don't let my ele-"
 	line "gant swimming un-"
 	cont "nerve you."
 	done
-; 0x18889f
 
-SwimmerfBrianaBeatenText: ; 0x18889f
+SwimmerfBrianaBeatenText:
 	text "Ooh, you calmly"
 	line "disposed of me…"
 	done
-; 0x1888c0
 
-UnknownText_0x1888c0: ; 0x1888c0
+UnknownText_0x1888c0:
 	text "Don't be too smug"
 	line "about beating me."
 
@@ -401,22 +323,19 @@ UnknownText_0x1888c0: ; 0x1888c0
 	line "you if you get"
 	cont "complacent."
 	done
-; 0x188912
 
-SwimmermParkerSeenText: ; 0x188912
+SwimmermParkerSeenText:
 	text "Glub…"
 
 	para "I'm first! Come"
 	line "and get me!"
 	done
-; 0x188934
 
-SwimmermParkerBeatenText: ; 0x188934
+SwimmermParkerBeatenText:
 	text "This can't be…"
 	done
-; 0x188943
 
-UnknownText_0x188943: ; 0x188943
+UnknownText_0x188943:
 	text "MISTY has gotten"
 	line "much better in the"
 	cont "past few years."
@@ -425,9 +344,8 @@ UnknownText_0x188943: ; 0x188943
 	line "guard down, or"
 	cont "you'll be crushed!"
 	done
-; 0x1889a7
 
-CeruleanGymGuyText: ; 0x1889a7
+CeruleanGymGuyText:
 	text "Yo! CHAMP in"
 	line "making!"
 
@@ -437,9 +355,8 @@ CeruleanGymGuyText: ; 0x1889a7
 	para "for some fun too."
 	line "He-he-he."
 	done
-; 0x1889fa
 
-CeruleanGymGuyWinText: ; 0x1889fa
+CeruleanGymGuyWinText:
 	text "Hoo, you showed me"
 	line "how tough you are."
 
@@ -447,33 +364,30 @@ CeruleanGymGuyWinText: ; 0x1889fa
 	line "was one heck of a"
 	cont "great battle!"
 	done
-; 0x188a51
 
-CeruleanGym_MapEventHeader: ; 0x188a51
+CeruleanGym_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $f, $4, 5, GROUP_CERULEAN_CITY, MAP_CERULEAN_CITY
-	warp_def $f, $5, 5, GROUP_CERULEAN_CITY, MAP_CERULEAN_CITY
+	warp_def $f, $4, 5, CERULEAN_CITY
+	warp_def $f, $5, 5, CERULEAN_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 3
-	signpost 8, 3, $7, MapCeruleanGymSignpostItem0
-	signpost 13, 2, $0, MapCeruleanGymSignpost1Script
-	signpost 13, 6, $0, MapCeruleanGymSignpost2Script
+	signpost 8, 3, SIGNPOST_ITEM, CeruleanGymHiddenMachinePart
+	signpost 13, 2, SIGNPOST_READ, CeruleanGymStatue1
+	signpost 13, 6, SIGNPOST_READ, CeruleanGymStatue2
 
-	; people-events
+.PersonEvents:
 	db 6
-	person_event SPRITE_ROCKET, 14, 8, $6, $0, 255, 255, $0, 0, ObjectEvent, $076d
-	person_event SPRITE_MISTY, 7, 9, $6, $0, 255, 255, $80, 0, MistyScript_0x188432, $076f
-	person_event SPRITE_SWIMMER_GIRL, 10, 8, $9, $0, 255, 255, $a2, 3, TrainerSwimmerfDiana, $076f
-	person_event SPRITE_SWIMMER_GIRL, 13, 5, $9, $0, 255, 255, $a2, 1, TrainerSwimmerfBriana, $076f
-	person_event SPRITE_SWIMMER_GUY, 13, 12, $8, $0, 255, 255, $82, 3, TrainerSwimmermParker, $076f
-	person_event SPRITE_GYM_GUY, 17, 11, $6, $0, 255, 255, $90, 0, CeruleanGymGuyScript, $076f
-; 0x188abe
-
+	person_event SPRITE_ROCKET, 10, 4, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ObjectEvent, EVENT_CERULEAN_GYM_ROCKET
+	person_event SPRITE_MISTY, 3, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, MistyScript_0x188432, EVENT_TRAINERS_IN_CERULEAN_GYM
+	person_event SPRITE_SWIMMER_GIRL, 6, 4, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_TRAINER, 3, TrainerSwimmerfDiana, EVENT_TRAINERS_IN_CERULEAN_GYM
+	person_event SPRITE_SWIMMER_GIRL, 9, 1, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_TRAINER, 1, TrainerSwimmerfBriana, EVENT_TRAINERS_IN_CERULEAN_GYM
+	person_event SPRITE_SWIMMER_GUY, 9, 8, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 3, TrainerSwimmermParker, EVENT_TRAINERS_IN_CERULEAN_GYM
+	person_event SPRITE_GYM_GUY, 13, 7, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, CeruleanGymGuyScript, EVENT_TRAINERS_IN_CERULEAN_GYM

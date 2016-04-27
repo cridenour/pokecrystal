@@ -1,38 +1,39 @@
-DarkCaveBlackthornEntrance_MapScriptHeader: ; 0x18c71e
-	; trigger count
+const_value set 2
+	const DARKCAVEBLACKTHORNENTRANCE_PHARMACIST
+	const DARKCAVEBLACKTHORNENTRANCE_POKE_BALL1
+	const DARKCAVEBLACKTHORNENTRANCE_POKE_BALL2
+
+DarkCaveBlackthornEntrance_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x18c720
 
-PharmacistScript_0x18c720: ; 0x18c720
+PharmacistScript_0x18c720:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_BLACKGLASSES_IN_DARK_CAVE
 	iftrue UnknownScript_0x18c735
-	2writetext UnknownText_0x18c73f
-	keeptextopen
-	verbosegiveitem BLACKGLASSES, 1
+	writetext UnknownText_0x18c73f
+	buttonsound
+	verbosegiveitem BLACKGLASSES
 	iffalse UnknownScript_0x18c739
 	setevent EVENT_GOT_BLACKGLASSES_IN_DARK_CAVE
-UnknownScript_0x18c735: ; 0x18c735
-	2writetext UnknownText_0x18c80c
+UnknownScript_0x18c735:
+	writetext UnknownText_0x18c80c
+	waitbutton
+UnknownScript_0x18c739:
 	closetext
-UnknownScript_0x18c739: ; 0x18c739
-	loadmovesprites
 	end
-; 0x18c73b
 
-ItemFragment_0x18c73b: ; 0x18c73b
-	db REVIVE, 1
-; 0x18c73d
+DarkCaveBlackthornEntranceRevive:
+	itemball REVIVE
 
-ItemFragment_0x18c73d: ; 0x18c73d
-	db TM_13, 1
-; 0x18c73f
+DarkCaveBlackthornEntranceTMSnore:
+	itemball TM_SNORE
 
-UnknownText_0x18c73f: ; 0x18c73f
+UnknownText_0x18c73f:
 	text "Whoa! You startled"
 	line "me there!"
 
@@ -53,34 +54,30 @@ UnknownText_0x18c73f: ; 0x18c73f
 	cont "GLASSES, so forget"
 	cont "you saw me, OK?"
 	done
-; 0x18c80c
 
-UnknownText_0x18c80c: ; 0x18c80c
+UnknownText_0x18c80c:
 	text "BLACKGLASSES ups"
 	line "the power of dark-"
 	cont "type moves."
 	done
-; 0x18c83d
 
-DarkCaveBlackthornEntrance_MapEventHeader: ; 0x18c83d
+DarkCaveBlackthornEntrance_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $3, $17, 1, GROUP_ROUTE_45, MAP_ROUTE_45
-	warp_def $19, $3, 2, GROUP_DARK_CAVE_VIOLET_ENTRANCE, MAP_DARK_CAVE_VIOLET_ENTRANCE
+	warp_def $3, $17, 1, ROUTE_45
+	warp_def $19, $3, 2, DARK_CAVE_VIOLET_ENTRANCE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_PHARMACIST, 7, 11, $3, $0, 255, 255, $0, 0, PharmacistScript_0x18c720, $ffff
-	person_event SPRITE_POKE_BALL, 28, 25, $1, $0, 255, 255, $1, 0, ItemFragment_0x18c73b, $06a1
-	person_event SPRITE_POKE_BALL, 26, 11, $1, $0, 255, 255, $1, 0, ItemFragment_0x18c73d, $06a2
-; 0x18c874
-
+	person_event SPRITE_PHARMACIST, 3, 7, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, PharmacistScript_0x18c720, -1
+	person_event SPRITE_POKE_BALL, 24, 21, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, DarkCaveBlackthornEntranceRevive, EVENT_DARK_CAVE_BLACKTHORN_ENTRANCE_REVIVE
+	person_event SPRITE_POKE_BALL, 22, 7, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, DarkCaveBlackthornEntranceTMSnore, EVENT_DARK_CAVE_BLACKTHORN_ENTRANCE_TM_SNORE

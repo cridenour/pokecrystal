@@ -1,27 +1,28 @@
-VioletMart_MapScriptHeader: ; 0x68293
-	; trigger count
+const_value set 2
+	const VIOLETMART_CLERK
+	const VIOLETMART_GRANNY
+	const VIOLETMART_COOLTRAINER_M
+
+VioletMart_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x68295
 
-ClerkScript_0x68295: ; 0x68295
-	loadfont
-	pokemart $0, $0002
-	loadmovesprites
+ClerkScript_0x68295:
+	opentext
+	pokemart MARTTYPE_STANDARD, MART_VIOLET
+	closetext
 	end
-; 0x6829c
 
-GrannyScript_0x6829c: ; 0x6829c
+GrannyScript_0x6829c:
 	jumptextfaceplayer UnknownText_0x682a2
-; 0x6829f
 
-CooltrainerMScript_0x6829f: ; 0x6829f
+CooltrainerMScript_0x6829f:
 	jumptextfaceplayer UnknownText_0x68323
-; 0x682a2
 
-UnknownText_0x682a2: ; 0x682a2
+UnknownText_0x682a2:
 	text "When you first"
 	line "catch a #MON,"
 	cont "it may be weak."
@@ -34,9 +35,8 @@ UnknownText_0x682a2: ; 0x682a2
 	line "treat #MON with"
 	cont "love."
 	done
-; 0x68323
 
-UnknownText_0x68323: ; 0x68323
+UnknownText_0x68323:
 	text "#MON can hold"
 	line "items like POTION"
 	cont "and ANTIDOTE."
@@ -47,27 +47,24 @@ UnknownText_0x68323: ; 0x68323
 	para "to use manmade"
 	line "items."
 	done
-; 0x68389
 
-VioletMart_MapEventHeader: ; 0x68389
+VioletMart_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 1, GROUP_VIOLET_CITY, MAP_VIOLET_CITY
-	warp_def $7, $3, 1, GROUP_VIOLET_CITY, MAP_VIOLET_CITY
+	warp_def $7, $2, 1, VIOLET_CITY
+	warp_def $7, $3, 1, VIOLET_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_CLERK, 7, 5, $9, $0, 255, 255, $0, 0, ClerkScript_0x68295, $ffff
-	person_event SPRITE_GRANNY, 10, 11, $5, $1, 255, 255, $0, 0, GrannyScript_0x6829c, $ffff
-	person_event SPRITE_COOLTRAINER_M, 6, 9, $3, $0, 255, 255, $80, 0, CooltrainerMScript_0x6829f, $ffff
-; 0x683c0
-
+	person_event SPRITE_CLERK, 3, 1, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ClerkScript_0x68295, -1
+	person_event SPRITE_GRANNY, 6, 7, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, 0, PERSONTYPE_SCRIPT, 0, GrannyScript_0x6829c, -1
+	person_event SPRITE_COOLTRAINER_M, 2, 5, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, CooltrainerMScript_0x6829f, -1

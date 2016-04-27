@@ -1,56 +1,55 @@
-HallOfFame_MapScriptHeader: ; 0x181445
-	; trigger count
+const_value set 2
+	const HALLOFFAME_LANCE
+
+HallOfFame_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x18144f, $0000
-	dw UnknownScript_0x181453, $0000
+	maptrigger .Trigger0
+	maptrigger .Trigger1
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x18144f
 
-UnknownScript_0x18144f: ; 0x18144f
-	priorityjump UnknownScript_0x181454
+.Trigger0:
+	priorityjump HallOfFameScript
 	end
-; 0x181453
 
-UnknownScript_0x181453: ; 0x181453
+.Trigger1:
 	end
-; 0x181454
 
-UnknownScript_0x181454: ; 0x181454
-	follow $2, $0
-	applymovement $2, MovementData_0x181499
+HallOfFameScript:
+	follow HALLOFFAME_LANCE, PLAYER
+	applymovement HALLOFFAME_LANCE, HallOfFame_WalkUpWithLance
 	stopfollow
-	spriteface $0, $3
-	loadfont
-	2writetext UnknownText_0x1814a6
+	spriteface PLAYER, RIGHT
+	opentext
+	writetext HallOfFame_LanceText
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $2, $1
-	applymovement $0, MovementData_0x1814a4
+	spriteface HALLOFFAME_LANCE, UP
+	applymovement PLAYER, HallOfFame_SlowlyApproachMachine
 	dotrigger $1
 	pause 15
-	writebyte $2
-	special $003e
-	setevent $0044
-	setevent $077c
-	setevent $06c4
-	clearevent $0762
-	setevent $0737
-	clearevent $0738
-	domaptrigger GROUP_SPROUT_TOWER_3F, MAP_SPROUT_TOWER_3F, $1
-	special $001b
+	writebyte 2 ; Machine is in the Hall of Fame
+	special HealMachineAnim
+	setevent EVENT_BEAT_ELITE_FOUR
+	setevent EVENT_TELEPORT_GUY
+	setevent EVENT_RIVAL_SPROUT_TOWER
+	clearevent EVENT_RED_IN_MT_SILVER
+	setevent EVENT_OLIVINE_PORT_SPRITES_BEFORE_HALL_OF_FAME
+	clearevent EVENT_OLIVINE_PORT_SPRITES_AFTER_HALL_OF_FAME
+	domaptrigger SPROUT_TOWER_3F, $1
+	special HealParty
 	checkevent EVENT_GOT_SS_TICKET_FROM_ELM
-	iftrue UnknownScript_0x181497
-	specialphonecall $5
-UnknownScript_0x181497: ; 0x181497
+	iftrue .SkipPhoneCall
+	specialphonecall SPECIALCALL_SSTICKET
+.SkipPhoneCall:
 	halloffame
 	end
-; 0x181499
 
-MovementData_0x181499: ; 0x181499
+HallOfFame_WalkUpWithLance:
 	step_up
 	step_up
 	step_up
@@ -62,14 +61,12 @@ MovementData_0x181499: ; 0x181499
 	step_right
 	turn_head_left
 	step_end
-; 0x1814a4
 
-MovementData_0x1814a4: ; 0x1814a4
+HallOfFame_SlowlyApproachMachine:
 	slow_step_up
 	step_end
-; 0x1814a6
 
-UnknownText_0x1814a6: ; 0x1814a6
+HallOfFame_LanceText:
 	text "LANCE: It's been a"
 	line "long time since I"
 	cont "last came here."
@@ -108,35 +105,28 @@ UnknownText_0x1814a6: ; 0x1814a6
 	para "all the makings"
 	line "of greatness!"
 
-	para $14, ", allow me"
+	para "<PLAY_G>, allow me"
 	line "to register you"
 
 	para "and your partners"
 	line "as CHAMPIONS!"
 	done
-; 0x181678
 
-HallOfFame_MapEventHeader: ; 0x181678
+HallOfFame_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $d, $4, 3, GROUP_LANCES_ROOM, MAP_LANCES_ROOM
-	warp_def $d, $5, 4, GROUP_LANCES_ROOM, MAP_LANCES_ROOM
+	warp_def $d, $4, 3, LANCES_ROOM
+	warp_def $d, $5, 4, LANCES_ROOM
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_LANCE, 16, 8, $7, $0, 255, 255, $0, 0, ObjectEvent, $ffff
-; 0x181695
-
-
-
-
-
+	person_event SPRITE_LANCE, 12, 4, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ObjectEvent, -1

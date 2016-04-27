@@ -1,4 +1,3 @@
-
 	const_def
 
 PHYSICAL EQU const_value
@@ -13,7 +12,6 @@ PHYSICAL EQU const_value
 	const GHOST
 	const STEEL
 
-
 UNUSED_TYPES EQU const_value
 	const TYPE_10
 	const TYPE_11
@@ -25,7 +23,7 @@ UNUSED_TYPES EQU const_value
 	const TYPE_17
 	const TYPE_18
 	const CURSE_T
-
+UNUSED_TYPES_END EQU const_value
 
 SPECIAL EQU const_value
 	const FIRE
@@ -37,3 +35,4 @@ SPECIAL EQU const_value
 	const DRAGON
 	const DARK
 
+TYPES_END EQU const_value

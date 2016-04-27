@@ -1,88 +1,83 @@
-CharcoalKiln_MapScriptHeader: ; 0x18dd18
-	; trigger count
+const_value set 2
+	const CHARCOALKILN_BLACK_BELT
+	const CHARCOALKILN_YOUNGSTER
+	const CHARCOALKILN_MOLTRES
+
+CharcoalKiln_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x18dd1a
 
-BlackBeltScript_0x18dd1a: ; 0x18dd1a
+CharcoalKilnBoss:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_HM01_CUT
-	iftrue UnknownScript_0x18dd34
+	iftrue .GotCut
 	checkevent EVENT_CLEARED_SLOWPOKE_WELL
-	iftrue UnknownScript_0x18dd2e
-	2writetext UnknownText_0x18dd74
+	iftrue .SavedSlowpoke
+	writetext CharcoalKilnBossText1
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18dd2e
 
-UnknownScript_0x18dd2e: ; 0x18dd2e
-	2writetext UnknownText_0x18ddfd
+.SavedSlowpoke:
+	writetext CharcoalKilnBossText2
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18dd34
 
-UnknownScript_0x18dd34: ; 0x18dd34
-	2writetext UnknownText_0x18de73
+.GotCut:
+	writetext CharcoalKilnBossText3
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18dd3a
 
-YoungsterScript_0x18dd3a: ; 0x18dd3a
+CharcoalKilnApprentice:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_CHARCOAL_IN_CHARCOAL_KILN
-	iftrue UnknownScript_0x18dd5d
+	iftrue .YoureTheCoolest
 	checkevent EVENT_GOT_HM01_CUT
-	iftrue UnknownScript_0x18dd4e
-	2writetext UnknownText_0x18dee0
+	iftrue .Thanks
+	writetext CharcoalKilnApprenticeText1
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18dd4e
 
-UnknownScript_0x18dd4e: ; 0x18dd4e
-	2writetext UnknownText_0x18df25
-	keeptextopen
-	verbosegiveitem CHARCOAL, 1
-	iffalse UnknownScript_0x18dd61
+.Thanks:
+	writetext CharcoalKilnApprenticeText2
+	buttonsound
+	verbosegiveitem CHARCOAL
+	iffalse .Done
 	setevent EVENT_GOT_CHARCOAL_IN_CHARCOAL_KILN
-	loadmovesprites
-	end
-; 0x18dd5d
-
-UnknownScript_0x18dd5d: ; 0x18dd5d
-	2writetext UnknownText_0x18df93
 	closetext
-UnknownScript_0x18dd61: ; 0x18dd61
-	loadmovesprites
 	end
-; 0x18dd63
 
-MoltresScript_0x18dd63: ; 0x18dd63
+.YoureTheCoolest:
+	writetext CharcoalKilnApprenticeText3
+	waitbutton
+.Done:
+	closetext
+	end
+
+CharcoalKilnFarfetchd:
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x18dfe5
+	opentext
+	writetext FarfetchdText
 	cry FARFETCH_D
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18dd6e
 
-MapCharcoalKilnSignpost1Script: ; 0x18dd6e
-	jumpstd $0003
-; 0x18dd71
+CharcoalKilnBookshelf:
+	jumpstd magazinebookshelf
 
-MapCharcoalKilnSignpost2Script: ; 0x18dd71
-	jumpstd $000c
-; 0x18dd74
+CharcoalKilnRadio:
+	jumpstd radio2
 
-UnknownText_0x18dd74: ; 0x18dd74
+CharcoalKilnBossText1:
 	text "All the SLOWPOKE"
 	line "have disappeared"
 	cont "from the town."
@@ -95,9 +90,8 @@ UnknownText_0x18dd74: ; 0x18dd74
 	line "omen. We should"
 	cont "stay in."
 	done
-; 0x18ddfd
 
-UnknownText_0x18ddfd: ; 0x18ddfd
+CharcoalKilnBossText2:
 	text "The SLOWPOKE have"
 	line "returned…"
 
@@ -108,9 +102,8 @@ UnknownText_0x18ddfd: ; 0x18ddfd
 	para "Where in the world"
 	line "is that lazy guy?"
 	done
-; 0x18de73
 
-UnknownText_0x18de73: ; 0x18de73
+CharcoalKilnBossText3:
 	text "You chased off"
 	line "TEAM ROCKET and"
 
@@ -121,18 +114,16 @@ UnknownText_0x18de73: ; 0x18de73
 	line "I like that. Come"
 	cont "train with us."
 	done
-; 0x18dee0
 
-UnknownText_0x18dee0: ; 0x18dee0
+CharcoalKilnApprenticeText1:
 	text "Where have all the"
 	line "SLOWPOKE gone?"
 
 	para "Are they out play-"
 	line "ing somewhere?"
 	done
-; 0x18df25
 
-UnknownText_0x18df25: ; 0x18df25
+CharcoalKilnApprenticeText2:
 	text "I'm sorry--I for-"
 	line "got to thank you."
 
@@ -143,9 +134,8 @@ UnknownText_0x18df25: ; 0x18df25
 	line "would be happy to"
 	cont "hold that."
 	done
-; 0x18df93
 
-UnknownText_0x18df93: ; 0x18df93
+CharcoalKilnApprenticeText3:
 	text "The SLOWPOKE came"
 	line "back, and you even"
 	cont "found FARFETCH'D."
@@ -153,35 +143,31 @@ UnknownText_0x18df93: ; 0x18df93
 	para "You're the cool-"
 	line "est, man!"
 	done
-; 0x18dfe5
 
-UnknownText_0x18dfe5: ; 0x18dfe5
+FarfetchdText:
 	text "FARFETCH'D: Kwaa!"
 	done
-; 0x18dff8
 
-CharcoalKiln_MapEventHeader: ; 0x18dff8
+CharcoalKiln_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 2, GROUP_AZALEA_TOWN, MAP_AZALEA_TOWN
-	warp_def $7, $3, 2, GROUP_AZALEA_TOWN, MAP_AZALEA_TOWN
+	warp_def $7, $2, 2, AZALEA_TOWN
+	warp_def $7, $3, 2, AZALEA_TOWN
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 3
-	signpost 1, 0, $0, MapCharcoalKilnSignpost1Script
-	signpost 1, 1, $0, MapCharcoalKilnSignpost1Script
-	signpost 1, 7, $0, MapCharcoalKilnSignpost2Script
+	signpost 1, 0, SIGNPOST_READ, CharcoalKilnBookshelf
+	signpost 1, 1, SIGNPOST_READ, CharcoalKilnBookshelf
+	signpost 1, 7, SIGNPOST_READ, CharcoalKilnRadio
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_BLACK_BELT, 7, 6, $3, $0, 255, 255, $0, 0, BlackBeltScript_0x18dd1a, $06f7
-	person_event SPRITE_YOUNGSTER, 7, 9, $2, $11, 255, 255, $0, 0, YoungsterScript_0x18dd3a, $06f6
-	person_event SPRITE_MOLTRES, 10, 9, $16, $22, 255, 255, $b0, 0, MoltresScript_0x18dd63, $06f5
-; 0x18e03e
-
+	person_event SPRITE_BLACK_BELT, 3, 2, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, CharcoalKilnBoss, EVENT_CHARCOAL_KILN_BOSS
+	person_event SPRITE_YOUNGSTER, 3, 5, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, 0, PERSONTYPE_SCRIPT, 0, CharcoalKilnApprentice, EVENT_CHARCOAL_KILN_APPRENTICE
+	person_event SPRITE_MOLTRES, 6, 5, SPRITEMOVEDATA_POKEMON, 2, 2, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_SCRIPT, 0, CharcoalKilnFarfetchd, EVENT_CHARCOAL_KILN_FARFETCH_D

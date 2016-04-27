@@ -1,51 +1,48 @@
-FuchsiaBillSpeechHouse_MapScriptHeader: ; 0x1963bb
-	; trigger count
+const_value set 2
+	const FUCHSIABILLSPEECHHOUSE_POKEFAN_F
+	const FUCHSIABILLSPEECHHOUSE_YOUNGSTER
+
+FuchsiaBillSpeechHouse_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1963bd
 
-PokefanFScript_0x1963bd: ; 0x1963bd
+PokefanFScript_0x1963bd:
 	jumptextfaceplayer UnknownText_0x1963c3
-; 0x1963c0
 
-YoungsterScript_0x1963c0: ; 0x1963c0
+YoungsterScript_0x1963c0:
 	jumptextfaceplayer UnknownText_0x1963f9
-; 0x1963c3
 
-UnknownText_0x1963c3: ; 0x1963c3
+UnknownText_0x1963c3:
 	text "My grandpa is at "
 	line "my brother BILL's"
 	cont "on CERULEAN CAPE."
 	done
-; 0x1963f9
 
-UnknownText_0x1963f9: ; 0x1963f9
+UnknownText_0x1963f9:
 	text "I saw these weird,"
 	line "slow #MON on"
 	cont "CYCLING ROAD."
 	done
-; 0x196428
 
-FuchsiaBillSpeechHouse_MapEventHeader: ; 0x196428
+FuchsiaBillSpeechHouse_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 4, GROUP_FUCHSIA_CITY, MAP_FUCHSIA_CITY
-	warp_def $7, $3, 4, GROUP_FUCHSIA_CITY, MAP_FUCHSIA_CITY
+	warp_def $7, $2, 4, FUCHSIA_CITY
+	warp_def $7, $3, 4, FUCHSIA_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_POKEFAN_F, 7, 6, $9, $0, 255, 255, $80, 0, PokefanFScript_0x1963bd, $ffff
-	person_event SPRITE_YOUNGSTER, 8, 10, $4, $10, 255, 255, $0, 0, YoungsterScript_0x1963c0, $ffff
-; 0x196452
-
+	person_event SPRITE_POKEFAN_F, 3, 2, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, PokefanFScript_0x1963bd, -1
+	person_event SPRITE_YOUNGSTER, 4, 6, SPRITEMOVEDATA_WALK_UP_DOWN, 1, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, YoungsterScript_0x1963c0, -1

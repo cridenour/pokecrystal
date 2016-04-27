@@ -1,206 +1,220 @@
-Function864c: ; 864c
+Predef_LoadSGBLayout: ; 864c
 ; LoadSGBLayout
 	call CheckCGB
-	jp nz, Function8d59
+	jp nz, Predef_LoadSGBLayoutCGB
 
 	ld a, b
-	cp $ff
-	jr nz, .asm_865a
+	cp SCGB_RAM
+	jr nz, .not_ram
 	ld a, [SGBPredef]
-
-.asm_865a
-	cp $fc
-	jp z, Function8ade
+.not_ram
+	cp SCGB_PARTY_MENU_HP_PALS
+	jp z, SGB_ApplyPartyMenuHPPals
 	ld l, a
 	ld h, 0
 	add hl, hl
-	ld de, Table866f
+	ld de, .Jumptable
 	add hl, de
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ld de, Function8a60
+	ld de, .Finish
 	push de
 	jp [hl]
 ; 866f
 
-Table866f: ; 866f
-	dw Function86ad
-	dw Function86b4
-	dw Function875c
-	dw Function8763
-	dw Function87b2
-	dw Function8852
-	dw Function8859
-	dw Function8867
-	dw Function8860
-	dw Function88b1
-	dw Function87ab
-	dw Function88cd
-	dw Function8884
-	dw Function891a
-	dw Function873c
-	dw Function8897
-	dw Function882a
-	dw Function889e
-	dw Function8928
-	dw Function8890
-	dw Function884b
-	dw Function891a
-	dw Function8823
-	dw Function87e9
-	dw Function8921
-	dw Function89a6
-	dw Function89ad
-	dw Function89d9
-	dw Function89e0
-	dw Function8860
-	dw Function8969
+.Jumptable: ; 866f
+	dw .SGB_BattleGrayscale
+	dw .SGB_BattleColors
+	dw .SGB_PokegearPals
+	dw .SGB_StatsScreenHPPals
+	dw .SGB_Pokedex
+	dw .SGB_SlotMachine
+	dw .SGB06
+	dw .SGB07
+	dw .SGB08
+	dw .SGB_MapPals
+	dw .SGB0a
+	dw .SGB0b
+	dw .SGB0c
+	dw .SGB0d
+	dw .SGB0e
+	dw .SGB0f
+	dw .SGB_PokedexSearchOption
+	dw .SGB11
+	dw .SGB12
+	dw .SGB13
+	dw .SGB_PackPals
+	dw .SGB_TrainerCard
+	dw .SGB_PokedexUnownMode
+	dw .SGB17
+	dw .SGB18
+	dw .SGB19
+	dw .SGB1a
+	dw .SGB1b
+	dw .SGB_FrontpicPals
+	dw .SGB1d
+	dw .SGB1e
 ; 86ad
 
-Function86ad: ; 86ad
+.SGB_BattleGrayscale: ; 86ad
 	ld hl, PalPacket_9c66
 	ld de, BlkPacket_9aa6
 	ret
 ; 86b4
 
-Function86b4: ; 86b4
+.SGB_BattleColors: ; 86b4
 	ld hl, BlkPacket_9aa6
 	call Function9809
+
 	ld hl, PalPacket_9ce6
-	ld de, $cda9
-	ld bc, $0010
+	ld de, wSGBPals
+	ld bc, $10
 	call CopyBytes
+
 	ld a, [PlayerHPPal]
 	ld l, a
 	ld h, 0
+rept 2
 	add hl, hl
+endr
+	ld de, Palettes_a8be
+	add hl, de
+
+	ld a, [hli]
+	ld [wSGBPals + 3], a
+	ld a, [hli]
+	ld [wSGBPals + 4], a
+	ld a, [hli]
+	ld [wSGBPals + 5], a
+	ld a, [hl]
+	ld [wSGBPals + 6], a
+
+	ld a, [EnemyHPPal]
+	ld l, a
+	ld h, 0
+rept 2
 	add hl, hl
+endr
+
 	ld de, Palettes_a8be
 	add hl, de
 	ld a, [hli]
-	ld [$cdac], a
+	ld [wSGBPals + 9], a
 	ld a, [hli]
-	ld [$cdad], a
+	ld [wSGBPals + 10], a
 	ld a, [hli]
-	ld [$cdae], a
+	ld [wSGBPals + 11], a
 	ld a, [hl]
-	ld [$cdaf], a
-	ld a, [EnemyHPPal]
-	ld l, a
-	ld h, $0
-	add hl, hl
-	add hl, hl
-	ld de, $68be
-	add hl, de
-	ld a, [hli]
-	ld [$cdb2], a
-	ld a, [hli]
-	ld [$cdb3], a
-	ld a, [hli]
-	ld [$cdb4], a
-	ld a, [hl]
-	ld [$cdb5], a
+	ld [wSGBPals + 12], a
+
 	ld hl, PalPacket_9cf6
-	ld de, $cdb9
-	ld bc, $0010
+	ld de, wSGBPals + $10
+	ld bc, $10
 	call CopyBytes
-	call Function9729
+
+	call GetBattlemonBackpicPalettePointer
+
 	ld a, [hli]
-	ld [$cdbc], a
+	ld [wSGBPals + $13], a
 	ld a, [hli]
-	ld [$cdbd], a
+	ld [wSGBPals + $14], a
 	ld a, [hli]
-	ld [$cdbe], a
+	ld [wSGBPals + $15], a
 	ld a, [hl]
-	ld [$cdbf], a
-	call Function973a
+	ld [wSGBPals + $16], a
+	call GetEnemyFrontpicPalettePointer
 	ld a, [hli]
-	ld [$cdc2], a
+	ld [wSGBPals + $19], a
 	ld a, [hli]
-	ld [$cdc3], a
+	ld [wSGBPals + $1a], a
 	ld a, [hli]
-	ld [$cdc4], a
+	ld [wSGBPals + $1b], a
 	ld a, [hl]
-	ld [$cdc5], a
-	ld hl, $cda9
-	ld de, $cdb9
-	ld a, $1
+	ld [wSGBPals + $1c], a
+
+	ld hl, wSGBPals
+	ld de, wSGBPals + $10
+	ld a, SCGB_BATTLE_COLORS
 	ld [SGBPredef], a
 	ret
 ; 873c
 
-Function873c: ; 873c
+.SGB0e: ; 873c
 	ld hl, PalPacket_9bd6
-	ld de, $cda9
-	ld bc, $0010
+	ld de, wSGBPals
+	ld bc, $10
 	call CopyBytes
-	ld hl, $cdaa
+
+	ld hl, wSGBPals + 1
 	ld [hl], $10
+rept 2
 	inc hl
-	inc hl
+endr
+
 	ld a, [PlayerHPPal]
 	add $2f
 	ld [hl], a
-	ld hl, $cda9
+	ld hl, wSGBPals
 	ld de, BlkPacket_9ad6
 	ret
 ; 875c
 
-Function875c: ; 875c
+.SGB_PokegearPals: ; 875c
 	ld hl, PalPacket_9c76
 	ld de, BlkPacket_9a86
 	ret
 ; 8763
 
-Function8763: ; 8763
+.SGB_StatsScreenHPPals: ; 8763
 	ld hl, PalPacket_9ce6
-	ld de, $cda9
-	ld bc, $0010
+	ld de, wSGBPals
+	ld bc, $10
 	call CopyBytes
-	ld a, [$cda1]
+	ld a, [wcda1]
 	ld l, a
-	ld h, $0
+	ld h, 0
+rept 2
 	add hl, hl
-	add hl, hl
+endr
 	ld de, Palettes_a8be
 	add hl, de
 	ld a, [hli]
-	ld [$cdac], a
+	ld [wSGBPals + 3], a
 	ld a, [hli]
-	ld [$cdad], a
+	ld [wSGBPals + 4], a
 	ld a, [hli]
-	ld [$cdae], a
+	ld [wSGBPals + 5], a
 	ld a, [hl]
-	ld [$cdaf], a
+	ld [wSGBPals + 6], a
 	ld a, [CurPartySpecies]
 	ld bc, TempMonDVs
-	call Function974b
+	call GetPlayerOrMonPalettePointer
 	ld a, [hli]
-	ld [$cdb2], a
+	ld [wSGBPals + 9], a
 	ld a, [hli]
-	ld [$cdb3], a
+	ld [wSGBPals + 10], a
 	ld a, [hli]
-	ld [$cdb4], a
+	ld [wSGBPals + 11], a
 	ld a, [hl]
-	ld [$cdb5], a
-	ld hl, $cda9
+	ld [wSGBPals + 12], a
+	ld hl, wSGBPals
 	ld de, BlkPacket_9ac6
 	ret
 ; 87ab
 
-Function87ab: ; 87ab
+.SGB0a: ; 87ab
 	ld hl, PalPacket_9c56
-	ld de, $cdaa
+	ld de, wSGBPals + 1
 	ret
 ; 87b2
 
-Function87b2: ; 87b2
+.SGB_Pokedex: ; 87b2
 	ld hl, PalPacket_9ce6
-	ld de, $cda9
-	ld bc, $0010
+	ld de, wSGBPals
+	ld bc, $10
 	call CopyBytes
-	ld hl, $cdac
+	ld hl, wSGBPals + 3
 	ld [hl], $9f
 	inc hl
 	ld [hl], $2a
@@ -209,26 +223,26 @@ Function87b2: ; 87b2
 	inc hl
 	ld [hl], $19
 	ld a, [CurPartySpecies]
-	call Function9775
+	call GetMonPalettePointer_
 	ld a, [hli]
-	ld [$cdb2], a
+	ld [wSGBPals + 9], a
 	ld a, [hli]
-	ld [$cdb3], a
+	ld [wSGBPals + 10], a
 	ld a, [hli]
-	ld [$cdb4], a
+	ld [wSGBPals + 11], a
 	ld a, [hl]
-	ld [$cdb5], a
-	ld hl, $cda9
+	ld [wSGBPals + 12], a
+	ld hl, wSGBPals
 	ld de, BlkPacket_9ae6
 	ret
 ; 87e9
 
-Function87e9: ; 87e9
+.SGB17: ; 87e9
 	ld hl, PalPacket_9ce6
-	ld de, $cda9
-	ld bc, $0010
+	ld de, wSGBPals
+	ld bc, $10
 	call CopyBytes
-	ld hl, $cdac
+	ld hl, wSGBPals + 3
 	ld [hl], $9f
 	inc hl
 	ld [hl], $2a
@@ -238,32 +252,32 @@ Function87e9: ; 87e9
 	ld [hl], $19
 	ld a, [CurPartySpecies]
 	ld bc, TempMonDVs
-	call Function974b
+	call GetPlayerOrMonPalettePointer
 	ld a, [hli]
-	ld [$cdb2], a
+	ld [wSGBPals + 9], a
 	ld a, [hli]
-	ld [$cdb3], a
+	ld [wSGBPals + 10], a
 	ld a, [hli]
-	ld [$cdb4], a
+	ld [wSGBPals + 11], a
 	ld a, [hl]
-	ld [$cdb5], a
-	ld hl, $cda9
+	ld [wSGBPals + 12], a
+	ld hl, wSGBPals
 	ld de, BlkPacket_9ae6
 	ret
 ; 8823
 
-Function8823: ; 8823
-	call Function87b2
+.SGB_PokedexUnownMode: ; 8823
+	call .SGB_Pokedex
 	ld de, BlkPacket_9af6
 	ret
 ; 882a
 
-Function882a: ; 882a
+.SGB_PokedexSearchOption: ; 882a
 	ld hl, PalPacket_9ce6
-	ld de, $cda9
-	ld bc, $0010
+	ld de, wSGBPals
+	ld bc, $10
 	call CopyBytes
-	ld hl, $cdac
+	ld hl, wSGBPals + 3
 	ld [hl], $9f
 	inc hl
 	ld [hl], $2a
@@ -271,42 +285,42 @@ Function882a: ; 882a
 	ld [hl], $5a
 	inc hl
 	ld [hl], $19
-	ld hl, $cda9
+	ld hl, wSGBPals
 	ld de, BlkPacket_9a86
 	ret
 ; 884b
 
-Function884b: ; 884b
+.SGB_PackPals: ; 884b
 	ld hl, PalPacket_9c36
 	ld de, BlkPacket_9a86
 	ret
 ; 8852
 
-Function8852: ; 8852
+.SGB_SlotMachine: ; 8852
 	ld hl, PalPacket_9c96
 	ld de, BlkPacket_9b06
 	ret
 ; 8859
 
-Function8859: ; 8859
+.SGB06: ; 8859
 	ld hl, PalPacket_9ca6
 	ld de, BlkPacket_9b76
 	ret
 ; 8860
 
-Function8860: ; 8860
+.SGB08:
+.SGB1d: ; 8860
 	ld hl, PalPacket_9cb6
 	ld de, BlkPacket_9a86
 	ret
 ; 8867
 
-Function8867: ; 8867
+.SGB07: ; 8867
 	ld b, 0
-	ld hl, Unknown_8878
+	ld hl, .BlkPacketTable_SGB07
+rept 4
 	add hl, bc
-	add hl, bc
-	add hl, bc
-	add hl, bc
+endr
 	ld e, [hl]
 	inc hl
 	ld d, [hl]
@@ -317,67 +331,67 @@ Function8867: ; 8867
 	ret
 ; 8878
 
-Unknown_8878: ; 8878
+.BlkPacketTable_SGB07: ; 8878
 	dw BlkPacket_9a86, PalPacket_9be6
 	dw BlkPacket_9a96, PalPacket_9c06
 	dw BlkPacket_9a86, PalPacket_9c16
 ; 8884
 
-Function8884: ; 8884
+.SGB0c: ; 8884
 	ld hl, PalPacket_9b96
 	ld de, BlkPacket_9b56
-	ld a, $8
+	ld a, SCGB_08
 	ld [SGBPredef], a
 	ret
 ; 8890
 
-Function8890: ; 8890
+.SGB13: ; 8890
 	ld hl, PalPacket_9ba6
 	ld de, BlkPacket_9b86
 	ret
 ; 8897
 
-Function8897: ; 8897
+.SGB0f: ; 8897
 	ld hl, PalPacket_9c46
 	ld de, BlkPacket_9a86
 	ret
 ; 889e
 
-Function889e: ; 889e
+.SGB11: ; 889e
 	ld hl, BlkPacket_9a86
 	ld de, PlayerLightScreenCount
-	ld bc, $0010
+	ld bc, $10
 	call CopyBytes
 	ld hl, PalPacket_9bb6
 	ld de, BlkPacket_9a86
 	ret
 ; 88b1
 
-Function88b1: ; 88b1
+.SGB_MapPals: ; 88b1
 	ld hl, PalPacket_9bd6
-	ld de, $cda9
-	ld bc, $0010
+	ld de, wSGBPals
+	ld bc, $10
 	call CopyBytes
-	call Function8a0c
-	ld hl, $cdaa
+	call .GetMapPalsIndex
+	ld hl, wSGBPals + 1
 	ld [hld], a
 	ld de, BlkPacket_9a86
-	ld a, $9
+	ld a, SCGB_MAPPALS
 	ld [SGBPredef], a
 	ret
 ; 88cd
 
-Function88cd: ; 88cd
+.SGB0b: ; 88cd
 	push bc
 	ld hl, PalPacket_9ce6
-	ld de, $cda9
-	ld bc, $0010
+	ld de, wSGBPals
+	ld bc, $10
 	call CopyBytes
 	pop bc
 	ld a, c
 	and a
-	jr z, .asm_88ef
-	ld hl, $cdac
+	jr z, .partymon
+	ld hl, wSGBPals + 3
 	ld [hl], $e7
 	inc hl
 	ld [hl], $1c
@@ -385,88 +399,89 @@ Function88cd: ; 88cd
 	ld [hl], $62
 	inc hl
 	ld [hl], $c
-	jr .asm_8913
+	jr .done
 
-.asm_88ef
+.partymon
 	ld hl, PartyMon1DVs
-	ld bc, $0030
+	ld bc, PARTYMON_STRUCT_LENGTH
 	ld a, [CurPartyMon]
 	call AddNTimes
 	ld c, l
 	ld b, h
 	ld a, [PlayerHPPal]
-	call Function974b
+	call GetPlayerOrMonPalettePointer
 	ld a, [hli]
-	ld [$cdac], a
+	ld [wSGBPals + 3], a
 	ld a, [hli]
-	ld [$cdad], a
+	ld [wSGBPals + 4], a
 	ld a, [hli]
-	ld [$cdae], a
+	ld [wSGBPals + 5], a
 	ld a, [hl]
-	ld [$cdaf], a
+	ld [wSGBPals + 6], a
 
-.asm_8913
-	ld hl, $cda9
+.done
+	ld hl, wSGBPals
 	ld de, BlkPacket_9a86
 	ret
 ; 891a
 
-Function891a: ; 891a
+.SGB0d:
+.SGB_TrainerCard: ; 891a
 	ld hl, PalPacket_9cb6
 	ld de, BlkPacket_9a86
 	ret
 ; 8921
 
-Function8921: ; 8921
+.SGB18: ; 8921
 	ld hl, PalPacket_9bc6
 	ld de, BlkPacket_9a86
 	ret
 ; 8928
 
-Function8928: ; 8928
+.SGB12: ; 8928
 	ld hl, PalPacket_9bd6
-	ld de, $cda9
-	ld bc, $0010
+	ld de, wSGBPals
+	ld bc, $10
 	call CopyBytes
 	ld hl, BlkPacket_9a86
-	ld de, $cdb9
-	ld bc, $0010
+	ld de, wSGBPals + $10
+	ld bc, $10
 	call CopyBytes
-	call Function8a0c
-	ld hl, $cdaa
+	call .GetMapPalsIndex
+	ld hl, wSGBPals + 1
 	ld [hl], a
-	ld hl, $cdac
+	ld hl, wSGBPals + 3
 	ld [hl], $2e
-	ld hl, $cdbc
-	ld a, $5
+	ld hl, wSGBPals + $13
+	ld a, 5
 	ld [hli], a
-	ld a, [$cf83]
+	ld a, [wMenuBorderLeftCoord]
 	ld [hli], a
-	ld a, [$cf82]
+	ld a, [wMenuBorderTopCoord]
 	ld [hli], a
-	ld a, [$cf85]
+	ld a, [wMenuBorderRightCoord]
 	ld [hli], a
-	ld a, [$cf84]
+	ld a, [wMenuBorderBottomCoord]
 	ld [hl], a
-	ld hl, $cda9
-	ld de, $cdb9
+	ld hl, wSGBPals
+	ld de, wSGBPals + $10
 	ret
 ; 8969
 
-Function8969: ; 8969
+.SGB1e: ; 8969
 	ld hl, PalPacket_9ce6
-	ld de, $cda9
-	ld bc, $0010
+	ld de, wSGBPals
+	ld bc, $10
 	call CopyBytes
 	ld a, [CurPartySpecies]
 	ld l, a
 	ld h, 0
+rept 3
 	add hl, hl
-	add hl, hl
-	add hl, hl
+endr
 	ld de, PokemonPalettes
 	add hl, de
-	ld a, [$cf65]
+	ld a, [wcf65]
 	and 3
 	sla a
 	sla a
@@ -474,150 +489,149 @@ Function8969: ; 8969
 	ld b, 0
 	add hl, bc
 	ld a, [hli]
-	ld [$cdac], a
+	ld [wSGBPals + 3], a
 	ld a, [hli]
-	ld [$cdad], a
+	ld [wSGBPals + 4], a
 	ld a, [hli]
-	ld [$cdae], a
+	ld [wSGBPals + 5], a
 	ld a, [hl]
-	ld [$cdaf], a
-	ld hl, $cda9
+	ld [wSGBPals + 6], a
+	ld hl, wSGBPals
 	ld de, BlkPacket_9a86
 	ret
 ; 89a6
 
-Function89a6: ; 89a6
+.SGB19: ; 89a6
 	ld hl, PalPacket_9cd6
 	ld de, BlkPacket_9a86
 	ret
 ; 89ad
 
-Function89ad: ; 89ad
+.SGB1a: ; 89ad
 	ld hl, PalPacket_9ce6
-	ld de, $cda9
-	ld bc, $0010
+	ld de, wSGBPals
+	ld bc, $10
 	call CopyBytes
 	ld a, [CurPartySpecies]
 	ld bc, TempMonDVs
-	call Function974b
+	call GetPlayerOrMonPalettePointer
 	ld a, [hli]
-	ld [$cdac], a
+	ld [wSGBPals + 3], a
 	ld a, [hli]
-	ld [$cdad], a
+	ld [wSGBPals + 4], a
 	ld a, [hli]
-	ld [$cdae], a
+	ld [wSGBPals + 5], a
 	ld a, [hl]
-	ld [$cdaf], a
-	ld hl, $cda9
+	ld [wSGBPals + 6], a
+	ld hl, wSGBPals
 	ld de, BlkPacket_9a86
 	ret
 ; 89d9
 
-Function89d9: ; 89d9
+.SGB1b: ; 89d9
 	ld hl, PalPacket_9cc6
 	ld de, BlkPacket_9a86
 	ret
 ; 89e0
 
-Function89e0: ; 89e0
+.SGB_FrontpicPals: ; 89e0
 	ld hl, PalPacket_9ce6
-	ld de, $cda9
-	ld bc, $0010
+	ld de, wSGBPals
+	ld bc, $10
 	call CopyBytes
 	ld a, [CurPartySpecies]
 	ld bc, TempMonDVs
-	call Function9764
+	call GetFrontpicPalettePointer
 	ld a, [hli]
-	ld [$cdac], a
+	ld [wSGBPals + 3], a
 	ld a, [hli]
-	ld [$cdad], a
+	ld [wSGBPals + 4], a
 	ld a, [hli]
-	ld [$cdae], a
+	ld [wSGBPals + 5], a
 	ld a, [hl]
-	ld [$cdaf], a
-	ld hl, $cda9
+	ld [wSGBPals + 6], a
+	ld hl, wSGBPals
 	ld de, BlkPacket_9a86
 	ret
 ; 8a0c
 
-Function8a0c: ; 8a0c
+.GetMapPalsIndex: ; 8a0c
 	ld a, [TimeOfDayPal]
-	cp $2
-	jr c, .asm_8a16
+	cp NITE
+	jr c, .morn_day
 	ld a, $19
 	ret
 
-.asm_8a16
-	ld a, [$d19a]
-	cp $2
-	jr z, .asm_8a39
-	cp $4
-	jr z, .asm_8a3c
-	cp $7
-	jr z, .asm_8a3c
-	cp $5
-	jr z, .asm_8a3f
-	cp $6
-	jr z, .asm_8a42
+.morn_day
+	ld a, [wPermission]
+	cp ROUTE
+	jr z, .route
+	cp CAVE
+	jr z, .cave
+	cp DUNGEON
+	jr z, .cave
+	cp PERM_5
+	jr z, .perm5
+	cp GATE
+	jr z, .gate
 	ld a, [MapGroup]
 	ld e, a
 	ld d, 0
-	ld hl, Unknown_8a45
+	ld hl, .SGBRoofPalInds
 	add hl, de
 	ld a, [hl]
 	ret
 
-.asm_8a39
-	ld a, $0
+.route
+	ld a, $00
 	ret
 
-.asm_8a3c
+.cave
 	ld a, $18
 	ret
 
-.asm_8a3f
-	ld a, $6
+.perm5
+	ld a, $06
 	ret
 
-.asm_8a42
-	ld a, $3
+.gate
+	ld a, $03
 	ret
 ; 8a45
 
-Unknown_8a45: ; 8a45
-	db $00
-	db $12
-	db $14
-	db $18
-	db $11
-	db $15
-	db $09
-	db $04
-	db $0f
-	db $16
-	db $0e
-	db $10
-	db $06
-	db $01
-	db $03
-	db $06
-	db $0b
-	db $08
-	db $05
-	db $17
-	db $08
-	db $07
-	db $13
-	db $02
-	db $0c
-	db $0a
-	db $0d
+.SGBRoofPalInds: ; 8a45
+	db $00 ; Unused
+	db $12 ; Olivine
+	db $14 ; Mahogany
+	db $18 ; Various Dungeons
+	db $11 ; Ecruteak
+	db $15 ; Blackthorn
+	db $09 ; Cinnabar
+	db $04 ; Cerulean
+	db $0f ; Azalea
+	db $16 ; Lake Of Rage
+	db $0e ; Violet
+	db $10 ; Goldenrod
+	db $06 ; Vermilion
+	db $01 ; Palette
+	db $03 ; Pewter
+	db $06 ; Fast Ship
+	db $0b ; Indigo Plateau
+	db $08 ; Fuchsia
+	db $05 ; Lavender
+	db $17 ; Silver Cave Outside
+	db $08 ; Pokemon Center 2F
+	db $07 ; Celadon
+	db $13 ; Cianwood
+	db $02 ; Viridian
+	db $0c ; New Bark
+	db $0a ; Saffron
+	db $0d ; Cherrygrove
 ; 8a60
 
-Function8a60: ; 8a60
+.Finish: ; 8a60
 	push de
 	call Function9809
 	pop hl
 	jp Function9809
 ; 8a68
-

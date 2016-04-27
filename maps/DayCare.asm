@@ -1,95 +1,89 @@
-DayCare_MapScriptHeader: ; 0x62f76
-	; trigger count
+const_value set 2
+	const DAYCARE_GRAMPS
+	const DAYCARE_GRANNY
+
+DayCare_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
 
-	dbw 2, UnknownScript_0x62f7b
-; 0x62f7b
+	dbw MAPCALLBACK_OBJECTS, .EggCheckCallback
 
-UnknownScript_0x62f7b: ; 0x62f7b
-	checkflag $0005
-	iftrue UnknownScript_0x62f88
-	clearevent $06e5
-	setevent $06e6
+.EggCheckCallback:
+	checkflag ENGINE_DAYCARE_MAN_HAS_EGG
+	iftrue .PutDaycareManOutside
+	clearevent EVENT_DAYCARE_MAN_IN_DAYCARE
+	setevent EVENT_DAYCARE_MAN_ON_ROUTE_34
 	return
-; 0x62f88
 
-UnknownScript_0x62f88: ; 0x62f88
-	setevent $06e5
-	clearevent $06e6
+.PutDaycareManOutside:
+	setevent EVENT_DAYCARE_MAN_IN_DAYCARE
+	clearevent EVENT_DAYCARE_MAN_ON_ROUTE_34
 	return
-; 0x62f8f
 
-GrampsScript_0x62f8f: ; 0x62f8f
+DayCareManScript_Inside:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_ODD_EGG
-	iftrue UnknownScript_0x62fbd
-	2writetext UnknownText_0x630ce
-	keeptextopen
-	loadmovesprites
-	checkcode $1
-	if_equal $6, UnknownScript_0x62fb6
-	special $007d
-	loadfont
-	2writetext UnknownText_0x631ae
-	playsound SFX_KEY_ITEM
-	waitbutton
-	2writetext UnknownText_0x631c3
+	iftrue .AlreadyHaveOddEgg
+	writetext DayCareManText_GiveOddEgg
+	buttonsound
 	closetext
-	loadmovesprites
+	checkcode VAR_PARTYCOUNT
+	if_equal PARTY_LENGTH, .PartyFull
+	special Special_GiveOddEgg
+	opentext
+	writetext DayCareText_GotOddEgg
+	playsound SFX_KEY_ITEM
+	waitsfx
+	writetext DayCareText_DescribeOddEgg
+	waitbutton
+	closetext
 	setevent EVENT_GOT_ODD_EGG
 	end
-; 0x62fb6
 
-UnknownScript_0x62fb6: ; 0x62fb6
-	loadfont
-	2writetext UnknownText_0x63237
+.PartyFull:
+	opentext
+	writetext DayCareText_PartyFull
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x62fbd
 
-UnknownScript_0x62fbd: ; 0x62fbd
-	special $001e
+.AlreadyHaveOddEgg:
+	special Special_DayCareMan
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x62fc3
 
-GrannyScript_0x62fc3: ; 0x62fc3
+DayCareLadyScript:
 	faceplayer
-	loadfont
-	checkflag $0005
-	iftrue UnknownScript_0x62fd1
-	special $001f
+	opentext
+	checkflag ENGINE_DAYCARE_MAN_HAS_EGG
+	iftrue .HusbandWasLookingForYou
+	special Special_DayCareLady
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x62fd1
 
-UnknownScript_0x62fd1: ; 0x62fd1
-	2writetext UnknownText_0x62fda
+.HusbandWasLookingForYou:
+	writetext Text_GrampsLookingForYou
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x62fd7
 
-MapDayCareSignpost1Script: ; 0x62fd7
-	jumpstd $0001
-; 0x62fda
+DayCareBookshelf:
+	jumpstd difficultbookshelf
 
-UnknownText_0x62fda: ; 0x62fda
+Text_GrampsLookingForYou:
 	text "Gramps was looking"
 	line "for you."
 	done
-; 0x62ff7
 
-UnknownText_0x62ff7: ; 0x62ff7
+Text_DayCareManTalksAboutEggTicket:
 	text "I'm the DAY-CARE"
 	line "MAN."
 
@@ -111,9 +105,8 @@ UnknownText_0x62ff7: ; 0x62ff7
 	para "need it. You may"
 	line "as well have it."
 	done
-; 0x630ce
 
-UnknownText_0x630ce: ; 0x630ce
+DayCareManText_GiveOddEgg:
 	text "I'm the DAY-CARE"
 	line "MAN."
 
@@ -136,20 +129,17 @@ UnknownText_0x630ce: ; 0x630ce
 	para "Then fine, this is"
 	line "yours to keep!"
 	done
-; 0x631a1
 
-UnknownText_0x631a1: ; 0x631a1
+DayCareText_ComeAgain:
 	text "Come again."
 	done
-; 0x631ae
 
-UnknownText_0x631ae: ; 0x631ae
-	text $52, " received"
+DayCareText_GotOddEgg:
+	text "<PLAYER> received"
 	line "ODD EGG!"
 	done
-; 0x631c3
 
-UnknownText_0x631c3: ; 0x631c3
+DayCareText_DescribeOddEgg:
 	text "I found that when"
 	line "I was caring for"
 
@@ -162,37 +152,32 @@ UnknownText_0x631c3: ; 0x631c3
 	para "EGG, so I'd kept"
 	line "it around."
 	done
-; 0x63237
 
-UnknownText_0x63237: ; 0x63237
+DayCareText_PartyFull:
 	text "You've no room for"
 	line "this."
 	done
-; 0x63250
 
-DayCare_MapEventHeader: ; 0x63250
+DayCare_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 4
-	warp_def $5, $0, 3, GROUP_ROUTE_34, MAP_ROUTE_34
-	warp_def $6, $0, 4, GROUP_ROUTE_34, MAP_ROUTE_34
-	warp_def $7, $2, 5, GROUP_ROUTE_34, MAP_ROUTE_34
-	warp_def $7, $3, 5, GROUP_ROUTE_34, MAP_ROUTE_34
+	warp_def $5, $0, 3, ROUTE_34
+	warp_def $6, $0, 4, ROUTE_34
+	warp_def $7, $2, 5, ROUTE_34
+	warp_def $7, $3, 5, ROUTE_34
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 1, 0, $0, MapDayCareSignpost1Script
-	signpost 1, 1, $0, MapDayCareSignpost1Script
+	signpost 1, 0, SIGNPOST_READ, DayCareBookshelf
+	signpost 1, 1, SIGNPOST_READ, DayCareBookshelf
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_GRAMPS, 7, 6, $9, $0, 255, 255, $0, 0, GrampsScript_0x62f8f, $06e5
-	person_event SPRITE_GRANNY, 7, 9, $8, $0, 255, 255, $80, 0, GrannyScript_0x62fc3, $ffff
-; 0x6328e
-
-
+	person_event SPRITE_GRAMPS, 3, 2, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, DayCareManScript_Inside, EVENT_DAYCARE_MAN_IN_DAYCARE
+	person_event SPRITE_GRANNY, 3, 5, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, DayCareLadyScript, -1

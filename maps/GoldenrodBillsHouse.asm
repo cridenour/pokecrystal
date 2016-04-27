@@ -1,123 +1,115 @@
-GoldenrodBillsHouse_MapScriptHeader: ; 0x54be2
-	; trigger count
+const_value set 2
+	const GOLDENRODBILLSHOUSE_BILL
+	const GOLDENRODBILLSHOUSE_POKEFAN_F
+	const GOLDENRODBILLSHOUSE_TWIN
+
+GoldenrodBillsHouse_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x54be4
 
-BillScript_0x54be4: ; 0x54be4
+BillsHouseBill:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_EEVEE
 	iftrue UnknownScript_0x54c1f
-	2writetext UnknownText_0x54c74
+	writetext UnknownText_0x54c74
 	yesorno
 	iffalse UnknownScript_0x54c19
-	2writetext UnknownText_0x54d3f
-	keeptextopen
-	waitbutton
-	checkcode $1
+	writetext UnknownText_0x54d3f
+	buttonsound
+	waitsfx
+	checkcode VAR_PARTYCOUNT
 	if_equal $6, UnknownScript_0x54c13
-	2writetext UnknownText_0x54dae
+	writetext UnknownText_0x54dae
 	playsound SFX_CAUGHT_MON
-	waitbutton
-	givepoke EEVEE, 20, 0, 0
+	waitsfx
+	givepoke EEVEE, 20
 	setevent EVENT_GOT_EEVEE
-	2writetext UnknownText_0x54dc1
+	writetext UnknownText_0x54dc1
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x54c13
 
-UnknownScript_0x54c13: ; 0x54c13
-	2writetext UnknownText_0x54e02
+UnknownScript_0x54c13:
+	writetext UnknownText_0x54e02
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x54c19
 
-UnknownScript_0x54c19: ; 0x54c19
-	2writetext UnknownText_0x54e2d
+UnknownScript_0x54c19:
+	writetext UnknownText_0x54e2d
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x54c1f
 
-UnknownScript_0x54c1f: ; 0x54c1f
-	2writetext UnknownText_0x54e42
+UnknownScript_0x54c1f:
+	writetext UnknownText_0x54e42
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x54c25
 
-PokefanFScript_0x54c25: ; 0x54c25
+BillsMom:
 	faceplayer
-	loadfont
-	checkevent $0712
+	opentext
+	checkevent EVENT_MET_BILL
 	iffalse UnknownScript_0x54c33
-	2writetext UnknownText_0x54ea8
+	writetext UnknownText_0x54ea8
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x54c33
 
-UnknownScript_0x54c33: ; 0x54c33
-	2writetext UnknownText_0x54f4e
+UnknownScript_0x54c33:
+	writetext UnknownText_0x54f4e
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x54c39
 
-TwinScript_0x54c39: ; 0x54c39
+BillsSister:
 	faceplayer
-	loadfont
-	checkcellnum $3
+	opentext
+	checkcellnum PHONE_BILL
 	iftrue UnknownScript_0x54c58
-	2writetext UnknownText_0x54f9e
-	askforphonenumber $3
+	writetext UnknownText_0x54f9e
+	askforphonenumber PHONE_BILL
 	if_equal $1, UnknownScript_0x54c64
 	if_equal $2, UnknownScript_0x54c5e
-	waitbutton
-	addcellnum $3
-	2writetext UnknownText_0x54fd9
+	waitsfx
+	addcellnum PHONE_BILL
+	writetext UnknownText_0x54fd9
 	playsound SFX_REGISTER_PHONE_NUMBER
-	waitbutton
-	keeptextopen
+	waitsfx
+	buttonsound
 UnknownScript_0x54c58: ;0x54c58
-	2writetext UnknownText_0x55069
+	writetext UnknownText_0x55069
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x54c5e
 
-UnknownScript_0x54c5e: ; 0x54c5e
-	2writetext UnknownText_0x54ff3
+UnknownScript_0x54c5e:
+	writetext UnknownText_0x54ff3
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x54c64
 
-UnknownScript_0x54c64: ; 0x54c64
-	2writetext UnknownText_0x55046
-	keeptextopen
-	2jump UnknownScript_0x54c5e
-; 0x54c6b
+UnknownScript_0x54c64:
+	writetext UnknownText_0x55046
+	buttonsound
+	jump UnknownScript_0x54c5e
 
-MapGoldenrodBillsHouseSignpost1Script: ; 0x54c6b
-	jumpstd $0002
-; 0x54c6e
+BillsHouseBookshelf1:
+	jumpstd picturebookshelf
 
-MapGoldenrodBillsHouseSignpost0Script: ; 0x54c6e
-	jumpstd $0003
-; 0x54c71
+BillsHouseBookshelf2:
+	jumpstd magazinebookshelf
 
-MapGoldenrodBillsHouseSignpost2Script: ; 0x54c71
-	jumpstd $000c
-; 0x54c74
+BillsHouseRadio:
+	jumpstd radio2
 
-UnknownText_0x54c74: ; 0x54c74
-	text "BILL: Hi, ", $52, "!"
+UnknownText_0x54c74:
+	text "BILL: Hi, <PLAYER>!"
 	line "Do us a favor and"
 	cont "take this EEVEE."
 
@@ -133,11 +125,10 @@ UnknownText_0x54c74: ; 0x54c74
 
 	para "Can I count on you"
 	line "to play with it,"
-	cont $52, "?"
+	cont "<PLAYER>?"
 	done
-; 0x54d3f
 
-UnknownText_0x54d3f: ; 0x54d3f
+UnknownText_0x54d3f:
 	text "BILL: I knew you'd"
 	line "come through!"
 
@@ -150,37 +141,32 @@ UnknownText_0x54d3f: ; 0x54d3f
 	para "Take good care of"
 	line "it!"
 	done
-; 0x54dae
 
-UnknownText_0x54dae: ; 0x54dae
-	text $52, " received"
+UnknownText_0x54dae:
+	text "<PLAYER> received"
 	line "EEVEE!"
 	done
-; 0x54dc1
 
-UnknownText_0x54dc1: ; 0x54dc1
+UnknownText_0x54dc1:
 	text "BILL: PROF.ELM"
 	line "claims EEVEE may"
 
 	para "evolve in new and"
 	line "unknown ways."
 	done
-; 0x54e02
 
-UnknownText_0x54e02: ; 0x54e02
+UnknownText_0x54e02:
 	text "Whoa, wait. You"
 	line "can't carry any"
 	cont "more #MON."
 	done
-; 0x54e2d
 
-UnknownText_0x54e2d: ; 0x54e2d
+UnknownText_0x54e2d:
 	text "Oh… Now what to"
 	line "do?"
 	done
-; 0x54e42
 
-UnknownText_0x54e42: ; 0x54e42
+UnknownText_0x54e42:
 	text "BILL: My pop, he"
 	line "won't work. All he"
 
@@ -190,9 +176,8 @@ UnknownText_0x54e42: ; 0x54e42
 	para "He's getting to be"
 	line "a real headache…"
 	done
-; 0x54ea8
 
-UnknownText_0x54ea8: ; 0x54ea8
+UnknownText_0x54ea8:
 	text "Oh, you collect"
 	line "#MON? My son"
 	cont "BILL is an expert."
@@ -209,9 +194,8 @@ UnknownText_0x54ea8: ; 0x54ea8
 	para "CORNER without"
 	line "being called…"
 	done
-; 0x54f4e
 
-UnknownText_0x54f4e: ; 0x54f4e
+UnknownText_0x54f4e:
 	text "My husband was"
 	line "once known as a"
 
@@ -221,24 +205,21 @@ UnknownText_0x54f4e: ; 0x54f4e
 	para "taken after his"
 	line "father."
 	done
-; 0x54f9e
 
-UnknownText_0x54f9e: ; 0x54f9e
+UnknownText_0x54f9e:
 	text "Are you a trainer?"
 
 	para "I've got a useful"
 	line "phone number for"
 	cont "you."
 	done
-; 0x54fd9
 
-UnknownText_0x54fd9: ; 0x54fd9
-	text $52, " recorded"
+UnknownText_0x54fd9:
+	text "<PLAYER> recorded"
 	line "BILL's number."
 	done
-; 0x54ff3
 
-UnknownText_0x54ff3: ; 0x54ff3
+UnknownText_0x54ff3:
 	text "My brother made"
 	line "the PC #MON"
 	cont "storage system."
@@ -247,45 +228,40 @@ UnknownText_0x54ff3: ; 0x54ff3
 	line "give you BILL's"
 	cont "number…"
 	done
-; 0x55046
 
-UnknownText_0x55046: ; 0x55046
+UnknownText_0x55046:
 	text "You can't record"
 	line "any more numbers."
 	done
-; 0x55069
 
-UnknownText_0x55069: ; 0x55069
+UnknownText_0x55069:
 	text "My big brother"
 	line "BILL made the PC"
 
 	para "#MON storage"
 	line "system."
 	done
-; 0x5509f
 
-GoldenrodBillsHouse_MapEventHeader: ; 0x5509f
+GoldenrodBillsHouse_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 4, GROUP_GOLDENROD_CITY, MAP_GOLDENROD_CITY
-	warp_def $7, $3, 4, GROUP_GOLDENROD_CITY, MAP_GOLDENROD_CITY
+	warp_def $7, $2, 4, GOLDENROD_CITY
+	warp_def $7, $3, 4, GOLDENROD_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 3
-	signpost 1, 0, $0, MapGoldenrodBillsHouseSignpost0Script
-	signpost 1, 1, $0, MapGoldenrodBillsHouseSignpost1Script
-	signpost 1, 7, $0, MapGoldenrodBillsHouseSignpost2Script
+	signpost 1, 0, SIGNPOST_READ, BillsHouseBookshelf2
+	signpost 1, 1, SIGNPOST_READ, BillsHouseBookshelf1
+	signpost 1, 7, SIGNPOST_READ, BillsHouseRadio
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_BILL, 7, 6, $9, $0, 255, 255, $0, 0, BillScript_0x54be4, $0712
-	person_event SPRITE_POKEFAN_F, 7, 9, $6, $0, 255, 255, $0, 0, PokefanFScript_0x54c25, $ffff
-	person_event SPRITE_TWIN, 8, 9, $2, $11, 255, 255, $a0, 0, TwinScript_0x54c39, $ffff
-; 0x550e5
-
+	person_event SPRITE_BILL, 3, 2, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, BillsHouseBill, EVENT_MET_BILL
+	person_event SPRITE_POKEFAN_F, 3, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, BillsMom, -1
+	person_event SPRITE_TWIN, 4, 5, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, BillsSister, -1

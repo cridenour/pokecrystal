@@ -1,73 +1,66 @@
-TinTowerRoof_MapScriptHeader: ; 0x7722b
-	; trigger count
+const_value set 2
+	const TINTOWERROOF_HO_OH
+
+TinTowerRoof_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
 
-	dbw 2, UnknownScript_0x77230
-; 0x77230
+	dbw MAPCALLBACK_OBJECTS, .HoOh
 
-UnknownScript_0x77230: ; 0x77230
+.HoOh:
 	checkevent EVENT_FOUGHT_HO_OH
-	iftrue UnknownScript_0x77241
+	iftrue .NoAppear
 	checkitem RAINBOW_WING
-	iftrue UnknownScript_0x7723e
-	2jump UnknownScript_0x77241
-; 0x7723e
+	iftrue .Appear
+	jump .NoAppear
 
-UnknownScript_0x7723e: ; 0x7723e
-	appear $2
+.Appear:
+	appear TINTOWERROOF_HO_OH
 	return
-; 0x77241
 
-UnknownScript_0x77241: ; 0x77241
-	disappear $2
+.NoAppear:
+	disappear TINTOWERROOF_HO_OH
 	return
-; 0x77244
 
-HoOhScript_0x77244: ; 0x77244
+TinTowerHoOh:
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x77260
+	opentext
+	writetext HoOhText
 	cry HO_OH
 	pause 15
-	loadmovesprites
+	closetext
 	setevent EVENT_FOUGHT_HO_OH
-	writecode $3, $a
-	loadpokedata HO_OH, 60
+	writecode VAR_BATTLETYPE, BATTLETYPE_FORCEITEM
+	loadwildmon HO_OH, 60
 	startbattle
-	disappear $2
-	returnafterbattle
+	disappear TINTOWERROOF_HO_OH
+	reloadmapafterbattle
 	setevent EVENT_SET_WHEN_FOUGHT_HO_OH
 	end
-; 0x77260
 
-UnknownText_0x77260: ; 0x77260
+HoOhText:
 	text "Shaoooh!"
 	done
-; 0x7726a
 
-TinTowerRoof_MapEventHeader: ; 0x7726a
+TinTowerRoof_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 1
-	warp_def $d, $9, 4, GROUP_TIN_TOWER_9F, MAP_TIN_TOWER_9F
+	warp_def $d, $9, 4, TIN_TOWER_9F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_HO_OH, 9, 13, $16, $0, 255, 255, $80, 0, HoOhScript_0x77244, $073c
-; 0x77282
-
-
-
+	person_event SPRITE_HO_OH, 5, 9, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, TinTowerHoOh, EVENT_TIN_TOWER_ROOF_HO_OH

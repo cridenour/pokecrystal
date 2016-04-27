@@ -1,8 +1,8 @@
 Music_ElmsLab: ; ea040
-	dbw $c0, Music_ElmsLab_Ch1
-	dbw $01, Music_ElmsLab_Ch2
-	dbw $02, Music_ElmsLab_Ch3
-	dbw $03, Music_ElmsLab_Ch4
+	musicheader 4, 1, Music_ElmsLab_Ch1
+	musicheader 1, 2, Music_ElmsLab_Ch2
+	musicheader 1, 3, Music_ElmsLab_Ch3
+	musicheader 1, 4, Music_ElmsLab_Ch4
 ; ea04c
 
 Music_ElmsLab_Ch1: ; ea04c
@@ -540,5 +540,3 @@ Music_ElmsLab_branch_ea2b9: ; ea2b9
 	note G_, 4
 	loopchannel 0, Music_ElmsLab_branch_ea2b9
 ; ea2be
-
-

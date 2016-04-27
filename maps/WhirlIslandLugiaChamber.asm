@@ -1,70 +1,65 @@
-WhirlIslandLugiaChamber_MapScriptHeader: ; 0x18c4ff
-	; trigger count
+const_value set 2
+	const WHIRLISLANDLUGIACHAMBER_LUGIA
+
+WhirlIslandLugiaChamber_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
 
-	dbw 2, UnknownScript_0x18c504
-; 0x18c504
+	dbw MAPCALLBACK_OBJECTS, .Lugia
 
-UnknownScript_0x18c504: ; 0x18c504
+.Lugia:
 	checkevent EVENT_FOUGHT_LUGIA
-	iftrue UnknownScript_0x18c515
+	iftrue .NoAppear
 	checkitem SILVER_WING
-	iftrue UnknownScript_0x18c512
-	2jump UnknownScript_0x18c515
-; 0x18c512
+	iftrue .Appear
+	jump .NoAppear
 
-UnknownScript_0x18c512: ; 0x18c512
-	appear $2
+.Appear:
+	appear WHIRLISLANDLUGIACHAMBER_LUGIA
 	return
-; 0x18c515
 
-UnknownScript_0x18c515: ; 0x18c515
-	disappear $2
+.NoAppear:
+	disappear WHIRLISLANDLUGIACHAMBER_LUGIA
 	return
-; 0x18c518
 
-LugiaScript_0x18c518: ; 0x18c518
+Lugia:
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x18c531
+	opentext
+	writetext LugiaText
 	cry LUGIA
 	pause 15
-	loadmovesprites
+	closetext
 	setevent EVENT_FOUGHT_LUGIA
-	writecode $3, $a
-	loadpokedata LUGIA, 60
+	writecode VAR_BATTLETYPE, BATTLETYPE_FORCEITEM
+	loadwildmon LUGIA, 60
 	startbattle
-	disappear $2
-	returnafterbattle
+	disappear WHIRLISLANDLUGIACHAMBER_LUGIA
+	reloadmapafterbattle
 	end
-; 0x18c531
 
-UnknownText_0x18c531: ; 0x18c531
+LugiaText:
 	text "Gyaaas!"
 	done
-; 0x18c53a
 
-WhirlIslandLugiaChamber_MapEventHeader: ; 0x18c53a
+WhirlIslandLugiaChamber_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 1
-	warp_def $d, $9, 3, GROUP_WHIRL_ISLAND_B2F, MAP_WHIRL_ISLAND_B2F
+	warp_def $d, $9, 3, WHIRL_ISLAND_B2F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_LUGIA, 9, 13, $16, $0, 255, 255, $90, 0, LugiaScript_0x18c518, $073d
-; 0x18c552
-
+	person_event SPRITE_LUGIA, 5, 9, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, Lugia, EVENT_WHIRL_ISLAND_LUGIA_CHAMBER_LUGIA

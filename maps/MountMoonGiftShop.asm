@@ -1,50 +1,50 @@
-MountMoonGiftShop_MapScriptHeader: ; 0x771a6
-	; trigger count
+const_value set 2
+	const MOUNTMOONGIFTSHOP_GRAMPS1
+	const MOUNTMOONGIFTSHOP_GRAMPS2
+	const MOUNTMOONGIFTSHOP_LASS1
+	const MOUNTMOONGIFTSHOP_LASS2
+
+MountMoonGiftShop_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x771a8
 
-GrampsScript_0x771a8: ; 0x771a8
+GrampsScript_0x771a8:
 	faceplayer
-	loadfont
-	pokemart $0, $001f
-	loadmovesprites
+	opentext
+	pokemart MARTTYPE_STANDARD, MART_MT_MOON
+	closetext
 	end
-; 0x771b0
 
-LassScript_0x771b0: ; 0x771b0
+LassScript_0x771b0:
 	jumptextfaceplayer UnknownText_0x771b3
-; 0x771b3
 
-UnknownText_0x771b3: ; 0x771b3
+UnknownText_0x771b3:
 	text "When the sun goes"
 	line "down, CLEFAIRY"
 	cont "come out to play."
 	done
-; 0x771e7
 
-MountMoonGiftShop_MapEventHeader: ; 0x771e7
+MountMoonGiftShop_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $3, 3, GROUP_MOUNT_MOON_SQUARE, MAP_MOUNT_MOON_SQUARE
-	warp_def $7, $4, 3, GROUP_MOUNT_MOON_SQUARE, MAP_MOUNT_MOON_SQUARE
+	warp_def $7, $3, 3, MOUNT_MOON_SQUARE
+	warp_def $7, $4, 3, MOUNT_MOON_SQUARE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 4
-	person_event SPRITE_GRAMPS, 7, 8, $6, $0, 255, 1, $0, 0, GrampsScript_0x771a8, $ffff
-	person_event SPRITE_GRAMPS, 6, 5, $9, $0, 255, 2, $0, 0, GrampsScript_0x771a8, $ffff
-	person_event SPRITE_LASS, 10, 5, $5, $1, 255, 1, $0, 0, LassScript_0x771b0, $ffff
-	person_event SPRITE_LASS, 8, 9, $4, $10, 255, 2, $0, 0, LassScript_0x771b0, $ffff
-; 0x7722b
-
+	person_event SPRITE_GRAMPS, 3, 4, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, 1, 0, PERSONTYPE_SCRIPT, 0, GrampsScript_0x771a8, -1
+	person_event SPRITE_GRAMPS, 2, 1, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, 2, 0, PERSONTYPE_SCRIPT, 0, GrampsScript_0x771a8, -1
+	person_event SPRITE_LASS, 6, 1, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, 1, 0, PERSONTYPE_SCRIPT, 0, LassScript_0x771b0, -1
+	person_event SPRITE_LASS, 4, 5, SPRITEMOVEDATA_WALK_UP_DOWN, 1, 0, -1, 2, 0, PERSONTYPE_SCRIPT, 0, LassScript_0x771b0, -1

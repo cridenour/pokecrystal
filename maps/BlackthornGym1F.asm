@@ -1,216 +1,157 @@
-BlackthornGym1F_MapScriptHeader: ; 0x194e00
-	; trigger count
+const_value set 2
+	const BLACKTHORNGYM1F_CLAIR
+	const BLACKTHORNGYM1F_COOLTRAINER_M1
+	const BLACKTHORNGYM1F_COOLTRAINER_M2
+	const BLACKTHORNGYM1F_COOLTRAINER_F
+	const BLACKTHORNGYM1F_GYM_GUY
+
+BlackthornGym1F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
+	dbw MAPCALLBACK_TILES, .Boulders
 
-	dbw 1, UnknownScript_0x194e05
-; 0x194e05
-
-UnknownScript_0x194e05: ; 0x194e05
-	checkevent $0706
-	iffalse UnknownScript_0x194e0f
+.Boulders:
+	checkevent EVENT_BOULDER_IN_BLACKTHORN_GYM_1
+	iffalse .skip1
 	changeblock $8, $2, $3b
-UnknownScript_0x194e0f: ; 0x194e0f
-	checkevent $0707
-	iffalse UnknownScript_0x194e19
+.skip1
+	checkevent EVENT_BOULDER_IN_BLACKTHORN_GYM_2
+	iffalse .skip2
 	changeblock $2, $4, $3a
-UnknownScript_0x194e19: ; 0x194e19
-	checkevent $0708
-	iffalse UnknownScript_0x194e23
+.skip2
+	checkevent EVENT_BOULDER_IN_BLACKTHORN_GYM_3
+	iffalse .skip3
 	changeblock $8, $6, $3b
-UnknownScript_0x194e23: ; 0x194e23
+.skip3
 	return
-; 0x194e24
 
-ClairScript_0x194e24: ; 0x194e24
+BlackthornGymClairScript:
 	faceplayer
-	loadfont
-	checkflag $0022
-	iftrue UnknownScript_0x194e69
+	opentext
+	checkflag ENGINE_RISINGBADGE
+	iftrue .AlreadyGotBadge
 	checkevent EVENT_BEAT_CLAIR
-	iftrue UnknownScript_0x194e63
-	2writetext UnknownText_0x194efa
+	iftrue .FightDone
+	writetext ClairIntroText
+	waitbutton
 	closetext
-	loadmovesprites
-	winlosstext UnknownText_0x194fd6, $0000
+	winlosstext ClairWinText, 0
 	loadtrainer CLAIR, 1
 	startbattle
-	returnafterbattle
+	reloadmapafterbattle
 	setevent EVENT_BEAT_CLAIR
-	loadfont
-	2writetext UnknownText_0x19500e
+	opentext
+	writetext ClairText_GoToDragonsDen
+	waitbutton
 	closetext
-	loadmovesprites
 	setevent EVENT_BEAT_COOLTRAINERM_PAUL
 	setevent EVENT_BEAT_COOLTRAINERM_CODY
 	setevent EVENT_BEAT_COOLTRAINERM_MIKE
 	setevent EVENT_BEAT_COOLTRAINERF_FRAN
 	setevent EVENT_BEAT_COOLTRAINERF_LOLA
-	clearevent $0736
-	setevent $074c
-	clearevent $074d
+	clearevent EVENT_MAHOGANY_MART_OWNERS
+	setevent EVENT_BLACKTHORN_CITY_GRAMPS_BLOCKS_DRAGONS_DEN
+	clearevent EVENT_BLACKTHORN_CITY_GRAMPS_NOT_BLOCKING_DRAGONS_DEN
 	end
-; 0x194e63
 
-UnknownScript_0x194e63: ; 0x194e63
-	2writetext UnknownText_0x195162
-	closetext
-	loadmovesprites
-	end
-; 0x194e69
-
-UnknownScript_0x194e69: ; 0x194e69
-	checkevent EVENT_GOT_TM24_DRAGONBREATH
-	iftrue UnknownScript_0x194e94
-	2writetext UnknownText_0x195196
-	keeptextopen
-	giveitem TM_24, $1
-	iffalse UnknownScript_0x194e8e
-	itemtotext TM_24, $0
-	2writetext UnknownText_0x1951bf
-	playsound SFX_ITEM
+.FightDone:
+	writetext ClairText_TooMuchToExpect
 	waitbutton
+	closetext
+	end
+
+.AlreadyGotBadge:
+	checkevent EVENT_GOT_TM24_DRAGONBREATH
+	iftrue .GotTM24
+	writetext BlackthornGymClairText_YouKeptMeWaiting
+	buttonsound
+	giveitem TM_DRAGONBREATH
+	iffalse .BagFull
+	itemtotext TM_DRAGONBREATH, $0
+	writetext BlackthornGymText_ReceivedTM24
+	playsound SFX_ITEM
+	waitsfx
 	itemnotify
 	setevent EVENT_GOT_TM24_DRAGONBREATH
-	2writetext UnknownText_0x1951d1
-	keeptextopen
-	2jump UnknownScript_0x194e94
-; 0x194e8e
+	writetext BlackthornGymClairText_DescribeTM24
+	buttonsound
+	jump .GotTM24
 
-UnknownScript_0x194e8e: ; 0x194e8e
-	2writetext UnknownText_0x19524f
+.BagFull:
+	writetext BlackthornGymClairText_BagFull
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x194e94
 
-UnknownScript_0x194e94: ; 0x194e94
-	2writetext UnknownText_0x195272
+.GotTM24:
+	writetext BlackthornGymClairText_League
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x194e9a
 
-TrainerCooltrainermPaul: ; 0x194e9a
-	; bit/flag number
-	dw $54a
+TrainerCooltrainermPaul:
+	trainer EVENT_BEAT_COOLTRAINERM_PAUL, COOLTRAINERM, PAUL, CooltrainermPaulSeenText, CooltrainermPaulBeatenText, 0, CooltrainermPaulScript
 
-	; trainer group && trainer id
-	db COOLTRAINERM, PAUL
-
-	; text when seen
-	dw CooltrainermPaulSeenText
-
-	; text when trainer beaten
-	dw CooltrainermPaulBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw CooltrainermPaulScript
-; 0x194ea6
-
-CooltrainermPaulScript: ; 0x194ea6
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1953f1
+CooltrainermPaulScript:
+	end_if_just_battled
+	opentext
+	writetext CooltrainermPaulAfterText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x194eae
 
-TrainerCooltrainermMike: ; 0x194eae
-	; bit/flag number
-	dw $54c
+TrainerCooltrainermMike:
+	trainer EVENT_BEAT_COOLTRAINERM_MIKE, COOLTRAINERM, MIKE, CooltrainermMikeSeenText, CooltrainermMikeBeatenText, 0, CooltrainermMikeScript
 
-	; trainer group && trainer id
-	db COOLTRAINERM, MIKE
-
-	; text when seen
-	dw CooltrainermMikeSeenText
-
-	; text when trainer beaten
-	dw CooltrainermMikeBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw CooltrainermMikeScript
-; 0x194eba
-
-CooltrainermMikeScript: ; 0x194eba
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x195467
+CooltrainermMikeScript:
+	end_if_just_battled
+	opentext
+	writetext CooltrainermMikeAfterText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x194ec2
 
-TrainerCooltrainerfLola: ; 0x194ec2
-	; bit/flag number
-	dw $55e
+TrainerCooltrainerfLola:
+	trainer EVENT_BEAT_COOLTRAINERF_LOLA, COOLTRAINERF, LOLA, CooltrainerfLolaSeenText, CooltrainerfLolaBeatenText, 0, CooltrainerfLolaScript
 
-	; trainer group && trainer id
-	db COOLTRAINERF, LOLA
-
-	; text when seen
-	dw CooltrainerfLolaSeenText
-
-	; text when trainer beaten
-	dw CooltrainerfLolaBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw CooltrainerfLolaScript
-; 0x194ece
-
-CooltrainerfLolaScript: ; 0x194ece
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x195516
+CooltrainerfLolaScript:
+	end_if_just_battled
+	opentext
+	writetext CooltrainerfLolaAfterText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x194ed6
 
-BlackthornGymGuyScript: ; 0x194ed6
+BlackthornGymGuyScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_BEAT_CLAIR
 	iftrue .BlackthornGymGuyWinScript
-	2writetext BlackthornGymGuyText
+	writetext BlackthornGymGuyText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
 
-.BlackthornGymGuyWinScript
-	2writetext BlackthornGymGuyWinText
+.BlackthornGymGuyWinScript:
+	writetext BlackthornGymGuyWinText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x194eea
 
-MapBlackthornGym1FSignpost1Script: ; 0x194eea
-	checkflag $0022
-	iftrue UnknownScript_0x194ef3
-	jumpstd $002d
-; 0x194ef3
-
-UnknownScript_0x194ef3: ; 0x194ef3
+BlackthornGymStatue:
+	checkflag ENGINE_RISINGBADGE
+	iftrue .Beaten
+	jumpstd gymstatue1
+.Beaten:
 	trainertotext CLAIR, 1, $1
-	jumpstd $002e
-; 0x194efa
+	jumpstd gymstatue2
 
-UnknownText_0x194efa: ; 0x194efa
+ClairIntroText:
 	text "I am CLAIR."
 
 	para "The world's best"
@@ -234,18 +175,16 @@ UnknownText_0x194efa: ; 0x194efa
 	para "power against any"
 	line "opponent!"
 	done
-; 0x194fd6
 
-UnknownText_0x194fd6: ; 0x194fd6
+ClairWinText:
 	text "I lost?"
 
 	para "I don't believe"
 	line "it. There must be"
 	cont "some mistake…"
 	done
-; 0x19500e
 
-UnknownText_0x19500e: ; 0x19500e
+ClairText_GoToDragonsDen:
 	text "I won't admit"
 	line "this."
 
@@ -279,31 +218,27 @@ UnknownText_0x19500e: ; 0x19500e
 	line "worthy of a GYM"
 	cont "BADGE!"
 	done
-; 0x195162
 
-UnknownText_0x195162: ; 0x195162
+ClairText_TooMuchToExpect:
 	text "What's the matter?"
 
 	para "Is it too much to"
 	line "expect of you?"
 	done
-; 0x195196
 
-UnknownText_0x195196: ; 0x195196
+BlackthornGymClairText_YouKeptMeWaiting:
 	text "You've kept me"
 	line "waiting!"
 
 	para "Here! Take this!"
 	done
-; 0x1951bf
 
-UnknownText_0x1951bf: ; 0x1951bf
-	text $52, " received"
+BlackthornGymText_ReceivedTM24:
+	text "<PLAYER> received"
 	line "TM24."
 	done
-; 0x1951d1
 
-UnknownText_0x1951d1: ; 0x1951d1
+BlackthornGymClairText_DescribeTM24:
 	text "That contains"
 	line "DRAGONBREATH."
 
@@ -315,15 +250,13 @@ UnknownText_0x1951d1: ; 0x1951d1
 	line "it, you don't have"
 	cont "to take it."
 	done
-; 0x19524f
 
-UnknownText_0x19524f: ; 0x19524f
+BlackthornGymClairText_BagFull:
 	text "What is this? You"
 	line "don't have room?"
 	done
-; 0x195272
 
-UnknownText_0x195272: ; 0x195272
+BlackthornGymClairText_League:
 	text "What's the matter?"
 
 	para "Aren't you headed"
@@ -353,54 +286,47 @@ UnknownText_0x195272: ; 0x195272
 	para "Give it every-"
 	line "thing you've got."
 	done
-; 0x195396
 
-CooltrainermPaulSeenText: ; 0x195396
+CooltrainermPaulSeenText:
 	text "Your first battle"
 	line "against dragons?"
 
 	para "I'll show you how"
 	line "tough they are!"
 	done
-; 0x1953db
 
-CooltrainermPaulBeatenText: ; 0x1953db
+CooltrainermPaulBeatenText:
 	text "My dragon #MON"
 	line "lost?"
 	done
-; 0x1953f1
 
-UnknownText_0x1953f1: ; 0x1953f1
+CooltrainermPaulAfterText:
 	text "LANCE told you"
 	line "that he'd like to"
 
 	para "see you again?"
 	line "Not a chance!"
 	done
-; 0x19542f
 
-CooltrainermMikeSeenText: ; 0x19542f
+CooltrainermMikeSeenText:
 	text "My chance of"
 	line "losing? Not even"
 	cont "one percent!"
 	done
-; 0x19545b
 
-CooltrainermMikeBeatenText: ; 0x19545b
+CooltrainermMikeBeatenText:
 	text "That's odd."
 	done
-; 0x195467
 
-UnknownText_0x195467: ; 0x195467
+CooltrainermMikeAfterText:
 	text "I know my short-"
 	line "comings now."
 
 	para "Thanks for showing"
 	line "me!"
 	done
-; 0x19549d
 
-CooltrainerfLolaSeenText: ; 0x19549d
+CooltrainerfLolaSeenText:
 	text "Dragons are sacred"
 	line "#MON."
 
@@ -413,21 +339,18 @@ CooltrainerfLolaSeenText: ; 0x19549d
 	para "be able to beat"
 	line "them."
 	done
-; 0x19550a
 
-CooltrainerfLolaBeatenText: ; 0x19550a
+CooltrainerfLolaBeatenText:
 	text "Way to go!"
 	done
-; 0x195516
 
-UnknownText_0x195516: ; 0x195516
+CooltrainerfLolaAfterText:
 	text "Dragons are weak"
 	line "against dragon-"
 	cont "type moves."
 	done
-; 0x195544
 
-BlackthornGymGuyText: ; 0x195544
+BlackthornGymGuyText:
 	text "Yo! CHAMP in"
 	line "making!"
 
@@ -451,9 +374,8 @@ BlackthornGymGuyText: ; 0x195544
 	para "to be weak against"
 	line "ice-type moves."
 	done
-; 0x195632
 
-BlackthornGymGuyWinText: ; 0x195632
+BlackthornGymGuyWinText:
 	text "You were great to"
 	line "beat CLAIR!"
 
@@ -465,36 +387,33 @@ BlackthornGymGuyWinText: ; 0x195632
 	line "to becoming the"
 	cont "#MON CHAMPION!"
 	done
-; 0x1956ae
 
-BlackthornGym1F_MapEventHeader: ; 0x1956ae
+BlackthornGym1F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 7
-	warp_def $11, $4, 1, GROUP_BLACKTHORN_CITY, MAP_BLACKTHORN_CITY
-	warp_def $11, $5, 1, GROUP_BLACKTHORN_CITY, MAP_BLACKTHORN_CITY
-	warp_def $7, $1, 1, GROUP_BLACKTHORN_GYM_2F, MAP_BLACKTHORN_GYM_2F
-	warp_def $9, $7, 2, GROUP_BLACKTHORN_GYM_2F, MAP_BLACKTHORN_GYM_2F
-	warp_def $6, $2, 3, GROUP_BLACKTHORN_GYM_2F, MAP_BLACKTHORN_GYM_2F
-	warp_def $7, $7, 4, GROUP_BLACKTHORN_GYM_2F, MAP_BLACKTHORN_GYM_2F
-	warp_def $6, $7, 5, GROUP_BLACKTHORN_GYM_2F, MAP_BLACKTHORN_GYM_2F
+	warp_def $11, $4, 1, BLACKTHORN_CITY
+	warp_def $11, $5, 1, BLACKTHORN_CITY
+	warp_def $7, $1, 1, BLACKTHORN_GYM_2F
+	warp_def $9, $7, 2, BLACKTHORN_GYM_2F
+	warp_def $6, $2, 3, BLACKTHORN_GYM_2F
+	warp_def $7, $7, 4, BLACKTHORN_GYM_2F
+	warp_def $6, $7, 5, BLACKTHORN_GYM_2F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 15, 3, $0, MapBlackthornGym1FSignpost1Script
-	signpost 15, 6, $0, MapBlackthornGym1FSignpost1Script
+	signpost 15, 3, SIGNPOST_READ, BlackthornGymStatue
+	signpost 15, 6, SIGNPOST_READ, BlackthornGymStatue
 
-	; people-events
+.PersonEvents:
 	db 5
-	person_event SPRITE_CLAIR, 7, 9, $6, $0, 255, 255, $90, 0, ClairScript_0x194e24, $ffff
-	person_event SPRITE_COOLTRAINER_M, 10, 10, $6, $0, 255, 255, $82, 3, TrainerCooltrainermMike, $ffff
-	person_event SPRITE_COOLTRAINER_M, 18, 5, $6, $0, 255, 255, $82, 3, TrainerCooltrainermPaul, $ffff
-	person_event SPRITE_COOLTRAINER_F, 6, 13, $6, $0, 255, 255, $82, 1, TrainerCooltrainerfLola, $ffff
-	person_event SPRITE_GYM_GUY, 19, 11, $6, $0, 255, 255, $80, 0, BlackthornGymGuyScript, $ffff
-; 0x195722
-
+	person_event SPRITE_CLAIR, 3, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, BlackthornGymClairScript, -1
+	person_event SPRITE_COOLTRAINER_M, 6, 6, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 3, TrainerCooltrainermMike, -1
+	person_event SPRITE_COOLTRAINER_M, 14, 1, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 3, TrainerCooltrainermPaul, -1
+	person_event SPRITE_COOLTRAINER_F, 2, 9, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 1, TrainerCooltrainerfLola, -1
+	person_event SPRITE_GYM_GUY, 15, 7, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, BlackthornGymGuyScript, -1

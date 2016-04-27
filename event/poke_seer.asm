@@ -1,20 +1,27 @@
-SEER_INTRO      EQU 0
-SEER_CANT_TELL  EQU 1
-SEER_MET_AT     EQU 2
-SEER_TIME_LEVEL EQU 3
-SEER_TRADED     EQU 4
-SEER_CANCEL     EQU 5
-SEER_EGG        EQU 6
-SEER_LEVEL_ONLY EQU 7
+	const_def
+	const SEER_INTRO
+	const SEER_CANT_TELL
+	const SEER_MET_AT
+	const SEER_TIME_LEVEL
+	const SEER_TRADED
+	const SEER_CANCEL
+	const SEER_EGG
+	const SEER_LEVEL_ONLY
 
+	const_def
+	const SEERACTION_MET
+	const SEERACTION_TRADED
+	const SEERACTION_CANT_TELL_1
+	const SEERACTION_CANT_TELL_2
+	const SEERACTION_LEVEL_ONLY
 
 SpecialPokeSeer: ; 4f0bc
 	ld a, SEER_INTRO
 	call PrintSeerText
-	call Functiona36
+	call JoyWaitAorB
 
 	ld b, $6
-	callba Function50000
+	callba SelectMonFromParty
 	jr c, .cancel
 
 	ld a, [CurPartySpecies]
@@ -44,7 +51,7 @@ SpecialPokeSeer: ; 4f0bc
 
 
 SeerAction: ; 4f0ee
-	ld a, [$d002]
+	ld a, [wSeerAction]
 	ld hl, SeerActions
 	rst JumpTable
 	ret
@@ -97,32 +104,33 @@ SeerAction4: ; 4f12b
 ; 4f134
 
 ReadCaughtData: ; 4f134
-	ld a, PartyMon1CaughtData - PartyMon1
+	ld a, MON_CAUGHTDATA
 	call GetPartyParamLocation
 	ld a, [hli]
-	ld [$d03b], a
+	ld [wSeerCaughtData], a
 	ld a, [hld]
-	ld [$d03c], a
+	ld [wSeerCaughtGender], a
 	or [hl]
-	jr z, .asm_4f170
+	jr z, .error
 
-	ld a, 1
-	ld [$d002], a
+	ld a, SEERACTION_TRADED
+	ld [wSeerAction], a
 
-	ld a, PartyMon1ID - PartyMon1
+	ld a, MON_ID
 	call GetPartyParamLocation
 	ld a, [PlayerID]
 	cp [hl]
-	jr nz, .asm_4f15f
+	jr nz, .traded
 
 	inc hl
-	ld a, [$d47c]
-	jr nz, .asm_4f15f
+	ld a, [PlayerID + 1]
+	; cp [hl]
+	jr nz, .traded
 
-	ld a, 0
-	ld [$d002], a
+	ld a, SEERACTION_MET
+	ld [wSeerAction], a
 
-.asm_4f15f
+.traded
 	call GetCaughtLevel
 	call GetCaughtOT
 	call GetCaughtName
@@ -131,18 +139,18 @@ ReadCaughtData: ; 4f134
 	and a
 	ret
 
-.asm_4f170
-	ld a, 2
-	ld [$d002], a
+.error
+	ld a, SEERACTION_CANT_TELL_1
+	ld [wSeerAction], a
 	ret
 ; 4f176
 
 GetCaughtName: ; 4f176
 	ld a, [CurPartyMon]
-	ld hl, PartyMon1Nickname
+	ld hl, PartyMonNicknames
 	ld bc, PKMN_NAME_LENGTH
 	call AddNTimes
-	ld de, $d003
+	ld de, wSeerNickname
 	ld bc, PKMN_NAME_LENGTH
 	call CopyBytes
 	ret
@@ -150,28 +158,29 @@ GetCaughtName: ; 4f176
 
 GetCaughtLevel: ; 4f18c
 	ld a, "@"
-	ld hl, $d036
+	ld hl, wSeerCaughtLevelString
 	ld bc, 4
 	call ByteFill
 
 	; caught level
-	ld a, [$d03b]
+	; Limited to between 1 and 63 for some reason.
+	ld a, [wSeerCaughtData]
 	and $3f
 	jr z, .unknown
 	cp 1 ; hatched from an egg
 	jr nz, .print
-	ld a, 5 ; egg hatch level
+	ld a, EGG_LEVEL ; egg hatch level
 
 .print
-	ld [$d03a], a
-	ld hl, $d036
-	ld de, $d03a
-	ld bc, $4103
+	ld [wSeerCaughtLevel], a
+	ld hl, wSeerCaughtLevelString
+	ld de, wSeerCaughtLevel
+	lb bc, PRINTNUM_RIGHTALIGN | 1, 3
 	call PrintNum
 	ret
 
 .unknown
-	ld de, $d036
+	ld de, wSeerCaughtLevelString
 	ld hl, .unknown_level
 	ld bc, 4
 	call CopyBytes
@@ -183,7 +192,7 @@ GetCaughtLevel: ; 4f18c
 ; 4f1c5
 
 GetCaughtTime: ; 4f1c5
-	ld a, [$d03b]
+	ld a, [wSeerCaughtData]
 	and $c0
 	jr z, .none
 
@@ -194,13 +203,13 @@ GetCaughtTime: ; 4f1c5
 	call GetNthString
 	ld d, h
 	ld e, l
-	ld hl, $d01f
+	ld hl, wSeerTimeOfDay
 	call CopyName2
 	and a
 	ret
 
 .none
-	ld de, $d01f
+	ld de, wSeerTimeOfDay
 	call UnknownCaughtData
 	ret
 ; 4f1e6
@@ -213,7 +222,7 @@ GetCaughtTime: ; 4f1c5
 
 UnknownCaughtData: ; 4f1f8
 	ld hl, .unknown
-	ld bc, $000b
+	ld bc, NAME_LENGTH
 	call CopyBytes
 	ret
 ; 4f202
@@ -223,55 +232,57 @@ UnknownCaughtData: ; 4f1f8
 ; 4f20a
 
 GetCaughtLocation: ; 4f20a
-	ld a, [$d03c]
+	ld a, [wSeerCaughtGender]
 	and $7f
-	jr z, .asm_4f22e
+	jr z, .Unknown
 	cp $7f
-	jr z, .asm_4f234
+	jr z, .event
 	cp $7e
-	jr z, .asm_4f23b
+	jr z, .fail
 	ld e, a
 	callba GetLandmarkName
 	ld hl, StringBuffer1
-	ld de, $d00e
-	ld bc, $0011
+	ld de, wSeerCaughtLocation
+	ld bc, 17
 	call CopyBytes
 	and a
 	ret
 
-.asm_4f22e
-	ld de, $d00e
+.Unknown:
+	ld de, wSeerCaughtLocation
 	jp UnknownCaughtData
 
-.asm_4f234
-	ld a, $4
-	ld [$d002], a
+.event
+	ld a, SEERACTION_LEVEL_ONLY
+	ld [wSeerAction], a
 	scf
 	ret
 
-.asm_4f23b
-	ld a, $3
-	ld [$d002], a
+.fail
+	ld a, SEERACTION_CANT_TELL_2
+	ld [wSeerAction], a
 	scf
 	ret
 ; 4f242
 
 GetCaughtOT: ; 4f242
 	ld a, [CurPartyMon]
-	ld hl, PartyMon1OT
-	ld bc, $000b
+	ld hl, PartyMonOT
+	ld bc, NAME_LENGTH
 	call AddNTimes
-	ld de, $d02a
-	ld bc, $000b
+	ld de, wSeerOTName
+	ld bc, NAME_LENGTH
 	call CopyBytes
+
+; this routine is useless in Western localizations
 	ld hl, .male
-	ld a, [$d03c]
+	ld a, [wSeerCaughtGender]
 	bit 7, a
-	jr z, .asm_4f264
+	jr z, .got_grammar
 	ld hl, .female
 
-.asm_4f264
-	ld de, $d035
+.got_grammar
+	ld de, wSeerOTNameGrammar
 	ld a, "@"
 	ld [de], a
 	ret
@@ -287,8 +298,9 @@ PrintSeerText: ; 4f26d
 	ld e, a
 	ld d, 0
 	ld hl, SeerTexts
+rept 2
 	add hl, de
-	add hl, de
+endr
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
@@ -357,9 +369,9 @@ SeerCancelText: ; 0x4f2af
 
 
 SeerAdvice: ; 4f2b4
-	ld a, PartyMon1Level - PartyMon1
+	ld a, MON_LEVEL
 	call GetPartyParamLocation
-	ld a, [$d03a]
+	ld a, [wSeerCaughtLevel]
 	ld c, a
 	ld a, [hl]
 	sub c
@@ -425,7 +437,7 @@ SeerAdvice5: ; 0x4f2fc
 
 
 GetCaughtGender: ; 4f301
-	ld hl, PartyMon1CaughtGender - PartyMon1
+	ld hl, MON_CAUGHTGENDER
 	add hl, bc
 
 	ld a, [hl]
@@ -448,5 +460,3 @@ GetCaughtGender: ; 4f301
 	ld c, 0
 	ret
 ; 4f31c
-
-

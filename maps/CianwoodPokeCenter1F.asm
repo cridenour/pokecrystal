@@ -1,42 +1,43 @@
-CianwoodPokeCenter1F_MapScriptHeader: ; 0x9dbcd
-	; trigger count
+const_value set 2
+	const CIANWOODPOKECENTER1F_NURSE
+	const CIANWOODPOKECENTER1F_LASS
+	const CIANWOODPOKECENTER1F_GYM_GUY
+	const CIANWOODPOKECENTER1F_SUPER_NERD
+
+CianwoodPokeCenter1F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x9dbcf
 
-NurseScript_0x9dbcf: ; 0x9dbcf
-	jumpstd $0000
-; 0x9dbd2
+NurseScript_0x9dbcf:
+	jumpstd pokecenternurse
 
-LassScript_0x9dbd2: ; 0x9dbd2
+LassScript_0x9dbd2:
 	jumptextfaceplayer UnknownText_0x9dbed
-; 0x9dbd5
 
-CianwoodGymGuyScript: ; 0x9dbd5
+CianwoodGymGuyScript:
 	faceplayer
 	checkevent EVENT_BEAT_CHUCK
 	iftrue .CianwoodGymGuyWinScript
-	loadfont
-	2writetext CianwoodGymGuyText
+	opentext
+	writetext CianwoodGymGuyText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
 
-.CianwoodGymGuyWinScript
-	loadfont
-	2writetext CianwoodGymGuyWinText
+.CianwoodGymGuyWinScript:
+	opentext
+	writetext CianwoodGymGuyWinText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9dbea
 
-SuperNerdScript_0x9dbea: ; 0x9dbea
+SuperNerdScript_0x9dbea:
 	jumptextfaceplayer UnknownText_0x9ded7
-; 0x9dbed
 
-UnknownText_0x9dbed: ; 0x9dbed
+UnknownText_0x9dbed:
 	text "Did you meet the"
 	line "#MANIAC?"
 
@@ -44,9 +45,8 @@ UnknownText_0x9dbed: ; 0x9dbed
 	line "ging about his"
 	cont "rare #MON."
 	done
-; 0x9dc33
 
-CianwoodGymGuyText: ; 0x9dc33
+CianwoodGymGuyText:
 	text "The #MON GYM"
 	line "trainers here are"
 	cont "macho bullies."
@@ -84,16 +84,14 @@ CianwoodGymGuyText: ; 0x9dc33
 	para "If you get stuck,"
 	line "go outside."
 	done
-; 0x9ddc5
 
-CianwoodGymGuyWinText: ; 0x9ddc5
-	text $52, "! You won!"
+CianwoodGymGuyWinText:
+	text "<PLAYER>! You won!"
 	line "I could tell by"
 	cont "looking at you!"
 	done
-; 0x9ddf2
 
-UnknownText_0x9ddf2: ; 0x9ddf2
+UnknownText_0x9ddf2:
 	text "Don't you get the"
 	line "urge to show off"
 
@@ -106,9 +104,8 @@ UnknownText_0x9ddf2: ; 0x9ddf2
 	para "raised to my pal"
 	line "in VIOLET."
 	done
-; 0x9de66
 
-UnknownText_0x9de66: ; 0x9de66
+UnknownText_0x9de66:
 	text "I've been battling"
 	line "my pal in VIOLET"
 
@@ -119,9 +116,8 @@ UnknownText_0x9de66: ; 0x9de66
 	line "against him. I've"
 	cont "gotta crank it up!"
 	done
-; 0x9ded7
 
-UnknownText_0x9ded7: ; 0x9ded7
+UnknownText_0x9ded7:
 	text "I love showing off"
 	line "the #MON that"
 
@@ -134,29 +130,26 @@ UnknownText_0x9ded7: ; 0x9ded7
 	para "battles, and show"
 	line "off my #MON!"
 	done
-; 0x9df4e
 
-CianwoodPokeCenter1F_MapEventHeader: ; 0x9df4e
+CianwoodPokeCenter1F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 3
-	warp_def $7, $3, 3, GROUP_CIANWOOD_CITY, MAP_CIANWOOD_CITY
-	warp_def $7, $4, 3, GROUP_CIANWOOD_CITY, MAP_CIANWOOD_CITY
-	warp_def $7, $0, 1, GROUP_POKECENTER_2F, MAP_POKECENTER_2F
+	warp_def $7, $3, 3, CIANWOOD_CITY
+	warp_def $7, $4, 3, CIANWOOD_CITY
+	warp_def $7, $0, 1, POKECENTER_2F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 4
-	person_event SPRITE_NURSE, 5, 7, $6, $0, 255, 255, $0, 0, NurseScript_0x9dbcf, $ffff
-	person_event SPRITE_LASS, 9, 5, $4, $10, 255, 255, $a0, 0, LassScript_0x9dbd2, $ffff
-	person_event SPRITE_GYM_GUY, 7, 9, $6, $0, 255, 255, $80, 0, CianwoodGymGuyScript, $ffff
-	person_event SPRITE_SUPER_NERD, 10, 12, $5, $1, 255, 255, $90, 0, SuperNerdScript_0x9dbea, $ffff
-; 0x9df97
-
+	person_event SPRITE_NURSE, 1, 3, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, NurseScript_0x9dbcf, -1
+	person_event SPRITE_LASS, 5, 1, SPRITEMOVEDATA_WALK_UP_DOWN, 1, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, LassScript_0x9dbd2, -1
+	person_event SPRITE_GYM_GUY, 3, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, CianwoodGymGuyScript, -1
+	person_event SPRITE_SUPER_NERD, 6, 8, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, SuperNerdScript_0x9dbea, -1

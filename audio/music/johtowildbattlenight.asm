@@ -1,7 +1,7 @@
 Music_JohtoWildBattleNight: ; f605c
-	dbw $80, Music_JohtoWildBattleNight_Ch1
-	dbw $01, Music_JohtoWildBattleNight_Ch2
-	dbw $02, Music_JohtoWildBattleNight_Ch3
+	musicheader 3, 1, Music_JohtoWildBattleNight_Ch1
+	musicheader 1, 2, Music_JohtoWildBattleNight_Ch2
+	musicheader 1, 3, Music_JohtoWildBattleNight_Ch3
 ; f6065
 
 Music_JohtoWildBattleNight_Ch1: ; f6065
@@ -30,5 +30,3 @@ Music_JohtoWildBattleNight_Ch3: ; f608f
 	notetype $c, $11
 	loopchannel 0, Music_JohtoWildBattleNight_branch_f5f94
 ; f6096
-
-

@@ -1,11 +1,9 @@
 Music_PostCredits: ; cfd9e
-	dbw $40, Music_PostCredits_Ch1
-	dbw $01, Music_PostCredits_Ch2
+	musicheader 2, 1, Music_PostCredits_Ch1
+	musicheader 1, 2, Music_PostCredits_Ch2
 ; cfda4
 
-
-INCBIN "baserom.gbc", $cfda4, $cfda5 - $cfda4
-
+	db $2
 
 Music_PostCredits_Ch1: ; cfda5
 	tempo 271
@@ -267,4 +265,3 @@ Music_PostCredits_branch_cfe5a: ; cfe5a
 	note F_, 2
 	loopchannel 0, Music_PostCredits_branch_cfe5a
 ; cff04
-

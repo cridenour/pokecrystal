@@ -1,16 +1,17 @@
-VermilionHouseDiglettsCaveSpeechHouse_MapScriptHeader: ; 0x19202f
-	; trigger count
+const_value set 2
+	const VERMILIONHOUSEDIGLETTSCAVESPEECHHOUSE_GENTLEMAN
+
+VermilionHouseDiglettsCaveSpeechHouse_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x192031
 
-GentlemanScript_0x192031: ; 0x192031
+GentlemanScript_0x192031:
 	jumptextfaceplayer UnknownText_0x192034
-; 0x192034
 
-UnknownText_0x192034: ; 0x192034
+UnknownText_0x192034:
 	text "Over many years,"
 	line "DIGLETT dug a"
 	cont "large tunnel."
@@ -18,25 +19,22 @@ UnknownText_0x192034: ; 0x192034
 	para "That tunnel goes"
 	line "to a distant town."
 	done
-; 0x192086
 
-VermilionHouseDiglettsCaveSpeechHouse_MapEventHeader: ; 0x192086
+VermilionHouseDiglettsCaveSpeechHouse_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 6, GROUP_VERMILION_CITY, MAP_VERMILION_CITY
-	warp_def $7, $3, 6, GROUP_VERMILION_CITY, MAP_VERMILION_CITY
+	warp_def $7, $2, 6, VERMILION_CITY
+	warp_def $7, $3, 6, VERMILION_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_GENTLEMAN, 7, 5, $4, $10, 255, 255, $80, 0, GentlemanScript_0x192031, $ffff
-; 0x1920a3
-
+	person_event SPRITE_GENTLEMAN, 3, 1, SPRITEMOVEDATA_WALK_UP_DOWN, 1, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, GentlemanScript_0x192031, -1

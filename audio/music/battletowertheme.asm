@@ -1,8 +1,8 @@
 Music_BattleTowerTheme: ; 178889
-	dbw $c0, Music_BattleTowerTheme_Ch1
-	dbw $01, Music_BattleTowerTheme_Ch2
-	dbw $02, Music_BattleTowerTheme_Ch3
-	dbw $03, Music_BattleTowerTheme_Ch4
+	musicheader 4, 1, Music_BattleTowerTheme_Ch1
+	musicheader 1, 2, Music_BattleTowerTheme_Ch2
+	musicheader 1, 3, Music_BattleTowerTheme_Ch3
+	musicheader 1, 4, Music_BattleTowerTheme_Ch4
 ; 178895
 
 Music_BattleTowerTheme_Ch1: ; 178895
@@ -242,7 +242,7 @@ Music_BattleTowerTheme_branch_178970: ; 178970
 	note __, 1
 	note F_, 4
 	note __, 4
-	tone $0000
+	tone 0
 	intensity $b7
 	note G_, 2
 	octave 4
@@ -695,5 +695,3 @@ Music_BattleTowerTheme_branch_178b76: ; 178b76
 	note C#, 1
 	endchannel
 ; 178b81
-
-

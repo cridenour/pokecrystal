@@ -1,8 +1,8 @@
 Reset:: ; 150
 	di
-	call SoundRestart
+	call MapSetup_Sound_Off
 	xor a
-	ld [$ffde], a
+	ld [hMapAnims], a
 	call ClearPalettes
 	xor a
 	ld [rIF], a
@@ -10,7 +10,7 @@ Reset:: ; 150
 	ld [rIE], a
 	ei
 
-	ld hl, $cfbe
+	ld hl, wcfbe
 	set 7, [hl]
 
 	ld c, 32
@@ -22,17 +22,17 @@ Reset:: ; 150
 
 _Start:: ; 16e
 	cp $11
-	jr z, .asm_175
+	jr z, .cgb
 	xor a
-	jr .asm_177
+	jr .load
 
-.asm_175
+.cgb
 	ld a, $1
 
-.asm_177
+.load
 	ld [hCGB], a
 	ld a, $1
-	ld [$ffea], a
+	ld [hFFEA], a
 ; 17d
 
 
@@ -69,29 +69,29 @@ Init:: ; 17d
 	ld [rLCDC], a
 
 ; Clear WRAM bank 0
-	ld hl, $c000
-	ld bc, $d000 - $c000
-.asm_1b1
+	ld hl, wc000
+	ld bc, wd000 - wc000
+.ByteFill:
 	ld [hl], 0
 	inc hl
 	dec bc
 	ld a, b
 	or c
-	jr nz, .asm_1b1
+	jr nz, .ByteFill
 
 	ld sp, Stack
 
 ; Clear HRAM
 	ld a, [hCGB]
 	push af
-	ld a, [$ffea]
+	ld a, [hFFEA]
 	push af
 	xor a
-	ld hl, $ff80
-	ld bc, $ffff - $ff80
+	ld hl, HRAM_START
+	ld bc, HRAM_END - HRAM_START
 	call ByteFill
 	pop af
-	ld [$ffea], a
+	ld [hFFEA], a
 	pop af
 	ld [hCGB], a
 
@@ -109,7 +109,7 @@ Init:: ; 17d
 	call LoadPushOAM
 
 	xor a
-	ld [$ffde], a
+	ld [hMapAnims], a
 	ld [hSCX], a
 	ld [hSCY], a
 	ld [rJOYP], a
@@ -136,15 +136,14 @@ Init:: ; 17d
 	; BG on
 	ld [rLCDC], a
 
-	ld a, $ff
-	ld [$ffcb], a
+	ld a, -1
+	ld [hLinkPlayerNumber], a
 
 	callba Function9890
 
-	ld a, $9c
-	ld [$ffd7], a
-
-	xor a
+	ld a, VBGMap1 / $100
+	ld [hBGMapAddress + 1], a
+	xor a ; VBGMap1 % $100
 	ld [hBGMapAddress], a
 
 	callba StartClock
@@ -167,12 +166,11 @@ Init:: ; 17d
 
 	call DelayFrame
 
-	ld a, $30
-	call Predef
+	predef Function9853
 
-	call SoundRestart
+	call MapSetup_Sound_Off
 	xor a
-	ld [CurMusic], a
+	ld [wMapMusic], a
 	jp GameInit
 ; 245
 
@@ -222,4 +220,3 @@ Function270:: ; 270
 	call CloseSRAM
 	ret
 ; 283
-

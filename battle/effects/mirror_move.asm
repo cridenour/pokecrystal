@@ -1,10 +1,10 @@
-BattleCommand1b: ; 373c9
+BattleCommand_MirrorMove: ; 373c9
 ; mirrormove
 
-	call Function372d8
+	call ClearLastMove
 
 	ld a, BATTLE_VARS_MOVE
-	call _GetBattleVar
+	call GetBattleVarAddr
 
 	ld a, BATTLE_VARS_LAST_COUNTER_MOVE_OPP
 	call GetBattleVar
@@ -24,11 +24,11 @@ BattleCommand1b: ; 373c9
 .use
 	ld a, b
 	ld [hl], a
-	ld [$d265], a
+	ld [wd265], a
 
 	push af
 	ld a, BATTLE_VARS_MOVE_ANIM
-	call _GetBattleVar
+	call GetBattleVarAddr
 	ld d, h
 	ld e, l
 	pop af
@@ -37,17 +37,16 @@ BattleCommand1b: ; 373c9
 	call GetMoveData
 	call GetMoveName
 	call CopyName1
-	call Function34548
+	call CheckUserIsCharging
 	jr nz, .done
 
-	ld a, [$c689]
+	ld a, [wKickCounter]
 	push af
-	call BattleCommand0a
+	call BattleCommand_LowerSub
 	pop af
-	ld [$c689], a
+	ld [wKickCounter], a
 
 .done
-	call BattleCommandaa
+	call BattleCommand_MoveDelay
 	jp ResetTurn
 ; 37418
-

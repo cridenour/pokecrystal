@@ -3,11 +3,11 @@ CopyBytes:: ; 0x3026
 	inc b  ; we bail the moment b hits 0, so include the last run
 	inc c  ; same thing; include last byte
 	jr .HandleLoop
-.CopyByte
+.CopyByte:
 	ld a, [hli]
 	ld [de], a
 	inc de
-.HandleLoop
+.HandleLoop:
 	dec c
 	jr nz, .CopyByte
 	dec b
@@ -16,7 +16,7 @@ CopyBytes:: ; 0x3026
 
 SwapBytes:: ; 0x3034
 ; swap bc bytes between hl and de
-.Loop
+.Loop:
 	; stash [hl] away on the stack
 	ld a, [hl]
 	push af
@@ -42,9 +42,9 @@ ByteFill:: ; 0x3041
 	inc b  ; we bail the moment b hits 0, so include the last run
 	inc c  ; same thing; include last byte
 	jr .HandleLoop
-.PutByte
+.PutByte:
 	ld [hli], a
-.HandleLoop
+.HandleLoop:
 	dec c
 	jr nz, .PutByte
 	dec b
@@ -98,7 +98,9 @@ FarCopyWRAM:: ; 306b
 	push af
 	ld a, [hBuffer]
 	ld [rSVBK], a
+
 	call CopyBytes
+
 	pop af
 	ld [rSVBK], a
 	ret
@@ -131,4 +133,3 @@ GetFarWRAMWord:: ; 308d
 	ld [rSVBK], a
 	ret
 ; 309d
-

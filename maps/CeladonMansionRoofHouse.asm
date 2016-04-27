@@ -1,47 +1,46 @@
-CeladonMansionRoofHouse_MapScriptHeader: ; 0x71afb
-	; trigger count
+const_value set 2
+	const CELADONMANSIONROOFHOUSE_PHARMACIST
+
+CeladonMansionRoofHouse_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x71afd
 
-PharmacistScript_0x71afd: ; 0x71afd
+PharmacistScript_0x71afd:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_TM03_CURSE
 	iftrue UnknownScript_0x71b21
-	2writetext UnknownText_0x71b27
-	keeptextopen
-	checktime $4
+	writetext UnknownText_0x71b27
+	buttonsound
+	checknite
 	iftrue UnknownScript_0x71b14
-	2writetext UnknownText_0x71b4a
+	writetext UnknownText_0x71b4a
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x71b14
 
-UnknownScript_0x71b14: ; 0x71b14
-	2writetext UnknownText_0x71ba3
-	keeptextopen
-	verbosegiveitem TM_03, 1
+UnknownScript_0x71b14:
+	writetext UnknownText_0x71ba3
+	buttonsound
+	verbosegiveitem TM_CURSE
 	iffalse UnknownScript_0x71b25
 	setevent EVENT_GOT_TM03_CURSE
-UnknownScript_0x71b21: ; 0x71b21
-	2writetext UnknownText_0x71db3
+UnknownScript_0x71b21:
+	writetext UnknownText_0x71db3
+	waitbutton
+UnknownScript_0x71b25:
 	closetext
-UnknownScript_0x71b25: ; 0x71b25
-	loadmovesprites
 	end
-; 0x71b27
 
-UnknownText_0x71b27: ; 0x71b27
+UnknownText_0x71b27:
 	text "Let me recount a"
 	line "terrifying tale…"
 	done
-; 0x71b4a
 
-UnknownText_0x71b4a: ; 0x71b4a
+UnknownText_0x71b4a:
 	text "Then again, it's"
 	line "not as scary while"
 
@@ -51,9 +50,8 @@ UnknownText_0x71b4a: ; 0x71b4a
 	para "Come back after"
 	line "sunset, OK?"
 	done
-; 0x71ba3
 
-UnknownText_0x71ba3: ; 0x71ba3
+UnknownText_0x71ba3:
 	text "Once upon a time,"
 	line "there was a little"
 
@@ -107,9 +105,8 @@ UnknownText_0x71ba3: ; 0x71ba3
 	line "patiently, you may"
 	cont "take this--TM03!"
 	done
-; 0x71db3
 
-UnknownText_0x71db3: ; 0x71db3
+UnknownText_0x71db3:
 	text "TM03 is CURSE."
 
 	para "It's a terrifying"
@@ -118,25 +115,22 @@ UnknownText_0x71db3: ; 0x71db3
 	para "whittles down the"
 	line "victim's HP."
 	done
-; 0x71e03
 
-CeladonMansionRoofHouse_MapEventHeader: ; 0x71e03
+CeladonMansionRoofHouse_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 3, GROUP_CELADON_MANSION_ROOF, MAP_CELADON_MANSION_ROOF
-	warp_def $7, $3, 3, GROUP_CELADON_MANSION_ROOF, MAP_CELADON_MANSION_ROOF
+	warp_def $7, $2, 3, CELADON_MANSION_ROOF
+	warp_def $7, $3, 3, CELADON_MANSION_ROOF
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_PHARMACIST, 6, 7, $6, $20, 255, 255, $a0, 0, PharmacistScript_0x71afd, $ffff
-; 0x71e20
-
+	person_event SPRITE_PHARMACIST, 2, 3, SPRITEMOVEDATA_STANDING_DOWN, 2, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, PharmacistScript_0x71afd, -1

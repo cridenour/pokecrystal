@@ -1,216 +1,203 @@
-LancesRoom_MapScriptHeader: ; 0x180e2c
-	; trigger count
+const_value set 2
+	const LANCESROOM_LANCE
+	const LANCESROOM_MARY
+	const LANCESROOM_OAK
+
+LancesRoom_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x180e39, $0000
-	dw UnknownScript_0x180e3d, $0000
+	dw .Trigger0, 0
+	dw .Trigger1, 0
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
 
-	dbw 1, UnknownScript_0x180e3e
-; 0x180e39
+	dbw MAPCALLBACK_TILES, .CheckDoor
 
-UnknownScript_0x180e39: ; 0x180e39
-	priorityjump UnknownScript_0x180e53
+.Trigger0:
+	priorityjump LancesRoom_PlayerWalksIn_DoorsCloseBehind
 	end
-; 0x180e3d
 
-UnknownScript_0x180e3d: ; 0x180e3d
+.Trigger1:
 	end
-; 0x180e3e
 
-UnknownScript_0x180e3e: ; 0x180e3e
+.CheckDoor:
 	checkevent EVENT_LANCES_ROOM_ENTRANCE_CLOSED
-	iffalse UnknownScript_0x180e48
+	iffalse .LanceEntranceOpen
 	changeblock $4, $16, $34
-UnknownScript_0x180e48: ; 0x180e48
-	checkevent $0312
-	iffalse UnknownScript_0x180e52
+.LanceEntranceOpen:
+	checkevent EVENT_LANCES_ROOM_EXIT_OPEN
+	iffalse .LanceExitClosed
 	changeblock $4, $0, $b
-UnknownScript_0x180e52: ; 0x180e52
+.LanceExitClosed:
 	return
-; 0x180e53
 
-UnknownScript_0x180e53: ; 0x180e53
-	applymovement $0, MovementData_0x180f33
+LancesRoom_PlayerWalksIn_DoorsCloseBehind:
+	applymovement PLAYER, LancesRoom_PlayerWalksInMovementData
 	refreshscreen $86
 	playsound SFX_STRENGTH
 	earthquake 80
 	changeblock $4, $16, $34
 	reloadmappart
-	loadmovesprites
+	closetext
 	dotrigger $1
 	setevent EVENT_LANCES_ROOM_ENTRANCE_CLOSED
 	end
-; 0x180e6a
 
-UnknownScript_0x180e6a: ; 0x180e6a
-	special $006a
-	applymovement $0, MovementData_0x180f38
-	2jump LanceScript_0x180e7b
-; 0x180e74
+Script_ApproachLanceFromLeft:
+	special Special_FadeOutMusic
+	applymovement PLAYER, MovementData_ApproachLanceFromLeft
+	jump LanceScript_0x180e7b
 
-UnknownScript_0x180e74: ; 0x180e74
-	special $006a
-	applymovement $0, MovementData_0x180f3c
-LanceScript_0x180e7b: ; 0x180e7b
-	spriteface $2, $2
-	loadfont
-	2writetext UnknownText_0x180f67
+Script_ApproachLanceFromRight:
+	special Special_FadeOutMusic
+	applymovement PLAYER, MovementData_ApproachLanceFromRight
+LanceScript_0x180e7b:
+	spriteface LANCESROOM_LANCE, LEFT
+	opentext
+	writetext LanceBattleIntroText
+	waitbutton
 	closetext
-	loadmovesprites
-	winlosstext UnknownText_0x1810a4, $0000
-	setlasttalked $2
+	winlosstext LanceBattleWinText, 0
+	setlasttalked LANCESROOM_LANCE
 	loadtrainer CHAMPION, LANCE
 	startbattle
-	reloadmapmusic
-	returnafterbattle
+	dontrestartmapmusic
+	reloadmapafterbattle
 	setevent EVENT_BEAT_CHAMPION_LANCE
-	loadfont
-	2writetext UnknownText_0x181132
+	opentext
+	writetext LanceBattleAfterText
+	waitbutton
 	closetext
-	loadmovesprites
 	playsound SFX_ENTER_DOOR
 	changeblock $4, $0, $b
 	reloadmappart
-	loadmovesprites
+	closetext
 	setevent EVENT_LANCES_ROOM_ENTRANCE_CLOSED
-	musicfadeout $0038, $10
+	musicfadeout MUSIC_BEAUTY_ENCOUNTER, $10
 	pause 30
-	showemote $0, $2, 15
-	spriteface $2, $0
+	showemote EMOTE_SHOCK, LANCESROOM_LANCE, 15
+	spriteface LANCESROOM_LANCE, DOWN
 	pause 10
-	spriteface $0, $0
-	appear $3
-	applymovement $3, MovementData_0x180f41
-	loadfont
-	2writetext UnknownText_0x1811dd
+	spriteface PLAYER, DOWN
+	appear LANCESROOM_MARY
+	applymovement LANCESROOM_MARY, LancesRoomMovementData_MaryRushesIn
+	opentext
+	writetext UnknownText_0x1811dd
+	waitbutton
 	closetext
-	loadmovesprites
-	appear $4
-	applymovement $4, MovementData_0x180f46
-	follow $3, $4
-	applymovement $3, MovementData_0x180f49
+	appear LANCESROOM_OAK
+	applymovement LANCESROOM_OAK, LancesRoomMovementData_OakWalksIn
+	follow LANCESROOM_MARY, LANCESROOM_OAK
+	applymovement LANCESROOM_MARY, LancesRoomMovementData_MaryYieldsToOak
 	stopfollow
-	spriteface $4, $1
-	spriteface $2, $2
-	loadfont
-	2writetext UnknownText_0x18121b
+	spriteface LANCESROOM_OAK, UP
+	spriteface LANCESROOM_LANCE, LEFT
+	opentext
+	writetext UnknownText_0x18121b
+	waitbutton
 	closetext
-	loadmovesprites
-	applymovement $3, MovementData_0x180f4c
-	spriteface $0, $2
-	loadfont
-	2writetext UnknownText_0x18134b
+	applymovement LANCESROOM_MARY, LancesRoomMovementData_MaryInterviewChampion
+	spriteface PLAYER, LEFT
+	opentext
+	writetext UnknownText_0x18134b
+	waitbutton
 	closetext
-	loadmovesprites
-	applymovement $2, MovementData_0x180f4f
-	spriteface $0, $1
-	loadfont
-	2writetext UnknownText_0x18137b
+	applymovement LANCESROOM_LANCE, LancesRoomMovementData_LancePositionsSelfToGuidePlayerAway
+	spriteface PLAYER, UP
+	opentext
+	writetext UnknownText_0x18137b
+	waitbutton
 	closetext
-	loadmovesprites
-	follow $2, $0
-	spriteface $3, $1
-	spriteface $4, $1
-	applymovement $2, MovementData_0x180f53
+	follow LANCESROOM_LANCE, PLAYER
+	spriteface LANCESROOM_MARY, UP
+	spriteface LANCESROOM_OAK, UP
+	applymovement LANCESROOM_LANCE, LancesRoomMovementData_LanceLeadsPlayerToHallOfFame
 	stopfollow
 	playsound SFX_EXIT_BUILDING
-	disappear $2
-	applymovement $0, MovementData_0x180f55
+	disappear LANCESROOM_LANCE
+	applymovement PLAYER, LancesRoomMovementData_PlayerExits
 	playsound SFX_EXIT_BUILDING
-	disappear $0
-	applymovement $3, MovementData_0x180f57
-	showemote $0, $3, 15
-	loadfont
-	2writetext UnknownText_0x1813c5
+	disappear PLAYER
+	applymovement LANCESROOM_MARY, LancesRoomMovementData_MaryTriesToFollow
+	showemote EMOTE_SHOCK, LANCESROOM_MARY, 15
+	opentext
+	writetext UnknownText_0x1813c5
 	pause 30
-	loadmovesprites
-	applymovement $3, MovementData_0x180f5b
-	special $002e
+	closetext
+	applymovement LANCESROOM_MARY, LancesRoomMovementData_MaryRunsBackAndForth
+	special FadeOutPalettes
 	pause 15
-	warpfacing $1, GROUP_HALL_OF_FAME, MAP_HALL_OF_FAME, $4, $d
+	warpfacing UP, HALL_OF_FAME, $4, $d
 	end
-; 0x180f33
 
-MovementData_0x180f33: ; 0x180f33
+LancesRoom_PlayerWalksInMovementData:
 	step_up
 	step_up
 	step_up
 	step_up
 	step_end
-; 0x180f38
 
-MovementData_0x180f38: ; 0x180f38
+MovementData_ApproachLanceFromLeft:
 	step_up
 	step_up
 	turn_head_right
 	step_end
-; 0x180f3c
 
-MovementData_0x180f3c: ; 0x180f3c
+MovementData_ApproachLanceFromRight:
 	step_up
 	step_left
 	step_up
 	turn_head_right
 	step_end
-; 0x180f41
 
-MovementData_0x180f41: ; 0x180f41
+LancesRoomMovementData_MaryRushesIn:
 	big_step_up
 	big_step_up
 	big_step_up
 	turn_head_down
 	step_end
-; 0x180f46
 
-MovementData_0x180f46: ; 0x180f46
+LancesRoomMovementData_OakWalksIn:
 	step_up
 	step_up
 	step_end
-; 0x180f49
 
-MovementData_0x180f49: ; 0x180f49
+LancesRoomMovementData_MaryYieldsToOak:
 	step_left
 	turn_head_right
 	step_end
-; 0x180f4c
 
-MovementData_0x180f4c: ; 0x180f4c
+LancesRoomMovementData_MaryInterviewChampion:
 	big_step_up
 	turn_head_right
 	step_end
-; 0x180f4f
 
-MovementData_0x180f4f: ; 0x180f4f
+LancesRoomMovementData_LancePositionsSelfToGuidePlayerAway:
 	step_up
 	step_left
 	turn_head_down
 	step_end
-; 0x180f53
 
-MovementData_0x180f53: ; 0x180f53
+LancesRoomMovementData_LanceLeadsPlayerToHallOfFame:
 	step_up
 	step_end
-; 0x180f55
 
-MovementData_0x180f55: ; 0x180f55
+LancesRoomMovementData_PlayerExits:
 	step_up
 	step_end
-; 0x180f57
 
-MovementData_0x180f57: ; 0x180f57
+LancesRoomMovementData_MaryTriesToFollow:
 	step_up
 	step_right
 	turn_head_up
 	step_end
-; 0x180f5b
 
-MovementData_0x180f5b: ; 0x180f5b
+LancesRoomMovementData_MaryRunsBackAndForth:
 	big_step_right
 	big_step_right
 	big_step_left
@@ -223,13 +210,12 @@ MovementData_0x180f5b: ; 0x180f5b
 	big_step_left
 	turn_head_up
 	step_end
-; 0x180f67
 
-UnknownText_0x180f67: ; 0x180f67
+LanceBattleIntroText:
 	text "LANCE: I've been"
 	line "waiting for you."
 
-	para $14, "!"
+	para "<PLAY_G>!"
 
 	para "I knew that you,"
 	line "with your skills,"
@@ -256,9 +242,8 @@ UnknownText_0x180f67: ; 0x180f67
 	line "on master, accept"
 	cont "your challenge!"
 	done
-; 0x1810a4
 
-UnknownText_0x1810a4: ; 0x1810a4
+LanceBattleWinText:
 	text "…It's over."
 
 	para "But it's an odd"
@@ -274,14 +259,13 @@ UnknownText_0x1810a4: ; 0x1810a4
 	para "of a great new"
 	line "CHAMPION!"
 	done
-; 0x181132
 
-UnknownText_0x181132: ; 0x181132
+LanceBattleAfterText:
 	text "…Whew."
 
 	para "You have become"
 	line "truly powerful,"
-	cont $14, "."
+	cont "<PLAY_G>."
 
 	para "Your #MON have"
 	line "responded to your"
@@ -295,20 +279,18 @@ UnknownText_0x181132: ; 0x181132
 	para "grow strong with"
 	line "your #MON."
 	done
-; 0x1811dd
 
-UnknownText_0x1811dd: ; 0x1811dd
+UnknownText_0x1811dd:
 	text "MARY: Oh, no!"
 	line "It's all over!"
 
 	para "PROF.OAK, if you"
 	line "weren't so slow…"
 	done
-; 0x18121b
 
-UnknownText_0x18121b: ; 0x18121b
+UnknownText_0x18121b:
 	text "PROF.OAK: Ah,"
-	line $14, "!"
+	line "<PLAY_G>!"
 
 	para "It's been a long"
 	line "while."
@@ -336,57 +318,51 @@ UnknownText_0x18121b: ; 0x18121b
 	line "severed."
 
 	para "Congratulations,"
-	line $14, "!"
+	line "<PLAY_G>!"
 	done
-; 0x18134b
 
-UnknownText_0x18134b: ; 0x18134b
+UnknownText_0x18134b:
 	text "MARY: Let's inter-"
 	line "view the brand new"
 	cont "CHAMPION!"
 	done
-; 0x18137b
 
-UnknownText_0x18137b: ; 0x18137b
+UnknownText_0x18137b:
 	text "LANCE: This is"
 	line "getting to be a"
 	cont "bit too noisy…"
 
-	para $14, ", could you"
+	para "<PLAY_G>, could you"
 	line "come with me?"
 	done
-; 0x1813c5
 
-UnknownText_0x1813c5: ; 0x1813c5
+UnknownText_0x1813c5:
 	text "MARY: Oh, wait!"
 	line "We haven't done"
 	cont "the interview!"
 	done
-; 0x1813f4
 
-LancesRoom_MapEventHeader: ; 0x1813f4
+LancesRoom_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 4
-	warp_def $17, $4, 3, GROUP_KARENS_ROOM, MAP_KARENS_ROOM
-	warp_def $17, $5, 4, GROUP_KARENS_ROOM, MAP_KARENS_ROOM
-	warp_def $1, $4, 1, GROUP_HALL_OF_FAME, MAP_HALL_OF_FAME
-	warp_def $1, $5, 2, GROUP_HALL_OF_FAME, MAP_HALL_OF_FAME
+	warp_def $17, $4, 3, KARENS_ROOM
+	warp_def $17, $5, 4, KARENS_ROOM
+	warp_def $1, $4, 1, HALL_OF_FAME
+	warp_def $1, $5, 2, HALL_OF_FAME
 
-	; xy triggers
+.XYTriggers:
 	db 2
-	xy_trigger 1, $5, $4, $0, UnknownScript_0x180e6a, $0, $0
-	xy_trigger 1, $5, $5, $0, UnknownScript_0x180e74, $0, $0
+	xy_trigger 1, $5, $4, $0, Script_ApproachLanceFromLeft, $0, $0
+	xy_trigger 1, $5, $5, $0, Script_ApproachLanceFromRight, $0, $0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_LANCE, 7, 9, $6, $0, 255, 255, $0, 0, LanceScript_0x180e7b, $ffff
-	person_event SPRITE_TEACHER, 11, 8, $7, $0, 255, 255, $a0, 0, ObjectEvent, $075f
-	person_event SPRITE_OAK, 11, 8, $7, $0, 255, 255, $0, 0, ObjectEvent, $075f
-; 0x181445
-
+	person_event SPRITE_LANCE, 3, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, LanceScript_0x180e7b, -1
+	person_event SPRITE_TEACHER, 7, 4, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, ObjectEvent, EVENT_LANCES_ROOM_OAK_AND_MARY
+	person_event SPRITE_OAK, 7, 4, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ObjectEvent, EVENT_LANCES_ROOM_OAK_AND_MARY

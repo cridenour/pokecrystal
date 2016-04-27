@@ -1,7 +1,7 @@
 Music_ChampionBattle: ; ea9c1
-	dbw $80, Music_ChampionBattle_Ch1
-	dbw $01, Music_ChampionBattle_Ch2
-	dbw $02, Music_ChampionBattle_Ch3
+	musicheader 3, 1, Music_ChampionBattle_Ch1
+	musicheader 1, 2, Music_ChampionBattle_Ch2
+	musicheader 1, 3, Music_ChampionBattle_Ch3
 ; ea9ca
 
 Music_ChampionBattle_Ch1: ; ea9ca
@@ -789,5 +789,3 @@ Music_ChampionBattle_branch_ead8e: ; ead8e
 	note E_, 2
 	endchannel
 ; ead99
-
-

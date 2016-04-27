@@ -1,12 +1,10 @@
 Music_LavenderTown: ; ef72f
-	dbw $80, Music_LavenderTown_Ch1
-	dbw $01, Music_LavenderTown_Ch2
-	dbw $02, Music_LavenderTown_Ch3
+	musicheader 3, 1, Music_LavenderTown_Ch1
+	musicheader 1, 2, Music_LavenderTown_Ch2
+	musicheader 1, 3, Music_LavenderTown_Ch3
 ; ef738
 
-
-INCBIN "baserom.gbc", $ef738, $ef739 - $ef738
-
+	db $3
 
 Music_LavenderTown_Ch1: ; ef739
 	tempo 160
@@ -521,5 +519,3 @@ Music_LavenderTown_branch_ef941: ; ef941
 	note F_, 2
 	loopchannel 0, Music_LavenderTown_branch_ef941
 ; ef9bc
-
-

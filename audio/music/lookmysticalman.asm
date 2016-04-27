@@ -1,8 +1,8 @@
 Music_LookMysticalMan: ; 17843b
-	dbw $c0, Music_LookMysticalMan_Ch1
-	dbw $01, Music_LookMysticalMan_Ch2
-	dbw $02, Music_LookMysticalMan_Ch3
-	dbw $03, Music_LookMysticalMan_Ch4
+	musicheader 4, 1, Music_LookMysticalMan_Ch1
+	musicheader 1, 2, Music_LookMysticalMan_Ch2
+	musicheader 1, 3, Music_LookMysticalMan_Ch3
+	musicheader 1, 4, Music_LookMysticalMan_Ch4
 ; 178447
 
 Music_LookMysticalMan_Ch1: ; 178447
@@ -617,5 +617,3 @@ Music_LookMysticalMan_branch_1786df: ; 1786df
 	note D_, 1
 	endchannel
 ; 1786e8
-
-

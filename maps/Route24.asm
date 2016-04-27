@@ -1,41 +1,42 @@
-Route24_MapScriptHeader: ; 0x1adbf8
-	; trigger count
+const_value set 2
+	const ROUTE24_ROCKET
+
+Route24_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1adbfa
 
-RocketScript_0x1adbfa: ; 0x1adbfa
+RocketScript_0x1adbfa:
 	faceplayer
 	playmusic MUSIC_ROCKET_ENCOUNTER
-	loadfont
-	2writetext UnknownText_0x1adc2e
+	opentext
+	writetext UnknownText_0x1adc2e
+	waitbutton
 	closetext
-	loadmovesprites
-	winlosstext UnknownText_0x1add67, $ffff
+	winlosstext UnknownText_0x1add67, -1
 	loadtrainer GRUNTM, 31
 	startbattle
-	reloadmapmusic
-	returnafterbattle
+	dontrestartmapmusic
+	reloadmapafterbattle
 	playmusic MUSIC_ROCKET_ENCOUNTER
-	loadfont
-	2writetext UnknownText_0x1addc0
-	keeptextopen
-	special $006a
-	2writetext UnknownText_0x1adee1
+	opentext
+	writetext UnknownText_0x1addc0
+	buttonsound
+	special Special_FadeOutMusic
+	writetext UnknownText_0x1adee1
+	waitbutton
 	closetext
-	loadmovesprites
-	special $0030
-	special $0033
-	disappear $2
+	special Special_FadeBlackQuickly
+	special Special_ReloadSpritesNoPalettes
+	disappear ROUTE24_ROCKET
 	pause 25
-	special $0032
+	special Special_FadeInQuickly
 	playmapmusic
 	end
-; 0x1adc2e
 
-UnknownText_0x1adc2e: ; 0x1adc2e
+UnknownText_0x1adc2e:
 	text "Hey, kid! Me am a"
 	line "TEAM ROCKET member"
 	cont "kind of guy!"
@@ -63,9 +64,8 @@ UnknownText_0x1adc2e: ; 0x1adc2e
 	para "Hey, kid! Battle"
 	line "begin we do!"
 	done
-; 0x1add67
 
-UnknownText_0x1add67: ; 0x1add67
+UnknownText_0x1add67:
 	text "Ayieeeh! No, no,"
 	line "no, believe it I"
 	cont "can't!"
@@ -74,9 +74,8 @@ UnknownText_0x1add67: ; 0x1add67
 	line "be you! Match I am"
 	cont "not to you!"
 	done
-; 0x1addc0
 
-UnknownText_0x1addc0: ; 0x1addc0
+UnknownText_0x1addc0:
 	text "OK. Tell you mine"
 	line "secret will I."
 
@@ -104,9 +103,8 @@ UnknownText_0x1addc0: ; 0x1addc0
 	para "friends, yes. Will"
 	line "revenge they are."
 	done
-; 0x1adee1
 
-UnknownText_0x1adee1: ; 0x1adee1
+UnknownText_0x1adee1:
 	text "…"
 
 	para "You say what? TEAM"
@@ -119,23 +117,20 @@ UnknownText_0x1adee1: ; 0x1adee1
 	line "do what now on"
 	cont "from, me?"
 	done
-; 0x1adf50
 
-Route24_MapEventHeader: ; 0x1adf50
+Route24_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 0
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_ROCKET, 11, 12, $3, $0, 255, 255, $0, 0, RocketScript_0x1adbfa, $076c
-; 0x1adf63
-
+	person_event SPRITE_ROCKET, 7, 8, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, RocketScript_0x1adbfa, EVENT_ROUTE_24_ROCKET

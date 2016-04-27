@@ -1,232 +1,210 @@
-Route39Barn_MapScriptHeader: ; 0x9cc74
-	; trigger count
+const_value set 2
+	const ROUTE39BARN_TWIN1
+	const ROUTE39BARN_TWIN2
+	const ROUTE39BARN_MOOMOO
+
+Route39Barn_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x9cc76
 
-TwinScript_0x9cc76: ; 0x9cc76
+TwinScript_0x9cc76:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_HEALED_MOOMOO
-	iftrue UnknownScript_0x9cc87
-	2writetext UnknownText_0x9cd2e
+	iftrue .FeedingMooMoo
+	writetext Text_MoomooIsSick
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $2, $3
+	spriteface ROUTE39BARN_TWIN1, RIGHT
 	end
-; 0x9cc87
 
-UnknownScript_0x9cc87: ; 0x9cc87
-	2writetext UnknownText_0x9cd5a
+.FeedingMooMoo:
+	writetext Text_WereFeedingMoomoo
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $2, $3
+	spriteface ROUTE39BARN_TWIN1, RIGHT
 	end
-; 0x9cc90
 
-TwinScript_0x9cc90: ; 0x9cc90
+TwinScript_0x9cc90:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_HEALED_MOOMOO
-	iftrue UnknownScript_0x9cca1
-	2writetext UnknownText_0x9cd2e
+	iftrue .FeedingMooMoo
+	writetext Text_MoomooIsSick
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $3, $2
+	spriteface ROUTE39BARN_TWIN2, LEFT
 	end
-; 0x9cca1
 
-UnknownScript_0x9cca1: ; 0x9cca1
-	2writetext UnknownText_0x9cd5a
+.FeedingMooMoo:
+	writetext Text_WereFeedingMoomoo
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $3, $2
+	spriteface ROUTE39BARN_TWIN2, LEFT
 	end
-; 0x9ccaa
 
-TaurosScript_0x9ccaa: ; 0x9ccaa
-	loadfont
+MooMoo:
+	opentext
 	checkevent EVENT_HEALED_MOOMOO
-	iftrue UnknownScript_0x9cd25
-	2writetext UnknownText_0x9cd70
+	iftrue .HappyCow
+	writetext Text_WeakMoo
 	writebyte MILTANK
-	special $005f
-	keeptextopen
-	2writetext UnknownText_0x9cd80
+	special PlaySlowCry
+	buttonsound
+	writetext Text_ItsCryIsWeak
 	checkevent EVENT_TALKED_TO_FARMER_ABOUT_MOOMOO
-	iftrue UnknownScript_0x9ccc6
+	iftrue .GiveBerry
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9ccc6
 
-UnknownScript_0x9ccc6: ; 0x9ccc6
-	keeptextopen
-	2writetext UnknownText_0x9cda2
+.GiveBerry:
+	buttonsound
+	writetext Text_AskGiveBerry
 	yesorno
-	iffalse UnknownScript_0x9cd1f
+	iffalse .Refused
 	checkitem BERRY
-	iffalse UnknownScript_0x9cd19
-	takeitem BERRY, 1
+	iffalse .NoBerriesInBag
+	takeitem BERRY
 	copybytetovar MooMooBerries
-	addvar $1
+	addvar 1
 	copyvartobyte MooMooBerries
-	if_equal $3, UnknownScript_0x9ccf0
-	if_equal $5, UnknownScript_0x9ccfa
-	if_equal $7, UnknownScript_0x9cd04
-	2writetext UnknownText_0x9cdbc
+	if_equal 3, .ThreeBerries
+	if_equal 5, .FiveBerries
+	if_equal 7, .SevenBerries
+	writetext Text_GaveBerry
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9ccf0
 
-UnknownScript_0x9ccf0: ; 0x9ccf0
-	2writetext UnknownText_0x9cdbc
-	keeptextopen
-	2writetext UnknownText_0x9cdd8
+.ThreeBerries:
+	writetext Text_GaveBerry
+	buttonsound
+	writetext Text_LittleHealthier
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9ccfa
 
-UnknownScript_0x9ccfa: ; 0x9ccfa
-	2writetext UnknownText_0x9cdbc
-	keeptextopen
-	2writetext UnknownText_0x9cdfc
+.FiveBerries:
+	writetext Text_GaveBerry
+	buttonsound
+	writetext Text_QuiteHealthy
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9cd04
 
-UnknownScript_0x9cd04: ; 0x9cd04
+.SevenBerries:
 	playmusic MUSIC_HEAL
-	2writetext UnknownText_0x9cdbc
+	writetext Text_GaveBerry
 	pause 60
-	keeptextopen
-	special $003d
-	2writetext UnknownText_0x9ce1b
+	buttonsound
+	special RestartMapMusic
+	writetext Text_TotallyHealthy
+	waitbutton
 	closetext
-	loadmovesprites
 	setevent EVENT_HEALED_MOOMOO
 	end
-; 0x9cd19
 
-UnknownScript_0x9cd19: ; 0x9cd19
-	2writetext UnknownText_0x9ce3c
+.NoBerriesInBag:
+	writetext Text_NoBerries
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9cd1f
 
-UnknownScript_0x9cd1f: ; 0x9cd1f
-	2writetext UnknownText_0x9ce4f
+.Refused:
+	writetext Text_RefusedToGiveBerry
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9cd25
 
-UnknownScript_0x9cd25: ; 0x9cd25
-	2writetext UnknownText_0x9cd92
+.HappyCow:
+	writetext UnknownText_0x9cd92
 	cry MILTANK
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9cd2e
 
-UnknownText_0x9cd2e: ; 0x9cd2e
+Text_MoomooIsSick:
 	text "MOOMOO is sick…"
 
 	para "She needs lots of"
 	line "BERRIES."
 	done
-; 0x9cd5a
 
-UnknownText_0x9cd5a: ; 0x9cd5a
+Text_WereFeedingMoomoo:
 	text "We're feeding"
 	line "MOOMOO!"
 	done
-; 0x9cd70
 
-UnknownText_0x9cd70: ; 0x9cd70
+Text_WeakMoo:
 	text "MILTANK: …Moo…"
 	done
-; 0x9cd80
 
-UnknownText_0x9cd80: ; 0x9cd80
+Text_ItsCryIsWeak:
 	text "Its cry is weak…"
 	done
-; 0x9cd92
 
-UnknownText_0x9cd92: ; 0x9cd92
+UnknownText_0x9cd92:
 	text "MILTANK: Mooo!"
 	done
-; 0x9cda2
 
-UnknownText_0x9cda2: ; 0x9cda2
+Text_AskGiveBerry:
 	text "Give a BERRY to"
 	line "MILTANK?"
 	done
-; 0x9cdbc
 
-UnknownText_0x9cdbc: ; 0x9cdbc
-	text $52, " gave a"
+Text_GaveBerry:
+	text "<PLAYER> gave a"
 	line "BERRY to MILTANK."
 	done
-; 0x9cdd8
 
-UnknownText_0x9cdd8: ; 0x9cdd8
+Text_LittleHealthier:
 	text "MILTANK became a"
 	line "little healthier!"
 	done
-; 0x9cdfc
 
-UnknownText_0x9cdfc: ; 0x9cdfc
+Text_QuiteHealthy:
 	text "MILTANK became"
 	line "quite healthy!"
 	done
-; 0x9ce1b
 
-UnknownText_0x9ce1b: ; 0x9ce1b
+Text_TotallyHealthy:
 	text "MILTANK became"
 	line "totally healthy!"
 	done
-; 0x9ce3c
 
-UnknownText_0x9ce3c: ; 0x9ce3c
-	text $52, " has no"
+Text_NoBerries:
+	text "<PLAYER> has no"
 	line "BERRIES…"
 	done
-; 0x9ce4f
 
-UnknownText_0x9ce4f: ; 0x9ce4f
-	text $52, " wouldn't"
+Text_RefusedToGiveBerry:
+	text "<PLAYER> wouldn't"
 	line "give a BERRY."
 
 	para "MILTANK looks sad."
 	done
-; 0x9ce7b
 
-Route39Barn_MapEventHeader: ; 0x9ce7b
+Route39Barn_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $3, 1, GROUP_ROUTE_39, MAP_ROUTE_39
-	warp_def $7, $4, 1, GROUP_ROUTE_39, MAP_ROUTE_39
+	warp_def $7, $3, 1, ROUTE_39
+	warp_def $7, $4, 1, ROUTE_39
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_TWIN, 7, 6, $9, $0, 255, 255, $0, 0, TwinScript_0x9cc76, $ffff
-	person_event SPRITE_TWIN, 7, 8, $8, $0, 255, 255, $a0, 0, TwinScript_0x9cc90, $ffff
-	person_event SPRITE_TAUROS, 7, 7, $16, $0, 255, 255, $0, 0, TaurosScript_0x9ccaa, $ffff
-; 0x9ceb2
-
+	person_event SPRITE_TWIN, 3, 2, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, TwinScript_0x9cc76, -1
+	person_event SPRITE_TWIN, 3, 4, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, TwinScript_0x9cc90, -1
+	person_event SPRITE_TAUROS, 3, 3, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, MooMoo, -1

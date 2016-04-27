@@ -1,179 +1,102 @@
-Route17_MapScriptHeader: ; 0x1ad0a6
-	; trigger count
+const_value set 2
+	const ROUTE17_BIKER1
+	const ROUTE17_BIKER2
+	const ROUTE17_BIKER3
+	const ROUTE17_BIKER4
+
+Route17_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
 
-	dbw 5, UnknownScript_0x1ad0ab
-; 0x1ad0ab
+	dbw MAPCALLBACK_NEWMAP, UnknownScript_0x1ad0ab
 
-UnknownScript_0x1ad0ab: ; 0x1ad0ab
-	setflag $0019
-	setflag $001a
+UnknownScript_0x1ad0ab:
+	setflag ENGINE_ALWAYS_ON_BIKE
+	setflag ENGINE_DOWNHILL
 	return
-; 0x1ad0b2
 
-TrainerBikerCharles: ; 0x1ad0b2
-	; bit/flag number
-	dw $436
+TrainerBikerCharles:
+	trainer EVENT_BEAT_BIKER_CHARLES, BIKER, CHARLES, BikerCharlesSeenText, BikerCharlesBeatenText, 0, BikerCharlesScript
 
-	; trainer group && trainer id
-	db BIKER, CHARLES
-
-	; text when seen
-	dw BikerCharlesSeenText
-
-	; text when trainer beaten
-	dw BikerCharlesBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw BikerCharlesScript
-; 0x1ad0be
-
-BikerCharlesScript: ; 0x1ad0be
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1ad293
+BikerCharlesScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1ad293
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1ad0c6
 
-TrainerBikerRiley: ; 0x1ad0c6
-	; bit/flag number
-	dw $437
+TrainerBikerRiley:
+	trainer EVENT_BEAT_BIKER_RILEY, BIKER, RILEY, BikerRileySeenText, BikerRileyBeatenText, 0, BikerRileyScript
 
-	; trainer group && trainer id
-	db BIKER, RILEY
-
-	; text when seen
-	dw BikerRileySeenText
-
-	; text when trainer beaten
-	dw BikerRileyBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw BikerRileyScript
-; 0x1ad0d2
-
-BikerRileyScript: ; 0x1ad0d2
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1ad13b
+BikerRileyScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1ad13b
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1ad0da
 
-TrainerBikerJoel: ; 0x1ad0da
-	; bit/flag number
-	dw $438
+TrainerBikerJoel:
+	trainer EVENT_BEAT_BIKER_JOEL, BIKER, JOEL, BikerJoelSeenText, BikerJoelBeatenText, 0, BikerJoelScript
 
-	; trainer group && trainer id
-	db BIKER, JOEL
-
-	; text when seen
-	dw BikerJoelSeenText
-
-	; text when trainer beaten
-	dw BikerJoelBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw BikerJoelScript
-; 0x1ad0e6
-
-BikerJoelScript: ; 0x1ad0e6
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1ad196
+BikerJoelScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1ad196
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1ad0ee
 
-TrainerBikerGlenn: ; 0x1ad0ee
-	; bit/flag number
-	dw $439
+TrainerBikerGlenn:
+	trainer EVENT_BEAT_BIKER_GLENN, BIKER, GLENN, BikerGlennSeenText, BikerGlennBeatenText, 0, BikerGlennScript
 
-	; trainer group && trainer id
-	db BIKER, GLENN
-
-	; text when seen
-	dw BikerGlennSeenText
-
-	; text when trainer beaten
-	dw BikerGlennBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw BikerGlennScript
-; 0x1ad0fa
-
-BikerGlennScript: ; 0x1ad0fa
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1ad225
+BikerGlennScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1ad225
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1ad102
 
-MapRoute17SignpostItem0: ; 0x1ad102
-	dw $00f6
-	db MAX_ETHER
-	
-; 0x1ad105
+Route17HiddenMaxEther:
+	dwb EVENT_ROUTE_17_HIDDEN_MAX_ETHER, MAX_ETHER
 
-MapRoute17SignpostItem1: ; 0x1ad105
-	dw $00f7
-	db MAX_ELIXER
-	
-; 0x1ad108
 
-BikerRileySeenText: ; 0x1ad108
+Route17HiddenMaxElixer:
+	dwb EVENT_ROUTE_17_HIDDEN_MAX_ELIXER, MAX_ELIXER
+
+
+BikerRileySeenText:
 	text "Hey, you! You're"
 	line "from JOHTO, huh?"
 	done
-; 0x1ad12a
 
-BikerRileyBeatenText: ; 0x1ad12a
+BikerRileyBeatenText:
 	text "Whoa, you kick!"
 	done
-; 0x1ad13b
 
-UnknownText_0x1ad13b: ; 0x1ad13b
+UnknownText_0x1ad13b:
 	text "Don't get cocky,"
 	line "you JOHTO punk!"
 	done
-; 0x1ad15c
 
-BikerJoelSeenText: ; 0x1ad15c
+BikerJoelSeenText:
 	text "Wow. That's a cool"
 	line "BICYCLE!"
 	done
-; 0x1ad178
 
-BikerJoelBeatenText: ; 0x1ad178
+BikerJoelBeatenText:
 	text "But you don't just"
 	line "look cool…"
 	done
-; 0x1ad196
 
-UnknownText_0x1ad196: ; 0x1ad196
+UnknownText_0x1ad196:
 	text "I look cool, but"
 	line "I'm weak, so I'm"
 	cont "not really cool."
@@ -181,68 +104,59 @@ UnknownText_0x1ad196: ; 0x1ad196
 	para "I have to train"
 	line "harder…"
 	done
-; 0x1ad1e0
 
-BikerGlennSeenText: ; 0x1ad1e0
+BikerGlennSeenText:
 	text "Hey! Want to have"
 	line "a speed battle?"
 	done
-; 0x1ad203
 
-BikerGlennBeatenText: ; 0x1ad203
+BikerGlennBeatenText:
 	text "Yikes! You've got"
 	line "awesome torque!"
 	done
-; 0x1ad225
 
-UnknownText_0x1ad225: ; 0x1ad225
+UnknownText_0x1ad225:
 	text "Hands-free riding"
 	line "is considered cool"
 	cont "on CYCLING ROAD."
 	done
-; 0x1ad25c
 
-BikerCharlesSeenText: ; 0x1ad25c
+BikerCharlesSeenText:
 	text "We're fearless"
 	line "highway stars!"
 	done
-; 0x1ad27a
 
-BikerCharlesBeatenText: ; 0x1ad27a
+BikerCharlesBeatenText:
 	text "Arrrgh! Crash and"
 	line "burn!"
 	done
-; 0x1ad293
 
-UnknownText_0x1ad293: ; 0x1ad293
+UnknownText_0x1ad293:
 	text "Reckless driving"
 	line "causes accidents!"
 	cont "Take it easy!"
 	done
-; 0x1ad2c5
 
-Route17_MapEventHeader: ; 0x1ad2c5
+Route17_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $52, $11, 1, GROUP_ROUTE_17_18_GATE, MAP_ROUTE_17_18_GATE
-	warp_def $53, $11, 2, GROUP_ROUTE_17_18_GATE, MAP_ROUTE_17_18_GATE
+	warp_def $52, $11, 1, ROUTE_17_18_GATE
+	warp_def $53, $11, 2, ROUTE_17_18_GATE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 54, 9, $7, MapRoute17SignpostItem0
-	signpost 77, 8, $7, MapRoute17SignpostItem1
+	signpost 54, 9, SIGNPOST_ITEM, Route17HiddenMaxEther
+	signpost 77, 8, SIGNPOST_ITEM, Route17HiddenMaxElixer
 
-	; people-events
+.PersonEvents:
 	db 4
-	person_event SPRITE_BIKER, 21, 8, $a, $0, 255, 255, $b2, 4, TrainerBikerRiley, $ffff
-	person_event SPRITE_BIKER, 72, 13, $6, $0, 255, 255, $b2, 1, TrainerBikerJoel, $ffff
-	person_event SPRITE_BIKER, 57, 7, $a, $0, 255, 255, $b2, 3, TrainerBikerGlenn, $ffff
-	person_event SPRITE_BIKER, 84, 10, $9, $0, 255, 255, $b2, 4, TrainerBikerCharles, $ffff
-; 0x1ad313
-
+	person_event SPRITE_BIKER, 17, 4, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 4, TrainerBikerRiley, -1
+	person_event SPRITE_BIKER, 68, 9, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 1, TrainerBikerJoel, -1
+	person_event SPRITE_BIKER, 53, 3, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 3, TrainerBikerGlenn, -1
+	person_event SPRITE_BIKER, 80, 6, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 4, TrainerBikerCharles, -1

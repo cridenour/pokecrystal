@@ -1,152 +1,146 @@
-OlivineLighthouse6F_MapScriptHeader: ; 0x60b8f
-	; trigger count
+const_value set 2
+	const OLIVINELIGHTHOUSE6F_JASMINE
+	const OLIVINELIGHTHOUSE6F_MONSTER
+	const OLIVINELIGHTHOUSE6F_POKE_BALL
+
+OlivineLighthouse6F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x60b91
 
-JasmineScript_0x60b91: ; 0x60b91
+JasmineScript_0x60b91:
 	faceplayer
-	loadfont
+	opentext
 	checkitem SECRETPOTION
 	iftrue UnknownScript_0x60bab
-	checkevent $0037
+	checkevent EVENT_JASMINE_EXPLAINED_AMPHYS_SICKNESS
 	iftrue UnknownScript_0x60ba5
-	2writetext UnknownText_0x60c81
-	keeptextopen
-	setevent $0037
-UnknownScript_0x60ba5: ; 0x60ba5
-	2writetext UnknownText_0x60d64
+	writetext UnknownText_0x60c81
+	buttonsound
+	setevent EVENT_JASMINE_EXPLAINED_AMPHYS_SICKNESS
+UnknownScript_0x60ba5:
+	writetext UnknownText_0x60d64
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x60bab
 
-UnknownScript_0x60bab: ; 0x60bab
-	2writetext UnknownText_0x60d99
+UnknownScript_0x60bab:
+	writetext UnknownText_0x60d99
 	yesorno
 	iffalse UnknownScript_0x60c25
-	2writetext UnknownText_0x60dc3
-	keeptextopen
-	takeitem SECRETPOTION, 1
-	2writetext UnknownText_0x60dea
+	writetext UnknownText_0x60dc3
+	buttonsound
+	takeitem SECRETPOTION
+	writetext UnknownText_0x60dea
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $2, $3
+	spriteface OLIVINELIGHTHOUSE6F_JASMINE, RIGHT
 	pause 15
-	spriteface $3, $2
-	loadfont
+	spriteface OLIVINELIGHTHOUSE6F_MONSTER, LEFT
+	opentext
 	playmusic MUSIC_HEAL
-	2writetext UnknownText_0x60e44
+	writetext UnknownText_0x60e44
 	pause 60
-	keeptextopen
-	loadmovesprites
-	special $003d
+	buttonsound
+	closetext
+	special RestartMapMusic
 	cry AMPHAROS
-	special $002e
+	special FadeOutPalettes
 	pause 10
-	special $0031
-	loadfont
-	2writetext UnknownText_0x60f3d
+	special FadeInPalettes
+	opentext
+	writetext UnknownText_0x60f3d
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $3, $3
+	spriteface OLIVINELIGHTHOUSE6F_MONSTER, RIGHT
 	pause 10
-	spriteface $3, $2
+	spriteface OLIVINELIGHTHOUSE6F_MONSTER, LEFT
 	pause 10
-	spriteface $3, $3
+	spriteface OLIVINELIGHTHOUSE6F_MONSTER, RIGHT
 	pause 10
-	spriteface $3, $2
+	spriteface OLIVINELIGHTHOUSE6F_MONSTER, LEFT
 	pause 10
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x60e6c
+	opentext
+	writetext UnknownText_0x60e6c
+	waitbutton
 	closetext
-	loadmovesprites
 	setevent EVENT_JASMINE_RETURNED_TO_GYM
-	clearevent $06d3
-	checkcode $9
-	if_equal $0, UnknownScript_0x60c17
-	if_equal $3, UnknownScript_0x60c1e
-	applymovement $2, MovementData_0x60c68
-	disappear $2
+	clearevent EVENT_OLIVINE_GYM_JASMINE
+	checkcode VAR_FACING
+	if_equal DOWN, UnknownScript_0x60c17
+	if_equal RIGHT, UnknownScript_0x60c1e
+	applymovement OLIVINELIGHTHOUSE6F_JASMINE, MovementData_0x60c68
+	disappear OLIVINELIGHTHOUSE6F_JASMINE
 	end
-; 0x60c17
 
-UnknownScript_0x60c17: ; 0x60c17
-	applymovement $2, MovementData_0x60c70
-	disappear $2
+UnknownScript_0x60c17:
+	applymovement OLIVINELIGHTHOUSE6F_JASMINE, MovementData_0x60c70
+	disappear OLIVINELIGHTHOUSE6F_JASMINE
 	end
-; 0x60c1e
 
-UnknownScript_0x60c1e: ; 0x60c1e
-	applymovement $2, MovementData_0x60c79
-	disappear $2
+UnknownScript_0x60c1e:
+	applymovement OLIVINELIGHTHOUSE6F_JASMINE, MovementData_0x60c79
+	disappear OLIVINELIGHTHOUSE6F_JASMINE
 	end
-; 0x60c25
 
-UnknownScript_0x60c25: ; 0x60c25
-	2writetext UnknownText_0x60edf
+UnknownScript_0x60c25:
+	writetext UnknownText_0x60edf
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $2, $3
+	spriteface OLIVINELIGHTHOUSE6F_JASMINE, RIGHT
 	pause 15
-	spriteface $3, $2
-	loadfont
-	2writetext UnknownText_0x60ef1
+	spriteface OLIVINELIGHTHOUSE6F_MONSTER, LEFT
+	opentext
+	writetext UnknownText_0x60ef1
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x60c39
 
-UnknownScript_0x60c39: ; 0x60c39
+UnknownScript_0x60c39:
 	end
-; 0x60c3a
 
-MonsterScript_0x60c3a: ; 0x60c3a
+MonsterScript_0x60c3a:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_JASMINE_RETURNED_TO_GYM
 	iftrue UnknownScript_0x60c51
-	2writetext UnknownText_0x60f03
+	writetext UnknownText_0x60f03
 	writebyte AMPHAROS
-	special $005f
-	keeptextopen
-	2writetext UnknownText_0x60f19
+	special PlaySlowCry
+	buttonsound
+	writetext UnknownText_0x60f19
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x60c51
 
-UnknownScript_0x60c51: ; 0x60c51
-	2writetext UnknownText_0x60f3d
+UnknownScript_0x60c51:
+	writetext UnknownText_0x60f3d
 	cry AMPHAROS
+	waitbutton
 	closetext
-	loadmovesprites
-	special $002e
-	special $0031
-	special $002e
-	special $0031
+	special FadeOutPalettes
+	special FadeInPalettes
+	special FadeOutPalettes
+	special FadeInPalettes
 	end
-; 0x60c66
 
-ItemFragment_0x60c66: ; 0x60c66
-	db SUPER_POTION, 1
-; 0x60c68
+OlivineLighthouse6FSuperPotion:
+	itemball SUPER_POTION
 
-MovementData_0x60c68: ; 0x60c68
+MovementData_0x60c68:
 	slow_step_up
 	slow_step_up
 	slow_step_right
 	slow_step_up
 	slow_step_up
-	accelerate_last
-	accelerate_last
+	step_sleep_8
+	step_sleep_8
 	step_end
-; 0x60c70
 
-MovementData_0x60c70: ; 0x60c70
+MovementData_0x60c70:
 	slow_step_down
 	slow_step_right
 	slow_step_right
@@ -156,20 +150,18 @@ MovementData_0x60c70: ; 0x60c70
 	slow_step_right
 	slow_step_right
 	step_end
-; 0x60c79
 
-MovementData_0x60c79: ; 0x60c79
+MovementData_0x60c79:
 	slow_step_up
 	slow_step_up
 	slow_step_right
 	slow_step_up
 	slow_step_up
 	slow_step_up
-	accelerate_last
+	step_sleep_8
 	step_end
-; 0x60c81
 
-UnknownText_0x60c81: ; 0x60c81
+UnknownText_0x60c81:
 	text "JASMINE: … This"
 	line "#MON always"
 
@@ -192,30 +184,26 @@ UnknownText_0x60c81: ; 0x60c81
 	para "And I can't leave"
 	line "AMPHY unattended…"
 	done
-; 0x60d64
 
-UnknownText_0x60d64: ; 0x60d64
+UnknownText_0x60d64:
 	text "…May I ask you to"
 	line "get some medicine"
 	cont "for me? Please?"
 	done
-; 0x60d99
 
-UnknownText_0x60d99: ; 0x60d99
+UnknownText_0x60d99:
 	text "JASMINE: …Will"
 	line "that medicine cure"
 	cont "AMPHY?"
 	done
-; 0x60dc3
 
-UnknownText_0x60dc3: ; 0x60dc3
-	text $52, " handed the"
+UnknownText_0x60dc3:
+	text "<PLAYER> handed the"
 	line "SECRETPOTION to"
 	cont "JASMINE."
 	done
-; 0x60dea
 
-UnknownText_0x60dea: ; 0x60dea
+UnknownText_0x60dea:
 	text "JASMINE: …Um,"
 	line "please don't be"
 	cont "offended…"
@@ -224,17 +212,15 @@ UnknownText_0x60dea: ; 0x60dea
 	line "take anything from"
 	cont "anyone but me…"
 	done
-; 0x60e44
 
-UnknownText_0x60e44: ; 0x60e44
+UnknownText_0x60e44:
 	text "JASMINE: …"
 
 	para "AMPHY, how are you"
 	line "feeling?"
 	done
-; 0x60e6c
 
-UnknownText_0x60e6c: ; 0x60e6c
+UnknownText_0x60e6c:
 	text "JASMINE: …Oh, I'm"
 	line "so relieved…"
 
@@ -247,56 +233,48 @@ UnknownText_0x60e6c: ; 0x60e6c
 	para "…I will return to"
 	line "the GYM…"
 	done
-; 0x60edf
 
-UnknownText_0x60edf: ; 0x60edf
+UnknownText_0x60edf:
 	text "JASMINE: …I see…"
 	done
-; 0x60ef1
 
-UnknownText_0x60ef1: ; 0x60ef1
+UnknownText_0x60ef1:
 	text "…AMPHY, hang on!"
 	done
-; 0x60f03
 
-UnknownText_0x60f03: ; 0x60f03
+UnknownText_0x60f03:
 	text "AMPHY: …"
 	line "…Pa… paloo…"
 	done
-; 0x60f19
 
-UnknownText_0x60f19: ; 0x60f19
+UnknownText_0x60f19:
 	text "Its breathing is"
 	line "terribly labored…"
 	done
-; 0x60f3d
 
-UnknownText_0x60f3d: ; 0x60f3d
+UnknownText_0x60f3d:
 	text "AMPHY: Palu!"
 	line "Palulu!"
 	done
-; 0x60f53
 
-OlivineLighthouse6F_MapEventHeader: ; 0x60f53
+OlivineLighthouse6F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 3
-	warp_def $f, $9, 1, GROUP_OLIVINE_LIGHTHOUSE_5F, MAP_OLIVINE_LIGHTHOUSE_5F
-	warp_def $5, $10, 6, GROUP_OLIVINE_LIGHTHOUSE_5F, MAP_OLIVINE_LIGHTHOUSE_5F
-	warp_def $5, $11, 7, GROUP_OLIVINE_LIGHTHOUSE_5F, MAP_OLIVINE_LIGHTHOUSE_5F
+	warp_def $f, $9, 1, OLIVINE_LIGHTHOUSE_5F
+	warp_def $5, $10, 6, OLIVINE_LIGHTHOUSE_5F
+	warp_def $5, $11, 7, OLIVINE_LIGHTHOUSE_5F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_JASMINE, 12, 12, $6, $0, 255, 255, $80, 0, JasmineScript_0x60b91, $06d2
-	person_event SPRITE_MONSTER, 12, 13, $6, $0, 255, 255, $b0, 0, MonsterScript_0x60c3a, $ffff
-	person_event SPRITE_POKE_BALL, 8, 7, $1, $0, 255, 255, $1, 0, ItemFragment_0x60c66, $0668
-; 0x60f8f
-
+	person_event SPRITE_JASMINE, 8, 8, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, JasmineScript_0x60b91, EVENT_OLIVINE_LIGHTHOUSE_JASMINE
+	person_event SPRITE_MONSTER, 8, 9, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_SCRIPT, 0, MonsterScript_0x60c3a, -1
+	person_event SPRITE_POKE_BALL, 4, 3, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, OlivineLighthouse6FSuperPotion, EVENT_OLIVINE_LIGHTHOUSE_6F_SUPER_POTION

@@ -1,36 +1,37 @@
-OlivineCafe_MapScriptHeader: ; 0x9c8bf
-	; trigger count
+const_value set 2
+	const OLIVINECAFE_SAILOR1
+	const OLIVINECAFE_FISHING_GURU
+	const OLIVINECAFE_SAILOR2
+
+OlivineCafe_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x9c8c1
 
-SailorScript_0x9c8c1: ; 0x9c8c1
+SailorScript_0x9c8c1:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_HM04_STRENGTH
 	iftrue UnknownScript_0x9c8d3
-	2writetext UnknownText_0x9c8df
-	keeptextopen
-	verbosegiveitem HM_04, 1
+	writetext UnknownText_0x9c8df
+	buttonsound
+	verbosegiveitem HM_STRENGTH
 	setevent EVENT_GOT_HM04_STRENGTH
-UnknownScript_0x9c8d3: ; 0x9c8d3
-	2writetext UnknownText_0x9c965
+UnknownScript_0x9c8d3:
+	writetext UnknownText_0x9c965
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9c8d9
 
-FishingGuruScript_0x9c8d9: ; 0x9c8d9
+FishingGuruScript_0x9c8d9:
 	jumptextfaceplayer UnknownText_0x9c9c5
-; 0x9c8dc
 
-SailorScript_0x9c8dc: ; 0x9c8dc
+SailorScript_0x9c8dc:
 	jumptextfaceplayer UnknownText_0x9ca09
-; 0x9c8df
 
-UnknownText_0x9c8df: ; 0x9c8df
+UnknownText_0x9c8df:
 	text "Hah! Your #MON"
 	line "sure look like"
 	cont "lightweights!"
@@ -43,9 +44,8 @@ UnknownText_0x9c8df: ; 0x9c8df
 	line "and teach them"
 	cont "STRENGTH!"
 	done
-; 0x9c965
 
-UnknownText_0x9c965: ; 0x9c965
+UnknownText_0x9c965:
 	text "On the sea, the"
 	line "only thing you can"
 
@@ -55,18 +55,16 @@ UnknownText_0x9c965: ; 0x9c965
 	para "I'm so proud of my"
 	line "buff bod!"
 	done
-; 0x9c9c5
 
-UnknownText_0x9c9c5: ; 0x9c9c5
+UnknownText_0x9c9c5:
 	text "OLIVINE CAFE's"
 	line "menu is chock full"
 
 	para "of hearty fare for"
 	line "beefy SAILORS!"
 	done
-; 0x9ca09
 
-UnknownText_0x9ca09: ; 0x9ca09
+UnknownText_0x9ca09:
 	text "Whenever I roll"
 	line "into this town, I"
 
@@ -79,27 +77,24 @@ UnknownText_0x9ca09: ; 0x9ca09
 	para "stronger. I can't"
 	line "stop eating!"
 	done
-; 0x9ca8e
 
-OlivineCafe_MapEventHeader: ; 0x9ca8e
+OlivineCafe_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 7, GROUP_OLIVINE_CITY, MAP_OLIVINE_CITY
-	warp_def $7, $3, 7, GROUP_OLIVINE_CITY, MAP_OLIVINE_CITY
+	warp_def $7, $2, 7, OLIVINE_CITY
+	warp_def $7, $3, 7, OLIVINE_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_SAILOR, 7, 8, $8, $0, 255, 255, $0, 0, SailorScript_0x9c8c1, $ffff
-	person_event SPRITE_FISHING_GURU, 7, 11, $4, $10, 255, 255, $0, 0, FishingGuruScript_0x9c8d9, $ffff
-	person_event SPRITE_SAILOR, 10, 10, $7, $0, 255, 255, $0, 0, SailorScript_0x9c8dc, $ffff
-; 0x9cac5
-
+	person_event SPRITE_SAILOR, 3, 4, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, SailorScript_0x9c8c1, -1
+	person_event SPRITE_FISHING_GURU, 3, 7, SPRITEMOVEDATA_WALK_UP_DOWN, 1, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FishingGuruScript_0x9c8d9, -1
+	person_event SPRITE_SAILOR, 6, 6, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, SailorScript_0x9c8dc, -1

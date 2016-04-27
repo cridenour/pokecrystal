@@ -1,34 +1,34 @@
-MrPsychicsHouse_MapScriptHeader: ; 0x18a778
-	; trigger count
+const_value set 2
+	const MRPSYCHICSHOUSE_FISHING_GURU
+
+MrPsychicsHouse_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x18a77a
 
-FishingGuruScript_0x18a77a: ; 0x18a77a
+MrPsychic:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_TM29_PSYCHIC
-	iftrue UnknownScript_0x18a78f
-	2writetext UnknownText_0x18a798
-	keeptextopen
-	verbosegiveitem TM_29, 1
-	iffalse UnknownScript_0x18a793
+	iftrue .AlreadyGotItem
+	writetext MrPsychicText1
+	buttonsound
+	verbosegiveitem TM_PSYCHIC
+	iffalse .Done
 	setevent EVENT_GOT_TM29_PSYCHIC
-UnknownScript_0x18a78f: ; 0x18a78f
-	2writetext UnknownText_0x18a7bb
+.AlreadyGotItem:
+	writetext MrPsychicText2
+	waitbutton
+.Done:
 	closetext
-UnknownScript_0x18a793: ; 0x18a793
-	loadmovesprites
 	end
-; 0x18a795
 
-MapMrPsychicsHouseSignpost1Script: ; 0x18a795
-	jumpstd $0001
-; 0x18a798
+MrPsychicsHouseBookshelf:
+	jumpstd difficultbookshelf
 
-UnknownText_0x18a798: ; 0x18a798
+MrPsychicText1:
 	text "…"
 
 	para "…"
@@ -39,35 +39,31 @@ UnknownText_0x18a798: ; 0x18a798
 
 	para "You wanted this!"
 	done
-; 0x18a7bb
 
-UnknownText_0x18a7bb: ; 0x18a7bb
+MrPsychicText2:
 	text "TM29 is PSYCHIC."
 
 	para "It may lower the"
 	line "target's SPCL.DEF."
 	done
-; 0x18a7f0
 
-MrPsychicsHouse_MapEventHeader: ; 0x18a7f0
+MrPsychicsHouse_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 5, GROUP_SAFFRON_CITY, MAP_SAFFRON_CITY
-	warp_def $7, $3, 5, GROUP_SAFFRON_CITY, MAP_SAFFRON_CITY
+	warp_def $7, $2, 5, SAFFRON_CITY
+	warp_def $7, $3, 5, SAFFRON_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 1, 0, $0, MapMrPsychicsHouseSignpost1Script
-	signpost 1, 1, $0, MapMrPsychicsHouseSignpost1Script
+	signpost 1, 0, SIGNPOST_READ, MrPsychicsHouseBookshelf
+	signpost 1, 1, SIGNPOST_READ, MrPsychicsHouseBookshelf
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_FISHING_GURU, 7, 9, $8, $0, 255, 255, $a0, 0, FishingGuruScript_0x18a77a, $ffff
-; 0x18a817
-
+	person_event SPRITE_FISHING_GURU, 3, 5, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, MrPsychic, -1

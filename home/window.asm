@@ -1,6 +1,6 @@
-ResetWindow:: ; 2dba
+RefreshScreen:: ; 2dba
 
-	call Function1fbf
+	call ClearWindowData
 	ld a, [hROMBank]
 	push af
 	ld a, BANK(Function6454) ; and BANK(Function64bf)
@@ -16,12 +16,14 @@ ResetWindow:: ; 2dba
 ; 2dcf
 
 
-Function2dcf:: ; 2dcf
+CloseText:: ; 2dcf
 	ld a, [hOAMUpdate]
 	push af
 	ld a, $1
 	ld [hOAMUpdate], a
-	call Function2de2
+
+	call .CloseText
+
 	pop af
 	ld [hOAMUpdate], a
 	ld hl, VramState
@@ -29,34 +31,34 @@ Function2dcf:: ; 2dcf
 	ret
 ; 2de2
 
-Function2de2:: ; 2de2
-	call Function1fbf
+.CloseText: ; 2de2
+	call ClearWindowData
 	xor a
 	ld [hBGMapMode], a
-	call Function2173
+	call OverworldTextModeSwitch
 	call Function2e20
 	xor a
 	ld [hBGMapMode], a
 	call Function2e31
 	ld a, $90
 	ld [hWY], a
-	call Functione4a
-	callba Functionb8000
-	callba Function106594
+	call ReplaceKrisSprite
+	callba ReturnFromMapSetupScript
+	callba LoadOverworldFont
 	ret
 ; 2e08
 
-Function2e08:: ; 2e08
-	call Function1fbf
+OpenText:: ; 2e08
+	call ClearWindowData
 	ld a, [hROMBank]
 	push af
 	ld a, BANK(Function6454) ; and BANK(Function64bf)
 	rst Bankswitch
 
-	call Function6454
+	call Function6454 ; clear bgmap
 	call SpeechTextBox
-	call Function2e20
-	call Function64bf
+	call Function2e20 ; anchor bgmap
+	call Function64bf ; load font
 	pop af
 	rst Bankswitch
 
@@ -68,7 +70,9 @@ Function2e20:: ; 2e20
 	push af
 	ld a, $1
 	ld [hOAMUpdate], a
+
 	callba Function104110
+
 	pop af
 	ld [hOAMUpdate], a
 	ret
@@ -83,7 +87,7 @@ Function2e31:: ; 2e31
 	ld [hBGMapMode], a
 	ld a, $1
 	ld [hOAMUpdate], a
-	call Function1ad2
+	call UpdateSprites
 	xor a
 	ld [hOAMUpdate], a
 	call DelayFrame
@@ -93,4 +97,3 @@ Function2e31:: ; 2e31
 	ld [hOAMUpdate], a
 	ret
 ; 2e4e
-

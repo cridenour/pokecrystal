@@ -2,8 +2,9 @@
 
 
 Function547:: ; 547
-	ld a, [hLCDStatCustom]
-	cp rSCX & $ff
+; Unreferenced
+	ld a, [hFFC6]
+	cp rSCX - $ff00
 	ret nz
 	ld c, a
 	ld a, [LYOverrides]
@@ -14,7 +15,7 @@ Function547:: ; 547
 
 LCD:: ; 552
 	push af
-	ld a, [hLCDStatCustom]
+	ld a, [hFFC6]
 	and a
 	jr z, .done
 
@@ -25,7 +26,7 @@ LCD:: ; 552
 	ld b, LYOverrides >> 8
 	ld a, [bc]
 	ld b, a
-	ld a, [hLCDStatCustom]
+	ld a, [hFFC6]
 	ld c, a
 	ld a, b
 	ld [$ff00+c], a
@@ -49,7 +50,7 @@ DisableLCD:: ; 568
 	ld [rIF], a
 	ld a, [rIE]
 	ld b, a
-	
+
 ; Disable VBlank
 	res 0, a ; vblank
 	ld [rIE], a
@@ -78,4 +79,3 @@ EnableLCD:: ; 58a
 	ld [rLCDC], a
 	ret
 ; 591
-

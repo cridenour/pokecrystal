@@ -1,8 +1,8 @@
 Music_Route3: ; ec2ca
-	dbw $c0, Music_Route3_Ch1
-	dbw $01, Music_Route3_Ch2
-	dbw $02, Music_Route3_Ch3
-	dbw $03, Music_Route3_Ch4
+	musicheader 4, 1, Music_Route3_Ch1
+	musicheader 1, 2, Music_Route3_Ch2
+	musicheader 1, 3, Music_Route3_Ch3
+	musicheader 1, 4, Music_Route3_Ch4
 ; ec2d6
 
 Music_Route3_Ch1: ; ec2d6
@@ -508,5 +508,3 @@ Music_Route3_branch_ec4f0: ; ec4f0
 	note C#, 1
 	loopchannel 0, Music_Route3_branch_ec4f0
 ; ec506
-
-

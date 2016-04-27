@@ -1,12 +1,10 @@
 Music_Route1: ; ec000
-	dbw $80, Music_Route1_Ch1
-	dbw $01, Music_Route1_Ch2
-	dbw $02, Music_Route1_Ch3
+	musicheader 3, 1, Music_Route1_Ch1
+	musicheader 1, 2, Music_Route1_Ch2
+	musicheader 1, 3, Music_Route1_Ch3
 ; ec009
 
-
-INCBIN "baserom.gbc", $ec009, $ec00a - $ec009
-
+	db $3
 
 Music_Route1_Ch1: ; ec00a
 	stereopanning $f
@@ -653,5 +651,3 @@ Music_Route1_branch_ec20c: ; ec20c
 	note __, 3
 	loopchannel 0, Music_Route1_branch_ec20c
 ; ec2ca
-
-

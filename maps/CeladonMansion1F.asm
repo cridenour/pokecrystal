@@ -1,51 +1,50 @@
-CeladonMansion1F_MapScriptHeader: ; 0x713ed
-	; trigger count
+const_value set 2
+	const CELADONMANSION1F_GRANNY
+	const CELADONMANSION1F_GROWLITHE1
+	const CELADONMANSION1F_CLEFAIRY
+	const CELADONMANSION1F_GROWLITHE2
+
+CeladonMansion1F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x713ef
 
-GrannyScript_0x713ef: ; 0x713ef
-	jumptextfaceplayer UnknownText_0x71416
-; 0x713f2
+CeladonMansionManager:
+	jumptextfaceplayer CeladonMansionManagerText
 
-GrowlitheScript_0x713f2: ; 0x713f2
-	loadfont
-	2writetext UnknownText_0x71470
+CeladonMansion1FMeowth:
+	opentext
+	writetext CeladonMansion1FMeowthText
 	cry MEOWTH
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x713fc
 
-ClefairyScript_0x713fc: ; 0x713fc
-	loadfont
-	2writetext UnknownText_0x7147f
+CeladonMansion1FClefairy:
+	opentext
+	writetext CeladonMansion1FClefairyText
 	cry CLEFAIRY
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x71406
 
-GrowlitheScript_0x71406: ; 0x71406
-	loadfont
-	2writetext UnknownText_0x71496
+CeladonMansion1FNidoranF:
+	opentext
+	writetext CeladonMansion1FNidoranFText
 	cry NIDORAN_F
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x71410
 
-MapCeladonMansion1FSignpost0Script: ; 0x71410
-	jumptext UnknownText_0x714ab
-; 0x71413
+CeladonMansionManagersSuiteSign:
+	jumptext CeladonMansionManagersSuiteSignText
 
-MapCeladonMansion1FSignpost2Script: ; 0x71413
-	jumpstd $0002
-; 0x71416
+CeladonMansion1fBookshelf:
+	jumpstd picturebookshelf
 
-UnknownText_0x71416: ; 0x71416
+CeladonMansionManagerText:
 	text "My dear #MON"
 	line "keep me company,"
 
@@ -55,57 +54,50 @@ UnknownText_0x71416: ; 0x71416
 	para "MEOWTH even brings"
 	line "money home."
 	done
-; 0x71470
 
-UnknownText_0x71470: ; 0x71470
+CeladonMansion1FMeowthText:
 	text "MEOWTH: Meow!"
 	done
-; 0x7147f
 
-UnknownText_0x7147f: ; 0x7147f
+CeladonMansion1FClefairyText:
 	text "CLEFAIRY: Clef"
 	line "cleff!"
 	done
-; 0x71496
 
-UnknownText_0x71496: ; 0x71496
+CeladonMansion1FNidoranFText:
 	text "NIDORAN: Kya"
 	line "kyaoo!"
 	done
-; 0x714ab
 
-UnknownText_0x714ab: ; 0x714ab
+CeladonMansionManagersSuiteSignText:
 	text "CELADON MANSION"
 	line "MANAGER'S SUITE"
 	done
-; 0x714cc
 
-CeladonMansion1F_MapEventHeader: ; 0x714cc
+CeladonMansion1F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 5
-	warp_def $9, $6, 2, GROUP_CELADON_CITY, MAP_CELADON_CITY
-	warp_def $9, $7, 2, GROUP_CELADON_CITY, MAP_CELADON_CITY
-	warp_def $0, $3, 3, GROUP_CELADON_CITY, MAP_CELADON_CITY
-	warp_def $0, $0, 1, GROUP_CELADON_MANSION_2F, MAP_CELADON_MANSION_2F
-	warp_def $0, $7, 4, GROUP_CELADON_MANSION_2F, MAP_CELADON_MANSION_2F
+	warp_def $9, $6, 2, CELADON_CITY
+	warp_def $9, $7, 2, CELADON_CITY
+	warp_def $0, $3, 3, CELADON_CITY
+	warp_def $0, $0, 1, CELADON_MANSION_2F
+	warp_def $0, $7, 4, CELADON_MANSION_2F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 3
-	signpost 8, 5, $1, MapCeladonMansion1FSignpost0Script
-	signpost 3, 0, $0, MapCeladonMansion1FSignpost2Script
-	signpost 3, 2, $0, MapCeladonMansion1FSignpost2Script
+	signpost 8, 5, SIGNPOST_UP, CeladonMansionManagersSuiteSign
+	signpost 3, 0, SIGNPOST_READ, CeladonMansion1fBookshelf
+	signpost 3, 2, SIGNPOST_READ, CeladonMansion1fBookshelf
 
-	; people-events
+.PersonEvents:
 	db 4
-	person_event SPRITE_GRANNY, 9, 5, $3, $0, 255, 255, $0, 0, GrannyScript_0x713ef, $ffff
-	person_event SPRITE_GROWLITHE, 10, 6, $16, $0, 255, 255, $0, 0, GrowlitheScript_0x713f2, $ffff
-	person_event SPRITE_CLEFAIRY, 8, 7, $16, $0, 255, 255, $0, 0, ClefairyScript_0x713fc, $ffff
-	person_event SPRITE_GROWLITHE, 8, 8, $16, $2, 255, 255, $90, 0, GrowlitheScript_0x71406, $ffff
-; 0x7152e
-
+	person_event SPRITE_GRANNY, 5, 1, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, CeladonMansionManager, -1
+	person_event SPRITE_GROWLITHE, 6, 2, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, CeladonMansion1FMeowth, -1
+	person_event SPRITE_CLEFAIRY, 4, 3, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, CeladonMansion1FClefairy, -1
+	person_event SPRITE_GROWLITHE, 4, 4, SPRITEMOVEDATA_POKEMON, 0, 2, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, CeladonMansion1FNidoranF, -1

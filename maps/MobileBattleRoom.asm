@@ -1,100 +1,88 @@
-MobileBattleRoom_MapScriptHeader: ; 0x1935c4
-	; trigger count
+MobileBattleRoom_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x1935ce, $0000
-	dw UnknownScript_0x1935d2, $0000
+	maptrigger .Trigger0
+	maptrigger .Trigger1
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1935ce
 
-UnknownScript_0x1935ce: ; 0x1935ce
-	priorityjump UnknownScript_0x1935d3
+.Trigger0:
+	priorityjump MobileBattleRoom_Initialize
 	end
-; 0x1935d2
 
-UnknownScript_0x1935d2: ; 0x1935d2
+.Trigger1:
 	end
-; 0x1935d3
 
-UnknownScript_0x1935d3: ; 0x1935d3
+MobileBattleRoom_Initialize:
 	dotrigger $1
-	domaptrigger GROUP_POKECENTER_2F, MAP_POKECENTER_2F, $5
+	domaptrigger POKECENTER_2F, $5
 	end
-; 0x1935da
 
-MapMobileBattleRoomSignpost0Script: ; 0x1935da
+MapMobileBattleRoomSignpost0Script:
 	refreshscreen $0
-	special $009f
-	if_equal $1, UnknownScript_0x193619
-	special $009b
-	iffalse UnknownScript_0x193624
-	if_equal $1, UnknownScript_0x1935f4
-	if_equal $2, UnknownScript_0x19360d
-	2jump UnknownScript_0x193624
-; 0x1935f4
+	special Function1037c2
+	if_equal $1, .one
+	special Function1037eb
+	iffalse .false
+	if_equal $1, .one_
+	if_equal $2, .two_
+	jump .false
 
-UnknownScript_0x1935f4: ; 0x1935f4
-	2writetext UnknownText_0x193644
+.one_
+	writetext MobileBattleRoom_HealText
 	pause 20
-	loadmovesprites
-	special $002e
-	playmusic MUSIC_HEAL
-	special $00a4
-	pause 60
-	special $0031
-	special $003d
-	refreshscreen $0
-UnknownScript_0x19360d: ; 0x19360d
-	special $009d
-	special $001b
-	special $009c
-	iftrue UnknownScript_0x193624
-UnknownScript_0x193619: ; 0x193619
-	special $00a2
-	2writetext UnknownText_0x193626
 	closetext
+	special FadeOutPalettes
+	playmusic MUSIC_HEAL
+	special LoadMapPalettes
+	pause 60
+	special FadeInPalettes
+	special RestartMapMusic
+	refreshscreen $0
+.two_
+	special Mobile_HealParty
+	special HealParty
+	special Function10383c
+	iftrue .false
+.one
+	special Function10387b
+	writetext MobileBattleRoom_EstablishingCommsText
+	waitbutton
 	reloadmappart
-	special $0081
-UnknownScript_0x193624: ; 0x193624
-	loadmovesprites
+	special Function101225
+.false
+	closetext
 	end
-; 0x193626
 
-UnknownText_0x193626: ; 0x193626
+MobileBattleRoom_EstablishingCommsText:
 	text "Establishing"
 	line "communications…"
 	done
-; 0x193644
 
-UnknownText_0x193644: ; 0x193644
+MobileBattleRoom_HealText:
 	text "Your #MON will"
 	line "be fully healed"
 	cont "before battle."
 	done
-; 0x193673
 
-MobileBattleRoom_MapEventHeader: ; 0x193673
+MobileBattleRoom_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $4, 6, GROUP_POKECENTER_2F, MAP_POKECENTER_2F
-	warp_def $7, $5, 6, GROUP_POKECENTER_2F, MAP_POKECENTER_2F
+	warp_def $7, $4, 6, POKECENTER_2F
+	warp_def $7, $5, 6, POKECENTER_2F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 1
-	signpost 2, 4, $1, MapMobileBattleRoomSignpost0Script
+	signpost 2, 4, SIGNPOST_UP, MapMobileBattleRoomSignpost0Script
 
-	; people-events
+.PersonEvents:
 	db 0
-; 0x193688
-
-
-

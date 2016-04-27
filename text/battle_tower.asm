@@ -1,5 +1,5 @@
 
-UnknownText_0x1ec000: ; 0x1ec000
+BattleTowerText_0x1ec000: ; 0x1ec000
 	text "Hello, glad to"
 	line "meet you!"
 
@@ -8,7 +8,7 @@ UnknownText_0x1ec000: ; 0x1ec000
 	done
 ; 0x1ec03b
 
-UnknownText_0x1ec03b: ; 0x1ec03b
+BattleTowerText_0x1ec03b: ; 0x1ec03b
 	text "Thank you! A most"
 	line "enjoyable battle!"
 	done
@@ -20,7 +20,7 @@ UnknownText_0x1ec060: ; 0x1ec060
 	done
 ; 0x1ec080
 
-UnknownText_0x1ec080: ; 0x1ec080
+BattleTowerText_0x1ec080: ; 0x1ec080
 	text "Work, work, work…"
 	line "I'm always busy!"
 	done
@@ -186,20 +186,20 @@ UnknownText_0x1ec3e5: ; 0x1ec3e5
 ; 0x1ec402
 
 UnknownText_0x1ec402: ; 0x1ec402
-	text $56, $56, $56
-	line $56, $56, "Battle?"
+	text "<......><......><......>"
+	line "<......><......>Battle?"
 	done
 ; 0x1ec411
 
 UnknownText_0x1ec411: ; 0x1ec411
-	text $56, $56, $56
-	line $56, $56, "I won?"
+	text "<......><......><......>"
+	line "<......><......>I won?"
 	done
 ; 0x1ec41f
 
 UnknownText_0x1ec41f: ; 0x1ec41f
-	text $56, $56, $56
-	line $56, $56, "I lost?"
+	text "<......><......><......>"
+	line "<......><......>I lost?"
 	done
 ; 0x1ec42e
 

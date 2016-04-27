@@ -1,268 +1,165 @@
-Route13_MapScriptHeader: ; 0x1a2430
-	; trigger count
+const_value set 2
+	const ROUTE13_YOUNGSTER1
+	const ROUTE13_YOUNGSTER2
+	const ROUTE13_POKEFAN_M1
+	const ROUTE13_POKEFAN_M2
+	const ROUTE13_POKEFAN_M3
+
+Route13_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1a2432
 
-TrainerPokefanmAlex: ; 0x1a2432
-	; bit/flag number
-	dw $4d8
+TrainerPokefanmAlex:
+	trainer EVENT_BEAT_POKEFANM_ALEX, POKEFANM, ALEX, PokefanmAlexSeenText, PokefanmAlexBeatenText, 0, PokefanmAlexScript
 
-	; trainer group && trainer id
-	db POKEFANM, ALEX
-
-	; text when seen
-	dw PokefanmAlexSeenText
-
-	; text when trainer beaten
-	dw PokefanmAlexBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw PokefanmAlexScript
-; 0x1a243e
-
-PokefanmAlexScript: ; 0x1a243e
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a24e3
+PokefanmAlexScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a24e3
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a2446
 
-TrainerPokefanmJoshua: ; 0x1a2446
-	; bit/flag number
-	dw $4d0
+TrainerPokefanmJoshua:
+	trainer EVENT_BEAT_POKEFANM_JOSHUA, POKEFANM, JOSHUA, PokefanmJoshuaSeenText, PokefanmJoshuaBeatenText, 0, PokefanmJoshuaScript
 
-	; trainer group && trainer id
-	db POKEFANM, JOSHUA
-
-	; text when seen
-	dw PokefanmJoshuaSeenText
-
-	; text when trainer beaten
-	dw PokefanmJoshuaBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw PokefanmJoshuaScript
-; 0x1a2452
-
-PokefanmJoshuaScript: ; 0x1a2452
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a254f
+PokefanmJoshuaScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a254f
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a245a
 
-TrainerBird_keeperPerry: ; 0x1a245a
-	; bit/flag number
-	dw $409
+TrainerBird_keeperPerry:
+	trainer EVENT_BEAT_BIRD_KEEPER_PERRY, BIRD_KEEPER, PERRY, Bird_keeperPerrySeenText, Bird_keeperPerryBeatenText, 0, Bird_keeperPerryScript
 
-	; trainer group && trainer id
-	db BIRD_KEEPER, PERRY
-
-	; text when seen
-	dw Bird_keeperPerrySeenText
-
-	; text when trainer beaten
-	dw Bird_keeperPerryBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw Bird_keeperPerryScript
-; 0x1a2466
-
-Bird_keeperPerryScript: ; 0x1a2466
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a25db
+Bird_keeperPerryScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a25db
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a246e
 
-TrainerBird_keeperBret: ; 0x1a246e
-	; bit/flag number
-	dw $40a
+TrainerBird_keeperBret:
+	trainer EVENT_BEAT_BIRD_KEEPER_BRET, BIRD_KEEPER, BRET, Bird_keeperBretSeenText, Bird_keeperBretBeatenText, 0, Bird_keeperBretScript
 
-	; trainer group && trainer id
-	db BIRD_KEEPER, BRET
-
-	; text when seen
-	dw Bird_keeperBretSeenText
-
-	; text when trainer beaten
-	dw Bird_keeperBretBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw Bird_keeperBretScript
-; 0x1a247a
-
-Bird_keeperBretScript: ; 0x1a247a
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a2662
+Bird_keeperBretScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a2662
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a2482
 
-TrainerHikerKenny: ; 0x1a2482
-	; bit/flag number
-	dw $533
+TrainerHikerKenny:
+	trainer EVENT_BEAT_HIKER_KENNY, HIKER, KENNY, HikerKennySeenText, HikerKennyBeatenText, 0, HikerKennyScript
 
-	; trainer group && trainer id
-	db HIKER, KENNY
-
-	; text when seen
-	dw HikerKennySeenText
-
-	; text when trainer beaten
-	dw HikerKennyBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw HikerKennyScript
-; 0x1a248e
-
-HikerKennyScript: ; 0x1a248e
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a26c2
+HikerKennyScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a26c2
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a2496
 
-MapRoute13Signpost0Script: ; 0x1a2496
-	jumptext UnknownText_0x1a271c
-; 0x1a2499
+Route13TrainerTips:
+	jumptext Route13TrainerTipsText
 
-MapRoute13Signpost1Script: ; 0x1a2499
-	jumptext UnknownText_0x1a275b
-; 0x1a249c
+Route13Sign:
+	jumptext Route13SignText
 
-MapRoute13Signpost2Script: ; 0x1a249c
-	jumptext UnknownText_0x1a277d
-; 0x1a249f
+Route13DirectionsSign:
+	jumptext Route13DirectionsSignText
 
-MapRoute13SignpostItem3: ; 0x1a249f
-	dw $00f4
-	db CALCIUM
-	
-; 0x1a24a2
+Route13HiddenCalcium:
+	dwb EVENT_ROUTE_13_HIDDEN_CALCIUM, CALCIUM
 
-PokefanmAlexSeenText: ; 0x1a24a2
+
+PokefanmAlexSeenText:
 	text "Bow down before my"
 	line "regal #MON!"
 	done
-; 0x1a24c2
 
-PokefanmAlexBeatenText: ; 0x1a24c2
+PokefanmAlexBeatenText:
 	text "How… How dare you"
 	line "mock royalty!"
 	done
-; 0x1a24e3
 
-UnknownText_0x1a24e3: ; 0x1a24e3
+UnknownText_0x1a24e3:
 	text "Doesn't everyone"
 	line "wish to someday be"
 	cont "a king?"
 	done
-; 0x1a250f
 
-PokefanmJoshuaSeenText: ; 0x1a250f
+PokefanmJoshuaSeenText:
 	text "Nihihi! Would you"
 	line "like to battle my"
 	cont "PIKACHU gang?"
 	done
-; 0x1a2542
 
-PokefanmJoshuaBeatenText: ; 0x1a2542
+PokefanmJoshuaBeatenText:
 	text "PI-PIKACHU!"
 	done
-; 0x1a254f
 
-UnknownText_0x1a254f: ; 0x1a254f
+UnknownText_0x1a254f:
 	text "You look like you"
 	line "have many #MON,"
 
 	para "but PIKACHU is"
 	line "still the best."
 	done
-; 0x1a2591
 
-Bird_keeperPerrySeenText: ; 0x1a2591
+Bird_keeperPerrySeenText:
 	text "Agility is the key"
 	line "attribute of bird"
 	cont "#MON."
 	done
-; 0x1a25bd
 
-Bird_keeperPerryBeatenText: ; 0x1a25bd
+Bird_keeperPerryBeatenText:
 	text "You beat me with"
 	line "your speed…"
 	done
-; 0x1a25db
 
-UnknownText_0x1a25db: ; 0x1a25db
+UnknownText_0x1a25db:
 	text "Your #MON are"
 	line "remarkably well-"
 	cont "trained."
 	done
-; 0x1a2604
 
-Bird_keeperBretSeenText: ; 0x1a2604
+Bird_keeperBretSeenText:
 	text "Check out my #-"
 	line "MON. Just look at"
 
 	para "their coloring and"
 	line "their plumage."
 	done
-; 0x1a2649
 
-Bird_keeperBretBeatenText: ; 0x1a2649
+Bird_keeperBretBeatenText:
 	text "Shoot!"
 	line "Not good enough!"
 	done
-; 0x1a2662
 
-UnknownText_0x1a2662: ; 0x1a2662
+UnknownText_0x1a2662:
 	text "If you groom them,"
 	line "#MON get happy."
 	done
-; 0x1a2686
 
-HikerKennySeenText: ; 0x1a2686
+HikerKennySeenText:
 	text "I should go to"
 	line "ROCK TUNNEL to get"
 	cont "myself an ONIX."
 	done
-; 0x1a26b9
 
-HikerKennyBeatenText: ; 0x1a26b9
+HikerKennyBeatenText:
 	text "I lost…"
 	done
-; 0x1a26c2
 
-UnknownText_0x1a26c2: ; 0x1a26c2
+UnknownText_0x1a26c2:
 	text "Geological fea-"
 	line "tures don't appear"
 	cont "to change."
@@ -271,57 +168,51 @@ UnknownText_0x1a26c2: ; 0x1a26c2
 	line "change, little by"
 	cont "little."
 	done
-; 0x1a271c
 
-UnknownText_0x1a271c: ; 0x1a271c
+Route13TrainerTipsText:
 	text "TRAINER TIPS"
 
 	para "Look! Right there,"
 	line "at the left side"
 	cont "of the post."
 	done
-; 0x1a275b
 
-UnknownText_0x1a275b: ; 0x1a275b
+Route13SignText:
 	text "ROUTE 13"
 
 	para "NORTH TO SILENCE"
 	line "BRIDGE"
 	done
-; 0x1a277d
 
-UnknownText_0x1a277d: ; 0x1a277d
+Route13DirectionsSignText:
 	text "NORTH TO LAVENDER"
 	line "TOWN"
 
 	para "WEST TO FUCHSIA"
 	line "CITY"
 	done
-; 0x1a27aa
 
-Route13_MapEventHeader: ; 0x1a27aa
+Route13_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 0
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 4
-	signpost 13, 29, $0, MapRoute13Signpost0Script
-	signpost 11, 41, $0, MapRoute13Signpost1Script
-	signpost 13, 17, $0, MapRoute13Signpost2Script
-	signpost 13, 30, $7, MapRoute13SignpostItem3
+	signpost 13, 29, SIGNPOST_READ, Route13TrainerTips
+	signpost 11, 41, SIGNPOST_READ, Route13Sign
+	signpost 13, 17, SIGNPOST_READ, Route13DirectionsSign
+	signpost 13, 30, SIGNPOST_ITEM, Route13HiddenCalcium
 
-	; people-events
+.PersonEvents:
 	db 5
-	person_event SPRITE_YOUNGSTER, 10, 46, $6, $0, 255, 255, $92, 2, TrainerBird_keeperPerry, $ffff
-	person_event SPRITE_YOUNGSTER, 10, 47, $6, $0, 255, 255, $92, 2, TrainerBird_keeperBret, $ffff
-	person_event SPRITE_POKEFAN_M, 12, 36, $8, $0, 255, 255, $82, 3, TrainerPokefanmJoshua, $ffff
-	person_event SPRITE_POKEFAN_M, 14, 18, $8, $0, 255, 255, $82, 4, TrainerHikerKenny, $ffff
-	person_event SPRITE_POKEFAN_M, 10, 29, $9, $0, 255, 255, $82, 4, TrainerPokefanmAlex, $ffff
-; 0x1a2805
-
+	person_event SPRITE_YOUNGSTER, 6, 42, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 2, TrainerBird_keeperPerry, -1
+	person_event SPRITE_YOUNGSTER, 6, 43, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 2, TrainerBird_keeperBret, -1
+	person_event SPRITE_POKEFAN_M, 8, 32, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 3, TrainerPokefanmJoshua, -1
+	person_event SPRITE_POKEFAN_M, 10, 14, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 4, TrainerHikerKenny, -1
+	person_event SPRITE_POKEFAN_M, 6, 25, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 4, TrainerPokefanmAlex, -1

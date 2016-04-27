@@ -1,64 +1,56 @@
-MobileTradeRoomMobile_MapScriptHeader: ; 0x19356c
-	; trigger count
+MobileTradeRoomMobile_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x193576, $0000
-	dw UnknownScript_0x19357a, $0000
+	maptrigger .Trigger0
+	maptrigger .Trigger1
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x193576
 
-UnknownScript_0x193576: ; 0x193576
-	priorityjump UnknownScript_0x19357b
+.Trigger0:
+	priorityjump MobileTradeRoomMobile_Initialize
 	end
-; 0x19357a
 
-UnknownScript_0x19357a: ; 0x19357a
+.Trigger1:
 	end
-; 0x19357b
 
-UnknownScript_0x19357b: ; 0x19357b
+MobileTradeRoomMobile_Initialize:
 	dotrigger $1
-	domaptrigger GROUP_POKECENTER_2F, MAP_POKECENTER_2F, $4
+	domaptrigger POKECENTER_2F, $4
 	end
-; 0x193582
 
-MapMobileTradeRoomMobileSignpost0Script: ; 0x193582
+MapMobileTradeRoomMobileSignpost0Script:
 	refreshscreen $0
-	special $009f
-	2writetext UnknownText_0x193591
-	closetext
+	special Function1037c2
+	writetext MobileTradeRoomMobile_EstablishingCommsText
+	waitbutton
 	reloadmappart
-	special $0082
-	loadmovesprites
+	special Function101231
+	closetext
 	end
-; 0x193591
 
-UnknownText_0x193591: ; 0x193591
+MobileTradeRoomMobile_EstablishingCommsText:
 	text "Establishing"
 	line "communications…"
 	done
-; 0x1935af
 
-MobileTradeRoomMobile_MapEventHeader: ; 0x1935af
+MobileTradeRoomMobile_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $4, 5, GROUP_POKECENTER_2F, MAP_POKECENTER_2F
-	warp_def $7, $5, 5, GROUP_POKECENTER_2F, MAP_POKECENTER_2F
+	warp_def $7, $4, 5, POKECENTER_2F
+	warp_def $7, $5, 5, POKECENTER_2F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 1
-	signpost 2, 4, $1, MapMobileTradeRoomMobileSignpost0Script
+	signpost 2, 4, SIGNPOST_UP, MapMobileTradeRoomMobileSignpost0Script
 
-	; people-events
+.PersonEvents:
 	db 0
-; 0x1935c4
-

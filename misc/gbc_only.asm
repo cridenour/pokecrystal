@@ -96,7 +96,7 @@ DrawGBCOnlyBorder: ; 4eaea
 	ret
 ; 4eb15
 
-.FillRow ; 4eb15
+.FillRow: ; 4eb15
 	ld c, SCREEN_WIDTH - 2
 .next_column
 	ld [hli], a
@@ -105,7 +105,7 @@ DrawGBCOnlyBorder: ; 4eaea
 	ret
 ; 4eb1c
 
-.FillColumn ; 4eb1c
+.FillColumn: ; 4eb1c
 	ld de, SCREEN_WIDTH
 	ld c, SCREEN_HEIGHT - 2
 .next_row
@@ -147,4 +147,3 @@ GBCOnlyString: ; 4eb38
 GBCOnlyGFX: ; 4eb76
 INCBIN "gfx/misc/gbc_only.w112.2bpp.lz"
 ; 4f0bc
-

@@ -1,39 +1,39 @@
 MomPhoneGreetingText: ; 0x1b4000
 	text "Hello?"
 
-	para "Oh, hi, ", $52, "!"
+	para "Oh, hi, <PLAYER>!"
 	line "Working hard?"
 	done
 
 UnknownText_0x1b4021: ; 0x1b4021
 	text "Oh, so you're in"
 	line "@"
-	TX_RAM StringBuffer3
+	text_from_ram StringBuffer3
 	text "…"
 
 	para "Isn't that where"
 	line "@"
-	TX_RAM StringBuffer4
-	text $51
-	db "is? Did you go"
+	text_from_ram StringBuffer4
+	text ""
+	para "is? Did you go"
 	line "take a look?"
 	done
 
 MomPhoneGenericAreaText: ; 0x1b406b
 	text "Really, you're in"
 	line "@"
-	TX_RAM StringBuffer3
+	text_from_ram StringBuffer3
 	text "?"
 
 	para "I've never gone"
 	line "there. That's kind"
-	cont "of neat, ", $52, "."
+	cont "of neat, <PLAYER>."
 	done
 
 MomPhoneNewBarkText: ; 0x1b40b1
 	text "What? You're in"
 	line "@"
-	TX_RAM StringBuffer3
+	text_from_ram StringBuffer3
 	text "?"
 
 	para "Come see your MOM"
@@ -43,7 +43,7 @@ MomPhoneNewBarkText: ; 0x1b40b1
 MomPhoneCherrygroveText: ; 0x1b40e4
 	text "You're visiting"
 	line "@"
-	TX_RAM StringBuffer3
+	text_from_ram StringBuffer3
 	text "?"
 
 	para "How about coming"
@@ -53,7 +53,7 @@ MomPhoneCherrygroveText: ; 0x1b40e4
 UnknownText_0x1b411c: ; 0x1b411c
 	text "Wow, you're in"
 	line "@"
-	TX_RAM StringBuffer3
+	text_from_ram StringBuffer3
 	text "?"
 
 	para "Good luck on your"
@@ -64,7 +64,7 @@ UnknownText_0x1b4150: ; 0x1b4150
 	text "That sounds really"
 	line "tough."
 
-	para "But, ", $52, ", I"
+	para "But, <PLAYER>, I"
 	line "know you're really"
 
 	para "determined. You'll"
@@ -74,7 +74,7 @@ UnknownText_0x1b4150: ; 0x1b4150
 UnknownText_0x1b41a7: ; 0x1b41a7
 	text "By the way, you've"
 	line "saved up ¥@"
-	TX_RAM StringBuffer3
+	text_from_ram StringBuffer3
 	text "."
 
 	para "Do you want to"
@@ -87,7 +87,7 @@ UnknownText_0x1b41ea: ; 0x1b41ea
 	done
 
 UnknownText_0x1b420d: ; 0x1b420d
-	text "Oh, ", $52, ","
+	text "Oh, <PLAYER>,"
 	line "you're not saving"
 
 	para "any money. Would"
@@ -97,7 +97,7 @@ UnknownText_0x1b420d: ; 0x1b420d
 UnknownText_0x1b4249: ; 0x1b4249
 	text "By the way, you've"
 	line "saved up ¥@"
-	TX_RAM StringBuffer3
+	text_from_ram StringBuffer3
 	text "."
 
 	para "Want to start"
@@ -115,7 +115,7 @@ MomPhoneWontSaveMoneyText: ; 0x1b42a3
 	done
 
 MomPhoneHangUpText: ; 0x1b42c0
-	text $52, ", keep it"
+	text "<PLAYER>, keep it"
 	line "up! I'm rooting"
 	cont "for you, baby!"
 	done
@@ -123,7 +123,7 @@ MomPhoneHangUpText: ; 0x1b42c0
 MomPhoneNoPokemonText: ; 0x1b42ea
 	text "Hello?"
 
-	para "Oh, hi, ", $52, "!"
+	para "Oh, hi, <PLAYER>!"
 	line "Wasn't PROF.ELM"
 	cont "waiting for you?"
 	done
@@ -131,7 +131,7 @@ MomPhoneNoPokemonText: ; 0x1b42ea
 MomPhoneNoPokedexText: ; 0x1b431d
 	text "Hello?"
 
-	para "Oh, hi, ", $52, "!"
+	para "Oh, hi, <PLAYER>!"
 	line "You're on a big"
 
 	para "mission for PROF."
@@ -141,7 +141,7 @@ MomPhoneNoPokedexText: ; 0x1b431d
 MomPhoneNoGymQuestText: ; 0x1b435f
 	text "Hello?"
 
-	para "Hi, ", $52, "! If"
+	para "Hi, <PLAYER>! If"
 	line "you're done with"
 
 	para "your errand come"
@@ -151,7 +151,7 @@ MomPhoneNoGymQuestText: ; 0x1b435f
 MomPhoneLectureText: ; 0x1b43a1
 	text "Hello?"
 
-	para "…… ", $52, "?"
+	para "…… <PLAYER>?"
 	line "I heard from PROF."
 
 	para "ELM that you went"

@@ -1,4 +1,4 @@
-BattleCommand5a: ; 3766f
+BattleCommand_Endure: ; 3766f
 ; endure
 
 ; Endure shares code with Protect. See protect.asm.
@@ -7,7 +7,7 @@ BattleCommand5a: ; 3766f
 	ret c
 
 	ld a, BATTLE_VARS_SUBSTATUS1
-	call _GetBattleVar
+	call GetBattleVarAddr
 	set SUBSTATUS_ENDURE, [hl]
 
 	call AnimateCurrentMove
@@ -15,4 +15,3 @@ BattleCommand5a: ; 3766f
 	ld hl, BracedItselfText
 	jp StdBattleTextBox
 ; 37683
-

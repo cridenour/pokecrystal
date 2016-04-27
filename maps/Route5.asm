@@ -1,69 +1,63 @@
-Route5_MapScriptHeader: ; 0x1adb17
-	; trigger count
+const_value set 2
+	const ROUTE5_POKEFAN_M
+
+Route5_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1adb19
 
-PokefanMScript_0x1adb19: ; 0x1adb19
+PokefanMScript_0x1adb19:
 	jumptextfaceplayer UnknownText_0x1adb22
-; 0x1adb1c
 
-MapRoute5Signpost0Script: ; 0x1adb1c
-	jumptext UnknownText_0x1adb66
-; 0x1adb1f
+Route5UndergroundPathSign:
+	jumptext Route5UndergroundPathSignText
 
-MapRoute5Signpost1Script: ; 0x1adb1f
-	jumptext UnknownText_0x1adb97
-; 0x1adb22
+HouseForSaleSign:
+	jumptext HouseForSaleSignText
 
-UnknownText_0x1adb22: ; 0x1adb22
+UnknownText_0x1adb22:
 	text "The road is closed"
 	line "until the problem"
 
 	para "at the POWER PLANT"
 	line "is solved."
 	done
-; 0x1adb66
 
-UnknownText_0x1adb66: ; 0x1adb66
+Route5UndergroundPathSignText:
 	text "UNDERGROUND PATH"
 
 	para "CERULEAN CITY -"
 	line "VERMILION CITY"
 	done
-; 0x1adb97
 
-UnknownText_0x1adb97: ; 0x1adb97
+HouseForSaleSignText:
 	text "What's this?"
 
 	para "House for Sale…"
 	line "Nobody lives here."
 	done
-; 0x1adbc7
 
-Route5_MapEventHeader: ; 0x1adbc7
+Route5_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 4
-	warp_def $f, $11, 1, GROUP_ROUTE_5_UNDERGROUND_ENTRANCE, MAP_ROUTE_5_UNDERGROUND_ENTRANCE
-	warp_def $11, $8, 1, GROUP_ROUTE_5_SAFFRON_CITY_GATE, MAP_ROUTE_5_SAFFRON_CITY_GATE
-	warp_def $11, $9, 2, GROUP_ROUTE_5_SAFFRON_CITY_GATE, MAP_ROUTE_5_SAFFRON_CITY_GATE
-	warp_def $b, $a, 1, GROUP_ROUTE_5_CLEANSE_TAG_SPEECH_HOUSE, MAP_ROUTE_5_CLEANSE_TAG_SPEECH_HOUSE
+	warp_def $f, $11, 1, ROUTE_5_UNDERGROUND_ENTRANCE
+	warp_def $11, $8, 1, ROUTE_5_SAFFRON_CITY_GATE
+	warp_def $11, $9, 2, ROUTE_5_SAFFRON_CITY_GATE
+	warp_def $b, $a, 1, ROUTE_5_CLEANSE_TAG_SPEECH_HOUSE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 17, 17, $0, MapRoute5Signpost0Script
-	signpost 11, 10, $0, MapRoute5Signpost1Script
+	signpost 17, 17, SIGNPOST_READ, Route5UndergroundPathSign
+	signpost 11, 10, SIGNPOST_READ, HouseForSaleSign
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_POKEFAN_M, 20, 21, $6, $0, 255, 255, $80, 0, PokefanMScript_0x1adb19, $0771
-; 0x1adbf8
-
+	person_event SPRITE_POKEFAN_M, 16, 17, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, PokefanMScript_0x1adb19, EVENT_ROUTE_5_6_POKEFAN_M_BLOCKS_UNDERGROUND_PATH

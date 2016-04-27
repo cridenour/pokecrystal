@@ -1,24 +1,25 @@
-CinnabarPokeCenter1F_MapScriptHeader: ; 0x1ab32a
-	; trigger count
+const_value set 2
+	const CINNABARPOKECENTER1F_NURSE
+	const CINNABARPOKECENTER1F_COOLTRAINER_F
+	const CINNABARPOKECENTER1F_FISHER
+
+CinnabarPokeCenter1F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1ab32c
 
-NurseScript_0x1ab32c: ; 0x1ab32c
-	jumpstd $0000
-; 0x1ab32f
+NurseScript_0x1ab32c:
+	jumpstd pokecenternurse
 
-CooltrainerFScript_0x1ab32f: ; 0x1ab32f
+CooltrainerFScript_0x1ab32f:
 	jumptextfaceplayer UnknownText_0x1ab335
-; 0x1ab332
 
-FisherScript_0x1ab332: ; 0x1ab332
+FisherScript_0x1ab332:
 	jumptextfaceplayer UnknownText_0x1ab37f
-; 0x1ab335
 
-UnknownText_0x1ab335: ; 0x1ab335
+UnknownText_0x1ab335:
 	text "CINNABAR GYM's"
 	line "BLAINE apparently"
 
@@ -26,35 +27,31 @@ UnknownText_0x1ab335: ; 0x1ab335
 	line "SEAFOAM ISLANDS"
 	cont "cave…"
 	done
-; 0x1ab37f
 
-UnknownText_0x1ab37f: ; 0x1ab37f
+UnknownText_0x1ab37f:
 	text "It's been a year"
 	line "since the volcano"
 	cont "erupted."
 	done
-; 0x1ab3ab
 
-CinnabarPokeCenter1F_MapEventHeader: ; 0x1ab3ab
+CinnabarPokeCenter1F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 3
-	warp_def $7, $3, 1, GROUP_CINNABAR_ISLAND, MAP_CINNABAR_ISLAND
-	warp_def $7, $4, 1, GROUP_CINNABAR_ISLAND, MAP_CINNABAR_ISLAND
-	warp_def $7, $0, 1, GROUP_POKECENTER_2F, MAP_POKECENTER_2F
+	warp_def $7, $3, 1, CINNABAR_ISLAND
+	warp_def $7, $4, 1, CINNABAR_ISLAND
+	warp_def $7, $0, 1, POKECENTER_2F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_NURSE, 5, 7, $6, $0, 255, 255, $0, 0, NurseScript_0x1ab32c, $ffff
-	person_event SPRITE_COOLTRAINER_F, 10, 11, $5, $2, 255, 255, $80, 0, CooltrainerFScript_0x1ab32f, $ffff
-	person_event SPRITE_FISHER, 8, 6, $6, $0, 255, 255, $a0, 0, FisherScript_0x1ab332, $ffff
-; 0x1ab3e7
-
+	person_event SPRITE_NURSE, 1, 3, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, NurseScript_0x1ab32c, -1
+	person_event SPRITE_COOLTRAINER_F, 6, 7, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 2, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, CooltrainerFScript_0x1ab32f, -1
+	person_event SPRITE_FISHER, 4, 2, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, FisherScript_0x1ab332, -1

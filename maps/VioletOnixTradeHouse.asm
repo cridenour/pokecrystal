@@ -1,25 +1,26 @@
-VioletOnixTradeHouse_MapScriptHeader: ; 0x6998b
-	; trigger count
+const_value set 2
+	const VIOLETONIXTRADEHOUSE_POKEFAN_M
+	const VIOLETONIXTRADEHOUSE_KYLE
+
+VioletOnixTradeHouse_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x6998d
 
-PokefanMScript_0x6998d: ; 0x6998d
+PokefanMScript_0x6998d:
 	jumptextfaceplayer UnknownText_0x69997
-; 0x69990
 
-YoungsterScript_0x69990: ; 0x69990
+Kyle:
 	faceplayer
-	loadfont
+	opentext
 	trade $1
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x69997
 
-UnknownText_0x69997: ; 0x69997
+UnknownText_0x69997:
 	text "A #MON you get"
 	line "in a trade grows"
 	cont "quickly."
@@ -30,26 +31,23 @@ UnknownText_0x69997: ; 0x69997
 	para "BADGE, they may"
 	line "disobey you."
 	done
-; 0x69a01
 
-VioletOnixTradeHouse_MapEventHeader: ; 0x69a01
+VioletOnixTradeHouse_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $3, 6, GROUP_VIOLET_CITY, MAP_VIOLET_CITY
-	warp_def $7, $4, 6, GROUP_VIOLET_CITY, MAP_VIOLET_CITY
+	warp_def $7, $3, 6, VIOLET_CITY
+	warp_def $7, $4, 6, VIOLET_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_POKEFAN_M, 7, 6, $3, $0, 255, 255, $0, 0, PokefanMScript_0x6998d, $ffff
-	person_event SPRITE_YOUNGSTER, 9, 10, $4, $20, 255, 255, $80, 0, YoungsterScript_0x69990, $ffff
-; 0x69a2b
-
+	person_event SPRITE_POKEFAN_M, 3, 2, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, PokefanMScript_0x6998d, -1
+	person_event SPRITE_YOUNGSTER, 5, 6, SPRITEMOVEDATA_WALK_UP_DOWN, 2, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, Kyle, -1

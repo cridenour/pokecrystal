@@ -1,121 +1,113 @@
-SaffronTrainStation_MapScriptHeader: ; 0x18a817
-	; trigger count
+const_value set 2
+	const SAFFRONTRAINSTATION_OFFICER
+	const SAFFRONTRAINSTATION_GYM_GUY
+	const SAFFRONTRAINSTATION_TEACHER
+	const SAFFRONTRAINSTATION_LASS
+
+SaffronTrainStation_MapScriptHeader:
+.MapTriggers:
 	db 1
 
 	; triggers
-	dw UnknownScript_0x18a81d, $0000
+	maptrigger .Trigger0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x18a81d
 
-UnknownScript_0x18a81d: ; 0x18a81d
+.Trigger0:
 	end
-; 0x18a81e
 
-OfficerScript_0x18a81e: ; 0x18a81e
+OfficerScript_0x18a81e:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_RESTORED_POWER_TO_KANTO
-	iftrue UnknownScript_0x18a82c
-	2writetext UnknownText_0x18a8a9
+	iftrue .MagnetTrainToGoldenrod
+	writetext UnknownText_0x18a8a9
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18a82c
 
-UnknownScript_0x18a82c: ; 0x18a82c
-	2writetext UnknownText_0x18a8dd
+.MagnetTrainToGoldenrod:
+	writetext UnknownText_0x18a8dd
 	yesorno
-	iffalse UnknownScript_0x18a85c
+	iffalse .DecidedNotToRide
 	checkitem PASS
-	iffalse UnknownScript_0x18a856
-	2writetext UnknownText_0x18a917
+	iffalse .PassNotInBag
+	writetext UnknownText_0x18a917
+	waitbutton
 	closetext
-	loadmovesprites
-	applymovement $2, MovementData_0x18a88f
-	applymovement $0, MovementData_0x18a898
+	applymovement SAFFRONTRAINSTATION_OFFICER, MovementData_0x18a88f
+	applymovement PLAYER, MovementData_0x18a898
 	writebyte $1
-	special $0023
+	special Special_MagnetTrain
 	warpcheck
-	newloadmap $f9
-	applymovement $0, MovementData_0x18a854
+	newloadmap MAPSETUP_TRAIN
+	applymovement PLAYER, .MovementBoardTheTrain
 	wait $14
 	end
-; 0x18a854
 
-MovementData_0x18a854: ; 0x18a854
+.MovementBoardTheTrain:
 	turn_head_down
 	step_end
-; 0x18a856
 
-UnknownScript_0x18a856: ; 0x18a856
-	2writetext UnknownText_0x18a956
+.PassNotInBag:
+	writetext UnknownText_0x18a956
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18a85c
 
-UnknownScript_0x18a85c: ; 0x18a85c
-	2writetext UnknownText_0x18a978
+.DecidedNotToRide:
+	writetext UnknownText_0x18a978
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18a862
 
-UnknownScript_0x18a862: ; 0x18a862
-	applymovement $2, MovementData_0x18a88f
-	applymovement $0, MovementData_0x18a8a1
-	applymovement $2, MovementData_0x18a894
-	loadfont
-	2writetext UnknownText_0x18a993
+Script_ArriveFromGoldenrod:
+	applymovement SAFFRONTRAINSTATION_OFFICER, MovementData_0x18a88f
+	applymovement PLAYER, MovementData_0x18a8a1
+	applymovement SAFFRONTRAINSTATION_OFFICER, MovementData_0x18a894
+	opentext
+	writetext UnknownText_0x18a993
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18a875
 
-GymGuyScript_0x18a875: ; 0x18a875
+GymGuyScript_0x18a875:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_RETURNED_MACHINE_PART
 	iftrue UnknownScript_0x18a883
-	2writetext UnknownText_0x18a9ca
+	writetext UnknownText_0x18a9ca
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18a883
 
-UnknownScript_0x18a883: ; 0x18a883
-	2writetext UnknownText_0x18aa61
+UnknownScript_0x18a883:
+	writetext UnknownText_0x18aa61
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18a889
 
-TeacherScript_0x18a889: ; 0x18a889
+TeacherScript_0x18a889:
 	jumptextfaceplayer UnknownText_0x18aaab
-; 0x18a88c
 
-LassScript_0x18a88c: ; 0x18a88c
+LassScript_0x18a88c:
 	jumptextfaceplayer UnknownText_0x18ab20
-; 0x18a88f
 
-MovementData_0x18a88f: ; 0x18a88f
+MovementData_0x18a88f:
 	step_up
 	step_up
 	step_right
 	turn_head_left
 	step_end
-; 0x18a894
 
-MovementData_0x18a894: ; 0x18a894
+MovementData_0x18a894:
 	step_left
 	step_down
 	step_down
 	step_end
-; 0x18a898
 
-MovementData_0x18a898: ; 0x18a898
+MovementData_0x18a898:
 	step_up
 	step_up
 	step_up
@@ -125,9 +117,8 @@ MovementData_0x18a898: ; 0x18a898
 	step_up
 	step_up
 	step_end
-; 0x18a8a1
 
-MovementData_0x18a8a1: ; 0x18a8a1
+MovementData_0x18a8a1:
 	step_left
 	step_left
 	step_down
@@ -136,55 +127,48 @@ MovementData_0x18a8a1: ; 0x18a8a1
 	step_down
 	turn_head_up
 	step_end
-; 0x18a8a9
 
-UnknownText_0x18a8a9: ; 0x18a8a9
+UnknownText_0x18a8a9:
 	text "I'm sorry, but the"
 	line "MAGNET TRAIN isn't"
 	cont "operating now."
 	done
-; 0x18a8dd
 
-UnknownText_0x18a8dd: ; 0x18a8dd
+UnknownText_0x18a8dd:
 	text "We'll soon depart"
 	line "for GOLDENROD."
 
 	para "Are you coming on"
 	line "board?"
 	done
-; 0x18a917
 
-UnknownText_0x18a917: ; 0x18a917
+UnknownText_0x18a917:
 	text "May I see your"
 	line "rail PASS, please?"
 
 	para "OK. Right this"
 	line "way, please."
 	done
-; 0x18a956
 
-UnknownText_0x18a956: ; 0x18a956
+UnknownText_0x18a956:
 	text "Sorry, but you"
 	line "don't have a PASS."
 	done
-; 0x18a978
 
-UnknownText_0x18a978: ; 0x18a978
+UnknownText_0x18a978:
 	text "We hope to see you"
 	line "again."
 	done
-; 0x18a993
 
-UnknownText_0x18a993: ; 0x18a993
+UnknownText_0x18a993:
 	text "We have arrived in"
 	line "SAFFRON."
 
 	para "We hope to see you"
 	line "again."
 	done
-; 0x18a9ca
 
-UnknownText_0x18a9ca: ; 0x18a9ca
+UnknownText_0x18a9ca:
 	text "The MAGNET TRAIN"
 	line "is a super-modern"
 
@@ -199,9 +183,8 @@ UnknownText_0x18a9ca: ; 0x18a9ca
 	line "isn't any elec-"
 	cont "tricity…"
 	done
-; 0x18aa61
 
-UnknownText_0x18aa61: ; 0x18aa61
+UnknownText_0x18aa61:
 	text "Whew…"
 
 	para "How many times"
@@ -210,9 +193,8 @@ UnknownText_0x18aa61: ; 0x18aa61
 	para "and forth between"
 	line "KANTO and JOHTO?"
 	done
-; 0x18aaab
 
-UnknownText_0x18aaab: ; 0x18aaab
+UnknownText_0x18aaab:
 	text "Before the MAGNET"
 	line "TRAIN STATION was"
 
@@ -223,9 +205,8 @@ UnknownText_0x18aaab: ; 0x18aaab
 	line "named COPYCAT used"
 	cont "to live there."
 	done
-; 0x18ab20
 
-UnknownText_0x18ab20: ; 0x18ab20
+UnknownText_0x18ab20:
 	text "Hi. Do you have a"
 	line "rail PASS? I have"
 
@@ -235,31 +216,28 @@ UnknownText_0x18ab20: ; 0x18ab20
 	para "ride the MAGNET"
 	line "TRAIN have PASSES."
 	done
-; 0x18ab8d
 
-SaffronTrainStation_MapEventHeader: ; 0x18ab8d
+SaffronTrainStation_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 4
-	warp_def $11, $8, 6, GROUP_SAFFRON_CITY, MAP_SAFFRON_CITY
-	warp_def $11, $9, 6, GROUP_SAFFRON_CITY, MAP_SAFFRON_CITY
-	warp_def $5, $6, 4, GROUP_GOLDENROD_MAGNET_TRAIN_STATION, MAP_GOLDENROD_MAGNET_TRAIN_STATION
-	warp_def $5, $b, 3, GROUP_GOLDENROD_MAGNET_TRAIN_STATION, MAP_GOLDENROD_MAGNET_TRAIN_STATION
+	warp_def $11, $8, 6, SAFFRON_CITY
+	warp_def $11, $9, 6, SAFFRON_CITY
+	warp_def $5, $6, 4, GOLDENROD_MAGNET_TRAIN_STATION
+	warp_def $5, $b, 3, GOLDENROD_MAGNET_TRAIN_STATION
 
-	; xy triggers
+.XYTriggers:
 	db 1
-	xy_trigger 0, $6, $b, $0, UnknownScript_0x18a862, $0, $0
+	xy_trigger 0, $6, $b, $0, Script_ArriveFromGoldenrod, $0, $0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 4
-	person_event SPRITE_OFFICER, 13, 13, $6, $0, 255, 255, $0, 0, OfficerScript_0x18a81e, $ffff
-	person_event SPRITE_GYM_GUY, 18, 14, $2, $11, 255, 255, $0, 0, GymGuyScript_0x18a875, $ffff
-	person_event SPRITE_TEACHER, 15, 10, $9, $0, 255, 255, $0, 0, TeacherScript_0x18a889, $0772
-	person_event SPRITE_LASS, 14, 10, $7, $0, 255, 255, $a0, 0, LassScript_0x18a88c, $0772
-; 0x18abe3
-
+	person_event SPRITE_OFFICER, 9, 9, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, OfficerScript_0x18a81e, -1
+	person_event SPRITE_GYM_GUY, 14, 10, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, 0, PERSONTYPE_SCRIPT, 0, GymGuyScript_0x18a875, -1
+	person_event SPRITE_TEACHER, 11, 6, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, TeacherScript_0x18a889, EVENT_SAFFRON_TRAIN_STATION_POPULATION
+	person_event SPRITE_LASS, 10, 6, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, LassScript_0x18a88c, EVENT_SAFFRON_TRAIN_STATION_POPULATION

@@ -1,457 +1,386 @@
-Route36_MapScriptHeader: ; 0x194000
-	; trigger count
+const_value set 2
+	const ROUTE36_YOUNGSTER1
+	const ROUTE36_YOUNGSTER2
+	const ROUTE36_WEIRD_TREE
+	const ROUTE36_LASS1
+	const ROUTE36_FISHER
+	const ROUTE36_FRUIT_TREE
+	const ROUTE36_ARTHUR
+	const ROUTE36_FLORIA
+	const ROUTE36_SUICUNE
+
+Route36_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x19400d, $0000
-	dw UnknownScript_0x19400e, $0000
+	dw .Trigger0, 0
+	dw .Trigger1, 0
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
 
-	dbw 2, UnknownScript_0x19400f
-; 0x19400d
+	dbw MAPCALLBACK_OBJECTS, .ArthurCallback
 
-UnknownScript_0x19400d: ; 0x19400d
+.Trigger0:
 	end
-; 0x19400e
 
-UnknownScript_0x19400e: ; 0x19400e
+.Trigger1:
 	end
-; 0x19400f
 
-UnknownScript_0x19400f: ; 0x19400f
-	checkcode $b
-	if_equal THURSDAY, UnknownScript_0x194018
-	disappear $8
+.ArthurCallback:
+	checkcode VAR_WEEKDAY
+	if_equal THURSDAY, .ArthurAppears
+	disappear ROUTE36_ARTHUR
 	return
-; 0x194018
 
-UnknownScript_0x194018: ; 0x194018
-	appear $8
+.ArthurAppears:
+	appear ROUTE36_ARTHUR
 	return
-; 0x19401b
 
-UnknownScript_0x19401b: ; 0x19401b
-	showemote $0, $0, 15
+Route36SuicuneScript:
+	showemote EMOTE_SHOCK, PLAYER, 15
 	pause 15
 	playsound SFX_WARP_FROM
-	spriteface $0, $1
-	applymovement $a, MovementData_0x194262
-	disappear $a
-	spriteface $0, $0
+	spriteface PLAYER, UP
+	applymovement ROUTE36_SUICUNE, Route36SuicuneMovement
+	disappear ROUTE36_SUICUNE
+	spriteface PLAYER, DOWN
 	pause 10
 	dotrigger $0
 	clearevent EVENT_SAW_SUICUNE_AT_CIANWOOD_CITY
-	domaptrigger GROUP_CIANWOOD_CITY, MAP_CIANWOOD_CITY, $1
+	domaptrigger CIANWOOD_CITY, $1
 	end
-; 0x19403c
 
-WeirdTreeScript_0x19403c: ; 0x19403c
+SudowoodoScript:
 	checkitem SQUIRTBOTTLE
-	iftrue UnknownScript_0x19404a
-	waitbutton
+	iftrue .Fight
+
+	waitsfx
 	playsound SFX_SANDSTORM
-	applymovement $4, MovementData_0x194249
+	applymovement ROUTE36_WEIRD_TREE, SudowoodoShakeMovement
 	end
-; 0x19404a
 
-UnknownScript_0x19404a: ; 0x19404a
-	loadfont
-	2writetext UnknownText_0x19426b
+.Fight:
+	opentext
+	writetext UseSquirtbottleText
 	yesorno
-	iffalse UnknownScript_0x194079
-	loadmovesprites
-	; fallthrough
-; 0x194053
-
-WateredWeirdTreeScript:: ; 0x194053
-	loadfont
-	2writetext UnknownText_0x194290
+	iffalse DidntUseSquirtbottleScript
 	closetext
-	loadmovesprites
+WateredWeirdTreeScript:: ; export (for when you use Squirtbottle from pack)
+	opentext
+	writetext UsedSquirtbottleText
 	waitbutton
-	playsound SFX_SANDSTORM
-	applymovement $4, MovementData_0x194249
-	loadfont
-	2writetext UnknownText_0x1942aa
 	closetext
-	loadmovesprites
-	loadpokedata SUDOWOODO, 20
+	waitsfx
+	playsound SFX_SANDSTORM
+	applymovement ROUTE36_WEIRD_TREE, SudowoodoShakeMovement
+	opentext
+	writetext SudowoodoAttackedText
+	waitbutton
+	closetext
+	loadwildmon SUDOWOODO, 20
 	startbattle
 	setevent EVENT_FOUGHT_SUDOWOODO
-	if_equal $2, UnknownScript_0x19407b
-	disappear $4
-	variablesprite $4, $26
-	returnafterbattle
+	if_equal $2, DidntCatchSudowoodo
+	disappear ROUTE36_WEIRD_TREE
+	variablesprite SPRITE_WEIRD_TREE, SPRITE_TWIN
+	reloadmapafterbattle
 	end
-; 0x194079
 
-UnknownScript_0x194079: ; 0x194079
-	loadmovesprites
-	end
-; 0x19407b
-
-UnknownScript_0x19407b: ; 0x19407b
-	returnafterbattle
-	applymovement $4, MovementData_0x19424b
-	disappear $4
-	variablesprite $4, $26
-	special $005e
-	special $009e
-	end
-; 0x19408c
-
-LassScript_0x19408c: ; 0x19408c
-	faceplayer
-	loadfont
-	checkevent $00ba
-	iftrue UnknownScript_0x1940b3
-	setevent $00b9
-	2writetext UnknownText_0x1942f1
+DidntUseSquirtbottleScript:
 	closetext
-	loadmovesprites
-	clearevent $0768
-	checkcode $9
-	if_equal $1, UnknownScript_0x1940ac
-	applymovement $9, MovementData_0x19424e
-	disappear $9
 	end
-; 0x1940ac
 
-UnknownScript_0x1940ac: ; 0x1940ac
-	applymovement $9, MovementData_0x194258
-	disappear $9
+DidntCatchSudowoodo:
+	reloadmapafterbattle
+	applymovement ROUTE36_WEIRD_TREE, WeirdTreeMovement_Flee
+	disappear ROUTE36_WEIRD_TREE
+	variablesprite SPRITE_WEIRD_TREE, SPRITE_TWIN
+	special RunCallback_04
+	special RefreshSprites
 	end
-; 0x1940b3
 
-UnknownScript_0x1940b3: ; 0x1940b3
-	2writetext UnknownText_0x1943ed
-	closetext
-	loadmovesprites
-	end
-; 0x1940b9
-
-FisherScript_0x1940b9: ; 0x1940b9
+Route36FloriaScript:
 	faceplayer
-	loadfont
+	opentext
+	checkevent EVENT_TALKED_TO_FLORIA_AT_FLOWER_SHOP
+	iftrue .SecondTimeTalking
+	setevent EVENT_MET_FLORIA
+	writetext FloriaText1
+	waitbutton
+	closetext
+	clearevent EVENT_FLORIA_AT_FLOWER_SHOP
+	checkcode VAR_FACING
+	if_equal UP, .Up
+	applymovement ROUTE36_FLORIA, FloriaMovement1
+	disappear ROUTE36_FLORIA
+	end
+
+.Up:
+	applymovement ROUTE36_FLORIA, FloriaMovement2
+	disappear ROUTE36_FLORIA
+	end
+
+.SecondTimeTalking:
+	writetext FloriaText2
+	waitbutton
+	closetext
+	end
+
+Route36RockSmashGuyScript:
+	faceplayer
+	opentext
 	checkevent EVENT_GOT_TM08_ROCK_SMASH
-	iftrue UnknownScript_0x1940da
+	iftrue .AlreadyGotRockSmash
 	checkevent EVENT_FOUGHT_SUDOWOODO
-	iftrue UnknownScript_0x1940cd
-	2writetext UnknownText_0x19446f
+	iftrue .ClearedSudowoodo
+	writetext RockSmashGuyText1
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1940cd
 
-UnknownScript_0x1940cd: ; 0x1940cd
-	2writetext UnknownText_0x1944d0
-	keeptextopen
-	verbosegiveitem TM_08, 1
-	iffalse UnknownScript_0x1940de
+.ClearedSudowoodo:
+	writetext RockSmashGuyText2
+	buttonsound
+	verbosegiveitem TM_ROCK_SMASH
+	iffalse .NoRoomForTM
 	setevent EVENT_GOT_TM08_ROCK_SMASH
-UnknownScript_0x1940da: ; 0x1940da
-	2writetext UnknownText_0x19452c
+.AlreadyGotRockSmash:
+	writetext RockSmashGuyText3
+	waitbutton
+.NoRoomForTM:
 	closetext
-UnknownScript_0x1940de: ; 0x1940de
-	loadmovesprites
 	end
-; 0x1940e0
 
-LassScript_0x1940e0: ; 0x1940e0
+LassScript_0x1940e0:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_FOUGHT_SUDOWOODO
-	iftrue UnknownScript_0x1940ee
-	2writetext UnknownText_0x194626
+	iftrue .ClearedSudowoodo
+	writetext UnknownText_0x194626
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1940ee
 
-UnknownScript_0x1940ee: ; 0x1940ee
-	2writetext UnknownText_0x19469e
+.ClearedSudowoodo:
+	writetext UnknownText_0x19469e
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1940f4
 
-TrainerSchoolboyAlan1: ; 0x1940f4
-	; bit/flag number
-	dw $46e
+TrainerSchoolboyAlan1:
+	trainer EVENT_BEAT_SCHOOLBOY_ALAN, SCHOOLBOY, ALAN1, SchoolboyAlan1SeenText, SchoolboyAlan1BeatenText, 0, .Script
 
-	; trainer group && trainer id
-	db SCHOOLBOY, ALAN1
+.Script:
+	writecode VAR_CALLERID, PHONE_SCHOOLBOY_ALAN
+	end_if_just_battled
+	opentext
+	checkflag ENGINE_ALAN
+	iftrue .ChooseRematch
+	checkflag ENGINE_ALAN_HAS_FIRE_STONE
+	iftrue .GiveFireStone
+	checkcellnum PHONE_SCHOOLBOY_ALAN
+	iftrue .NumberAccepted
+	checkevent EVENT_ALAN_ASKED_FOR_PHONE_NUMBER
+	iftrue .AskAgainForPhoneNumber
+	writetext UnknownText_0x1947aa
+	buttonsound
+	setevent EVENT_ALAN_ASKED_FOR_PHONE_NUMBER
+	scall .AskNumber1
+	jump .ContinueAskForPhoneNumber
 
-	; text when seen
-	dw SchoolboyAlan1SeenText
-
-	; text when trainer beaten
-	dw SchoolboyAlan1BeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SchoolboyAlan1Script
-; 0x194100
-
-SchoolboyAlan1Script: ; 0x194100
-	writecode $17, $18
-	talkaftercancel
-	loadfont
-	checkflag $0073
-	iftrue UnknownScript_0x194140
-	checkflag $0081
-	iftrue UnknownScript_0x1941b4
-	checkcellnum $18
-	iftrue UnknownScript_0x1941d5
-	checkevent $0285
-	iftrue UnknownScript_0x194129
-	2writetext UnknownText_0x1947aa
-	keeptextopen
-	setevent $0285
-	2call UnknownScript_0x1941c9
-	2jump UnknownScript_0x19412c
-; 0x194129
-
-UnknownScript_0x194129: ; 0x194129
-	2call UnknownScript_0x1941cd
-UnknownScript_0x19412c: ; 0x19412c
-	askforphonenumber $18
-	if_equal $1, UnknownScript_0x1941dd
-	if_equal $2, UnknownScript_0x1941d9
+.AskAgainForPhoneNumber:
+	scall .AskNumber2
+.ContinueAskForPhoneNumber:
+	askforphonenumber PHONE_SCHOOLBOY_ALAN
+	if_equal $1, .PhoneFull
+	if_equal $2, .NumberDeclined
 	trainertotext SCHOOLBOY, ALAN1, $0
-	2call UnknownScript_0x1941d1
-	2jump UnknownScript_0x1941d5
-; 0x194140
+	scall .RegisteredNumber
+	jump .NumberAccepted
 
-UnknownScript_0x194140: ; 0x194140
-	2call UnknownScript_0x1941e1
-	winlosstext SchoolboyAlan1BeatenText, $0000
-	copybytetovar $da02
-	if_equal $4, UnknownScript_0x19415f
-	if_equal $3, UnknownScript_0x194165
-	if_equal $2, UnknownScript_0x19416b
-	if_equal $1, UnknownScript_0x194171
-	if_equal $0, UnknownScript_0x194177
-UnknownScript_0x19415f: ; 0x19415f
+.ChooseRematch:
+	scall .Rematch
+	winlosstext SchoolboyAlan1BeatenText, 0
+	copybytetovar wAlanFightCount
+	if_equal 4, .Fight4
+	if_equal 3, .Fight3
+	if_equal 2, .Fight2
+	if_equal 1, .Fight1
+	if_equal 0, .LoadFight0
+.Fight4:
 	checkevent EVENT_RESTORED_POWER_TO_KANTO
-	iftrue UnknownScript_0x1941ab
-UnknownScript_0x194165: ; 0x194165
-	checkevent $0044
-	iftrue UnknownScript_0x19419e
-UnknownScript_0x19416b: ; 0x19416b
-	checkflag $004b
-	iftrue UnknownScript_0x194191
-UnknownScript_0x194171: ; 0x194171
-	checkflag $0047
-	iftrue UnknownScript_0x194184
-UnknownScript_0x194177: ; 0x194177
+	iftrue .LoadFight4
+.Fight3:
+	checkevent EVENT_BEAT_ELITE_FOUR
+	iftrue .LoadFight3
+.Fight2:
+	checkflag ENGINE_FLYPOINT_BLACKTHORN
+	iftrue .LoadFight2
+.Fight1:
+	checkflag ENGINE_FLYPOINT_OLIVINE
+	iftrue .LoadFight1
+.LoadFight0:
 	loadtrainer SCHOOLBOY, ALAN1
 	startbattle
-	returnafterbattle
-	loadvar $da02, $1
-	clearflag $0073
+	reloadmapafterbattle
+	loadvar wAlanFightCount, 1
+	clearflag ENGINE_ALAN
 	end
-; 0x194184
 
-UnknownScript_0x194184: ; 0x194184
+.LoadFight1:
 	loadtrainer SCHOOLBOY, ALAN2
 	startbattle
-	returnafterbattle
-	loadvar $da02, $2
-	clearflag $0073
+	reloadmapafterbattle
+	loadvar wAlanFightCount, 2
+	clearflag ENGINE_ALAN
 	end
-; 0x194191
 
-UnknownScript_0x194191: ; 0x194191
+.LoadFight2:
 	loadtrainer SCHOOLBOY, ALAN3
 	startbattle
-	returnafterbattle
-	loadvar $da02, $3
-	clearflag $0073
+	reloadmapafterbattle
+	loadvar wAlanFightCount, 3
+	clearflag ENGINE_ALAN
 	end
-; 0x19419e
 
-UnknownScript_0x19419e: ; 0x19419e
+.LoadFight3:
 	loadtrainer SCHOOLBOY, ALAN4
 	startbattle
-	returnafterbattle
-	loadvar $da02, $4
-	clearflag $0073
+	reloadmapafterbattle
+	loadvar wAlanFightCount, 4
+	clearflag ENGINE_ALAN
 	end
-; 0x1941ab
 
-UnknownScript_0x1941ab: ; 0x1941ab
+.LoadFight4:
 	loadtrainer SCHOOLBOY, ALAN5
 	startbattle
-	returnafterbattle
-	clearflag $0073
+	reloadmapafterbattle
+	clearflag ENGINE_ALAN
 	end
-; 0x1941b4
 
-UnknownScript_0x1941b4: ; 0x1941b4
-	2call UnknownScript_0x1941e5
-	verbosegiveitem FIRE_STONE, 1
-	iffalse UnknownScript_0x1941c6
-	clearflag $0081
-	setevent $0101
-	2jump UnknownScript_0x1941d5
-; 0x1941c6
+.GiveFireStone:
+	scall .Gift
+	verbosegiveitem FIRE_STONE
+	iffalse .BagFull
+	clearflag ENGINE_ALAN_HAS_FIRE_STONE
+	setevent EVENT_ALAN_GAVE_FIRE_STONE
+	jump .NumberAccepted
 
-UnknownScript_0x1941c6: ; 0x1941c6
-	2jump UnknownScript_0x1941e9
-; 0x1941c9
+.BagFull:
+	jump .PackFull
 
-UnknownScript_0x1941c9: ; 0x1941c9
-	jumpstd $0019
+.AskNumber1:
+	jumpstd asknumber1m
 	end
-; 0x1941cd
 
-UnknownScript_0x1941cd: ; 0x1941cd
-	jumpstd $001a
+.AskNumber2:
+	jumpstd asknumber2m
 	end
-; 0x1941d1
 
-UnknownScript_0x1941d1: ; 0x1941d1
-	jumpstd $001b
+.RegisteredNumber:
+	jumpstd registerednumberm
 	end
-; 0x1941d5
 
-UnknownScript_0x1941d5: ; 0x1941d5
-	jumpstd $001c
+.NumberAccepted:
+	jumpstd numberacceptedm
 	end
-; 0x1941d9
 
-UnknownScript_0x1941d9: ; 0x1941d9
-	jumpstd $001d
+.NumberDeclined:
+	jumpstd numberdeclinedm
 	end
-; 0x1941dd
 
-UnknownScript_0x1941dd: ; 0x1941dd
-	jumpstd $001e
+.PhoneFull:
+	jumpstd phonefullm
 	end
-; 0x1941e1
 
-UnknownScript_0x1941e1: ; 0x1941e1
-	jumpstd $001f
+.Rematch:
+	jumpstd rematchm
 	end
-; 0x1941e5
 
-UnknownScript_0x1941e5: ; 0x1941e5
-	jumpstd $0020
+.Gift:
+	jumpstd giftm
 	end
-; 0x1941e9
 
-UnknownScript_0x1941e9: ; 0x1941e9
-	jumpstd $0021
+.PackFull:
+	jumpstd packfullm
 	end
-; 0x1941ed
 
-TrainerPsychicMark: ; 0x1941ed
-	; bit/flag number
-	dw $440
+TrainerPsychicMark:
+	trainer EVENT_BEAT_PSYCHIC_MARK, PSYCHIC_T, MARK, PsychicMarkSeenText, PsychicMarkBeatenText, 0, .Script
 
-	; trainer group && trainer id
-	db PSYCHIC_T, MARK
-
-	; text when seen
-	dw PsychicMarkSeenText
-
-	; text when trainer beaten
-	dw PsychicMarkBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw PsychicMarkScript
-; 0x1941f9
-
-PsychicMarkScript: ; 0x1941f9
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x19471e
+.Script:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x19471e
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x194201
 
-YoungsterScript_0x194201: ; 0x194201
+ArthurScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_HARD_STONE_FROM_ARTHUR
-	iftrue UnknownScript_0x19422f
-	checkcode $b
-	if_not_equal THURSDAY, UnknownScript_0x194235
+	iftrue .AlreadyGotStone
+	checkcode VAR_WEEKDAY
+	if_not_equal THURSDAY, ArthurNotThursdayScript
 	checkevent EVENT_MET_ARTHUR_OF_THURSDAY
-	iftrue UnknownScript_0x19421c
-	2writetext UnknownText_0x194800
-	keeptextopen
+	iftrue .MetArthur
+	writetext MeetArthurText
+	buttonsound
 	setevent EVENT_MET_ARTHUR_OF_THURSDAY
-UnknownScript_0x19421c: ; 0x19421c
-	2writetext UnknownText_0x19482d
-	keeptextopen
-	verbosegiveitem HARD_STONE, 1
-	iffalse UnknownScript_0x194233
+.MetArthur:
+	writetext ArthurGivesGiftText
+	buttonsound
+	verbosegiveitem HARD_STONE
+	iffalse .BagFull
 	setevent EVENT_GOT_HARD_STONE_FROM_ARTHUR
-	2writetext UnknownText_0x194847
+	writetext ArthurGaveGiftText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x19422f
 
-UnknownScript_0x19422f: ; 0x19422f
-	2writetext UnknownText_0x1948aa
+.AlreadyGotStone:
+	writetext ArthurThursdayText
+	waitbutton
+.BagFull:
 	closetext
-UnknownScript_0x194233: ; 0x194233
-	loadmovesprites
 	end
-; 0x194235
 
-UnknownScript_0x194235: ; 0x194235
-	2writetext UnknownText_0x1948f3
+ArthurNotThursdayScript:
+	writetext ArthurNotThursdayText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x19423b
 
-MapRoute36Signpost2Script: ; 0x19423b
-	jumptext UnknownText_0x194924
-; 0x19423e
+Route36Sign:
+	jumptext Route36SignText
 
-MapRoute36Signpost1Script: ; 0x19423e
-	jumptext UnknownText_0x19492e
-; 0x194241
+RuinsOfAlphNorthSign:
+	jumptext RuinsOfAlphNorthSignText
 
-MapRoute36Signpost3Script: ; 0x194241
-	jumptext UnknownText_0x19494c
-; 0x194244
+Route36TrainerTips1:
+	jumptext Route36TrainerTips1Text
 
-MapRoute36Signpost0Script: ; 0x194244
-	jumptext UnknownText_0x1949ee
-; 0x194247
+Route36TrainerTips2:
+	jumptext Route36TrainerTips2Text
 
-FruitTreeScript_0x194247: ; 0x194247
-	fruittree $d
-; 0x194249
+Route36FruitTree:
+	fruittree FRUITTREE_ROUTE_36
 
-MovementData_0x194249: ; 0x194249
-	db $56 ; movement
+SudowoodoShakeMovement:
+	tree_shake ; shake
 	step_end
-; 0x19424b
 
-MovementData_0x19424b: ; 0x19424b
+WeirdTreeMovement_Flee:
 	fast_jump_step_up
 	fast_jump_step_up
 	step_end
-; 0x19424e
 
-MovementData_0x19424e: ; 0x19424e
+FloriaMovement1:
 	step_down
 	step_down
 	step_down
@@ -462,9 +391,8 @@ MovementData_0x19424e: ; 0x19424e
 	step_left
 	step_left
 	step_end
-; 0x194258
 
-MovementData_0x194258: ; 0x194258
+FloriaMovement2:
 	step_left
 	step_down
 	step_down
@@ -475,33 +403,29 @@ MovementData_0x194258: ; 0x194258
 	step_left
 	step_left
 	step_end
-; 0x194262
 
-MovementData_0x194262: ; 0x194262
-	db $39 ; movement
+Route36SuicuneMovement:
+	set_sliding
 	fast_jump_step_down
 	fast_jump_step_down
 	fast_jump_step_down
 	fast_jump_step_right
 	fast_jump_step_right
 	fast_jump_step_right
-	db $38 ; movement
+	remove_sliding
 	step_end
-; 0x19426b
 
-UnknownText_0x19426b: ; 0x19426b
+UseSquirtbottleText:
 	text "It's a weird tree."
 	line "Use SQUIRTBOTTLE?"
 	done
-; 0x194290
 
-UnknownText_0x194290: ; 0x194290
-	text $52, " used the"
+UsedSquirtbottleText:
+	text "<PLAYER> used the"
 	line "SQUIRTBOTTLE."
 	done
-; 0x1942aa
 
-UnknownText_0x1942aa: ; 0x1942aa
+SudowoodoAttackedText:
 	text "The weird tree"
 	line "doesn't like the"
 	cont "SQUIRTBOTTLE!"
@@ -509,9 +433,8 @@ UnknownText_0x1942aa: ; 0x1942aa
 	para "The weird tree"
 	line "attacked!"
 	done
-; 0x1942f1
 
-UnknownText_0x1942f1: ; 0x1942f1
+FloriaText1:
 	text "I'm the FLOWER"
 	line "SHOP's FLORIA!"
 
@@ -536,9 +459,8 @@ UnknownText_0x1942f1: ; 0x1942f1
 	line "my sis and borrow"
 	cont "her water bottle!"
 	done
-; 0x1943ed
 
-UnknownText_0x1943ed: ; 0x1943ed
+FloriaText2:
 	text "When I told my sis"
 	line "about the jiggly"
 
@@ -551,9 +473,8 @@ UnknownText_0x1943ed: ; 0x1943ed
 	para "lend me her water"
 	line "bottle…"
 	done
-; 0x19446f
 
-UnknownText_0x19446f: ; 0x19446f
+RockSmashGuyText1:
 	text "Wa-hey!"
 
 	para "I was going to"
@@ -565,9 +486,8 @@ UnknownText_0x19446f: ; 0x19446f
 	para "But I couldn't!"
 	line "I'm a failure!"
 	done
-; 0x1944d0
 
-UnknownText_0x1944d0: ; 0x1944d0
+RockSmashGuyText2:
 	text "Did you clear that"
 	line "wretched tree?"
 
@@ -575,15 +495,13 @@ UnknownText_0x1944d0: ; 0x1944d0
 	line "I want you to"
 	cont "have this."
 	done
-; 0x19451a
 
-UnknownText_0x19451a: ; 0x19451a
-	text $52, " received"
+UnknownText_0x19451a:
+	text "<PLAYER> received"
 	line "TM08."
 	done
-; 0x19452c
 
-UnknownText_0x19452c: ; 0x19452c
+RockSmashGuyText3:
 	text "That happens to be"
 	line "ROCK SMASH."
 
@@ -597,9 +515,8 @@ UnknownText_0x19452c: ; 0x19452c
 	line "in your way, just"
 	cont "smash 'em up!"
 	done
-; 0x1945b8
 
-UnknownText_0x1945b8: ; 0x1945b8
+UnknownText_0x1945b8:
 	text "An odd tree is"
 	line "blocking the way"
 	cont "to GOLDENROD CITY."
@@ -610,9 +527,8 @@ UnknownText_0x1945b8: ; 0x1945b8
 	para "CENTER they just"
 	line "opened…"
 	done
-; 0x194626
 
-UnknownText_0x194626: ; 0x194626
+UnknownText_0x194626:
 	text "An odd tree is"
 	line "blocking the way"
 	cont "to GOLDENROD CITY."
@@ -623,9 +539,8 @@ UnknownText_0x194626: ; 0x194626
 	para "Something should"
 	line "be done about it."
 	done
-; 0x19469e
 
-UnknownText_0x19469e: ; 0x19469e
+UnknownText_0x19469e:
 	text "That odd tree dis-"
 	line "appeared without a"
 	cont "trace."
@@ -633,42 +548,36 @@ UnknownText_0x19469e: ; 0x19469e
 	para "Oh! That tree was"
 	line "really a #MON?"
 	done
-; 0x1946ed
 
-PsychicMarkSeenText: ; 0x1946ed
+PsychicMarkSeenText:
 	text "I'm going to read"
 	line "your thoughts!"
 	done
-; 0x19470e
 
-PsychicMarkBeatenText: ; 0x19470e
+PsychicMarkBeatenText:
 	text "I misread you!"
 	done
-; 0x19471e
 
-UnknownText_0x19471e: ; 0x19471e
+UnknownText_0x19471e:
 	text "I'd be strong if"
 	line "only I could tell"
 
 	para "what my opponent"
 	line "was thinking."
 	done
-; 0x194760
 
-SchoolboyAlan1SeenText: ; 0x194760
+SchoolboyAlan1SeenText:
 	text "Thanks to my stud-"
 	line "ies, I'm ready for"
 	cont "any #MON!"
 	done
-; 0x194790
 
-SchoolboyAlan1BeatenText: ; 0x194790
+SchoolboyAlan1BeatenText:
 	text "Oops! Computation"
 	line "error?"
 	done
-; 0x1947aa
 
-UnknownText_0x1947aa: ; 0x1947aa
+UnknownText_0x1947aa:
 	text "Darn. I study five"
 	line "hours a day too."
 
@@ -676,24 +585,21 @@ UnknownText_0x1947aa: ; 0x1947aa
 	line "learning than just"
 	cont "reading books."
 	done
-; 0x194800
 
-UnknownText_0x194800: ; 0x194800
+MeetArthurText:
 	text "ARTHUR: Who are"
 	line "you?"
 
 	para "I'm ARTHUR of"
 	line "Thursday."
 	done
-; 0x19482d
 
-UnknownText_0x19482d: ; 0x19482d
+ArthurGivesGiftText:
 	text "Here. You can have"
 	line "this."
 	done
-; 0x194847
 
-UnknownText_0x194847: ; 0x194847
+ArthurGaveGiftText:
 	text "ARTHUR: A #MON"
 	line "that uses rock-"
 
@@ -703,36 +609,31 @@ UnknownText_0x194847: ; 0x194847
 	para "It pumps up rock-"
 	line "type attacks."
 	done
-; 0x1948aa
 
-UnknownText_0x1948aa: ; 0x1948aa
+ArthurThursdayText:
 	text "ARTHUR: I'm ARTHUR"
 	line "of Thursday. I'm"
 
 	para "the second son out"
 	line "of seven children."
 	done
-; 0x1948f3
 
-UnknownText_0x1948f3: ; 0x1948f3
+ArthurNotThursdayText:
 	text "ARTHUR: Today's"
 	line "not Thursday. How"
 	cont "disappointing."
 	done
-; 0x194924
 
-UnknownText_0x194924: ; 0x194924
+Route36SignText:
 	text "ROUTE 36"
 	done
-; 0x19492e
 
-UnknownText_0x19492e: ; 0x19492e
+RuinsOfAlphNorthSignText:
 	text "RUINS OF ALPH"
 	line "NORTH ENTRANCE"
 	done
-; 0x19494c
 
-UnknownText_0x19494c: ; 0x19494c
+Route36TrainerTips1Text:
 	text "TRAINER TIPS"
 
 	para "#MON stats"
@@ -748,9 +649,8 @@ UnknownText_0x19494c: ; 0x19494c
 	para "pronounced as the"
 	line "#MON grow."
 	done
-; 0x1949ee
 
-UnknownText_0x1949ee: ; 0x1949ee
+Route36TrainerTips2Text:
 	text "TRAINER TIPS"
 
 	para "Use DIG to return"
@@ -763,41 +663,38 @@ UnknownText_0x1949ee: ; 0x1949ee
 	para "caves and other"
 	line "landmarks."
 	done
-; 0x194a66
 
-Route36_MapEventHeader: ; 0x194a66
+Route36_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 4
-	warp_def $8, $12, 3, GROUP_ROUTE_36_NATIONAL_PARK_GATE, MAP_ROUTE_36_NATIONAL_PARK_GATE
-	warp_def $9, $12, 4, GROUP_ROUTE_36_NATIONAL_PARK_GATE, MAP_ROUTE_36_NATIONAL_PARK_GATE
-	warp_def $d, $2f, 1, GROUP_ROUTE_36_RUINS_OF_ALPH_GATE, MAP_ROUTE_36_RUINS_OF_ALPH_GATE
-	warp_def $d, $30, 2, GROUP_ROUTE_36_RUINS_OF_ALPH_GATE, MAP_ROUTE_36_RUINS_OF_ALPH_GATE
+	warp_def $8, $12, 3, ROUTE_36_NATIONAL_PARK_GATE
+	warp_def $9, $12, 4, ROUTE_36_NATIONAL_PARK_GATE
+	warp_def $d, $2f, 1, ROUTE_36_RUINS_OF_ALPH_GATE
+	warp_def $d, $30, 2, ROUTE_36_RUINS_OF_ALPH_GATE
 
-	; xy triggers
+.XYTriggers:
 	db 2
-	xy_trigger 1, $7, $14, $0, UnknownScript_0x19401b, $0, $0
-	xy_trigger 1, $7, $16, $0, UnknownScript_0x19401b, $0, $0
+	xy_trigger 1, $7, $14, $0, Route36SuicuneScript, $0, $0
+	xy_trigger 1, $7, $16, $0, Route36SuicuneScript, $0, $0
 
-	; signposts
+.Signposts:
 	db 4
-	signpost 1, 29, $0, MapRoute36Signpost0Script
-	signpost 11, 45, $0, MapRoute36Signpost1Script
-	signpost 7, 55, $0, MapRoute36Signpost2Script
-	signpost 7, 21, $0, MapRoute36Signpost3Script
+	signpost 1, 29, SIGNPOST_READ, Route36TrainerTips2
+	signpost 11, 45, SIGNPOST_READ, RuinsOfAlphNorthSign
+	signpost 7, 55, SIGNPOST_READ, Route36Sign
+	signpost 7, 21, SIGNPOST_READ, Route36TrainerTips1
 
-	; people-events
+.PersonEvents:
 	db 9
-	person_event SPRITE_YOUNGSTER, 17, 24, $9, $0, 255, 255, $92, 3, TrainerPsychicMark, $ffff
-	person_event SPRITE_YOUNGSTER, 18, 35, $8, $0, 255, 255, $92, 5, TrainerSchoolboyAlan1, $ffff
-	person_event SPRITE_WEIRD_TREE, 13, 39, $17, $0, 255, 255, $0, 0, WeirdTreeScript_0x19403c, $06f8
-	person_event SPRITE_LASS, 12, 55, $5, $2, 255, 255, $0, 0, LassScript_0x1940e0, $ffff
-	person_event SPRITE_FISHER, 13, 48, $8, $0, 255, 255, $0, 0, FisherScript_0x1940b9, $ffff
-	person_event SPRITE_FRUIT_TREE, 8, 25, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x194247, $ffff
-	person_event SPRITE_YOUNGSTER, 10, 50, $2, $11, 255, 255, $0, 0, YoungsterScript_0x194201, $075a
-	person_event SPRITE_LASS, 16, 37, $6, $0, 255, 255, $90, 0, LassScript_0x19408c, $0769
-	person_event SPRITE_SUICUNE, 10, 25, $1, $0, 255, 255, $90, 0, ObjectEvent, $07b0
-; 0x194b19
-
+	person_event SPRITE_YOUNGSTER, 13, 20, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 3, TrainerPsychicMark, -1
+	person_event SPRITE_YOUNGSTER, 14, 31, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 5, TrainerSchoolboyAlan1, -1
+	person_event SPRITE_WEIRD_TREE, 9, 35, SPRITEMOVEDATA_SUDOWOODO, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, SudowoodoScript, EVENT_ROUTE_36_SUDOWOODO
+	person_event SPRITE_LASS, 8, 51, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 2, -1, -1, 0, PERSONTYPE_SCRIPT, 0, LassScript_0x1940e0, -1
+	person_event SPRITE_FISHER, 9, 44, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, Route36RockSmashGuyScript, -1
+	person_event SPRITE_FRUIT_TREE, 4, 21, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, Route36FruitTree, -1
+	person_event SPRITE_YOUNGSTER, 6, 46, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ArthurScript, EVENT_ROUTE_36_ARTHUR_OF_THURSDAY
+	person_event SPRITE_LASS, 12, 33, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, Route36FloriaScript, EVENT_FLORIA_AT_SUDOWOODO
+	person_event SPRITE_SUICUNE, 6, 21, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, ObjectEvent, EVENT_SAW_SUICUNE_ON_ROUTE_36

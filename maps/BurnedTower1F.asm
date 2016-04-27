@@ -1,188 +1,173 @@
-BurnedTower1F_MapScriptHeader: ; 0x185be1
-	; trigger count
+const_value set 2
+	const BURNEDTOWER1F_ROCK
+	const BURNEDTOWER1F_EUSINE
+	const BURNEDTOWER1F_SILVER
+	const BURNEDTOWER1F_MORTY
+	const BURNEDTOWER1F_POKE_BALL
+
+BurnedTower1F_MapScriptHeader:
+.MapTriggers:
 	db 3
 
 	; triggers
-	dw UnknownScript_0x185bf2, $0000
-	dw UnknownScript_0x185bf6, $0000
-	dw UnknownScript_0x185bf7, $0000
+	maptrigger .Trigger0
+	maptrigger .Trigger1
+	maptrigger .Trigger2
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
 
-	dbw 1, UnknownScript_0x185bf8
-; 0x185bf2
+	dbw MAPCALLBACK_TILES, .HoleAndLadder
 
-UnknownScript_0x185bf2: ; 0x185bf2
-	priorityjump UnknownScript_0x185c0d
+.Trigger0:
+	priorityjump .EusineTrigger
 	end
-; 0x185bf6
 
-UnknownScript_0x185bf6: ; 0x185bf6
+.Trigger1:
 	end
-; 0x185bf7
 
-UnknownScript_0x185bf7: ; 0x185bf7
+.Trigger2:
 	end
-; 0x185bf8
 
-UnknownScript_0x185bf8: ; 0x185bf8
-	checkevent $0332
-	iftrue UnknownScript_0x185c02
-	changeblock $a, $8, $32
-UnknownScript_0x185c02: ; 0x185c02
+.HoleAndLadder:
+	checkevent EVENT_HOLE_IN_BURNED_TOWER
+	iftrue .Next
+	changeblock $a, $8, $32 ; hole
+.Next:
 	checkevent EVENT_RELEASED_THE_BEASTS
-	iftrue UnknownScript_0x185c0c
-	changeblock $6, $e, $9
-UnknownScript_0x185c0c: ; 0x185c0c
+	iftrue .Done
+	changeblock $6, $e, $9 ; ladder
+.Done:
 	return
-; 0x185c0d
 
-UnknownScript_0x185c0d: ; 0x185c0d
-	spriteface $3, $0
-	showemote $0, $3, 15
-	applymovement $3, MovementData_0x185cd3
-	loadfont
-	2writetext UnknownText_0x185ecc
+.EusineTrigger:
+	spriteface BURNEDTOWER1F_EUSINE, DOWN
+	showemote EMOTE_SHOCK, BURNEDTOWER1F_EUSINE, 15
+	applymovement BURNEDTOWER1F_EUSINE, BurnedTower1FEusineMovement
+	opentext
+	writetext BurnedTower1FEusineIntroText
+	waitbutton
 	closetext
-	loadmovesprites
-	moveperson $3, $9, $e
+	moveperson BURNEDTOWER1F_EUSINE, $9, $e
 	dotrigger $1
 	end
-; 0x185c25
 
-UnknownScript_0x185c25: ; 0x185c25
-	showemote $0, $4, 15
-	special $006a
+BurnedTowerRivalBattleScript:
+	showemote EMOTE_SHOCK, BURNEDTOWER1F_SILVER, 15
+	special Special_FadeOutMusic
 	pause 15
-	spriteface $4, $3
+	spriteface BURNEDTOWER1F_SILVER, RIGHT
 	pause 15
-	applymovement $0, MovementData_0x185ccd
-	applymovement $4, MovementData_0x185ccf
+	applymovement PLAYER, BurnedTowerMovement_PlayerWalksToSilver
+	applymovement BURNEDTOWER1F_SILVER, BurnedTowerMovement_SilverWalksToPlayer
 	playmusic MUSIC_RIVAL_ENCOUNTER
-	loadfont
-	2writetext UnknownText_0x185cd9
+	opentext
+	writetext BurnedTowerSilver_BeforeText
+	waitbutton
 	closetext
-	loadmovesprites
 	checkevent EVENT_GOT_TOTODILE_FROM_ELM
-	iftrue UnknownScript_0x185c60
+	iftrue .totodile
 	checkevent EVENT_GOT_CHIKORITA_FROM_ELM
-	iftrue UnknownScript_0x185c70
-	winlosstext UnknownText_0x185d9b, UnknownText_0x185e2c
-	setlasttalked $4
+	iftrue .chikorita
+	winlosstext BurnedTowerSilver_WinText, BurnedTowerSilver_LossText
+	setlasttalked BURNEDTOWER1F_SILVER
 	loadtrainer RIVAL1, RIVAL1_9
 	startbattle
-	reloadmapmusic
-	returnafterbattle
-	2jump UnknownScript_0x185c80
-; 0x185c60
+	dontrestartmapmusic
+	reloadmapafterbattle
+	jump .returnfrombattle
 
-UnknownScript_0x185c60: ; 0x185c60
-	winlosstext UnknownText_0x185d9b, UnknownText_0x185e2c
-	setlasttalked $4
+.totodile
+	winlosstext BurnedTowerSilver_WinText, BurnedTowerSilver_LossText
+	setlasttalked BURNEDTOWER1F_SILVER
 	loadtrainer RIVAL1, RIVAL1_7
 	startbattle
-	reloadmapmusic
-	returnafterbattle
-	2jump UnknownScript_0x185c80
-; 0x185c70
+	dontrestartmapmusic
+	reloadmapafterbattle
+	jump .returnfrombattle
 
-UnknownScript_0x185c70: ; 0x185c70
-	winlosstext UnknownText_0x185d9b, UnknownText_0x185e2c
-	setlasttalked $4
+.chikorita
+	winlosstext BurnedTowerSilver_WinText, BurnedTowerSilver_LossText
+	setlasttalked BURNEDTOWER1F_SILVER
 	loadtrainer RIVAL1, RIVAL1_8
 	startbattle
-	reloadmapmusic
-	returnafterbattle
-	2jump UnknownScript_0x185c80
-; 0x185c80
+	dontrestartmapmusic
+	reloadmapafterbattle
+	jump .returnfrombattle
 
-UnknownScript_0x185c80: ; 0x185c80
+.returnfrombattle
 	playmusic MUSIC_RIVAL_AFTER
-	loadfont
-	2writetext UnknownText_0x185de2
+	opentext
+	writetext BurnedTowerSilver_AfterText1
+	waitbutton
 	closetext
-	loadmovesprites
 	dotrigger $2
-	setevent $06c5
-	special $006a
+	setevent EVENT_RIVAL_BURNED_TOWER
+	special Special_FadeOutMusic
 	pause 15
 	earthquake 50
-	showemote $0, $0, 15
+	showemote EMOTE_SHOCK, PLAYER, 15
 	playsound SFX_ENTER_DOOR
-	waitbutton
+	waitsfx
 	changeblock $a, $8, $25
 	reloadmappart
 	pause 15
-	applymovement $0, MovementData_0x185cd1
+	applymovement PLAYER, BurnedTower1FMovement_PlayerStartsToFall
 	playsound SFX_KINESIS
-	showemote $0, $4, 20
-	loadfont
-	2writetext UnknownText_0x185e75
+	showemote EMOTE_SHOCK, BURNEDTOWER1F_SILVER, 20
+	opentext
+	writetext BurnedTowerSilver_AfterText2
+	waitbutton
 	closetext
-	loadmovesprites
-	setevent $0332
+	setevent EVENT_HOLE_IN_BURNED_TOWER
 	pause 15
 	warpcheck
 	end
-; 0x185cbc
 
-SuperNerdScript_0x185cbc: ; 0x185cbc
-	jumptextfaceplayer UnknownText_0x185f99
-; 0x185cbf
+BurnedTower1FEusineScript:
+	jumptextfaceplayer BurnedTower1FEusineText
 
-MortyScript_0x185cbf: ; 0x185cbf
-	jumptextfaceplayer UnknownText_0x186002
-; 0x185cc2
+BurnedTower1FMortyScript:
+	jumptextfaceplayer BurnedTower1FMortyText
 
-RockScript_0x185cc2: ; 0x185cc2
-	jumpstd $000f
-; 0x185cc5
+BurnedTower1FRock:
+	jumpstd smashrock
 
-MapBurnedTower1FSignpostItem0: ; 0x185cc5
-	dw $0080
-	db ETHER
-	
-; 0x185cc8
+BurnedTower1FHiddenEther:
+	dwb EVENT_BURNED_TOWER_1F_HIDDEN_ETHER, ETHER
 
-MapBurnedTower1FSignpostItem1: ; 0x185cc8
-	dw $00ff
-	db ULTRA_BALL
-	
-; 0x185ccb
 
-ItemFragment_0x185ccb: ; 0x185ccb
-	db HP_UP, 1
-; 0x185ccd
+BurnedTower1FHiddenUltraBall:
+	dwb EVENT_BURNED_TOWER_1F_HIDDEN_ULTRA_BALL, ULTRA_BALL
 
-MovementData_0x185ccd: ; 0x185ccd
+
+BurnedTower1FHPUp:
+	itemball HP_UP
+
+BurnedTowerMovement_PlayerWalksToSilver:
 	step_left
 	step_end
-; 0x185ccf
 
-MovementData_0x185ccf: ; 0x185ccf
+BurnedTowerMovement_SilverWalksToPlayer:
 	step_right
 	step_end
-; 0x185cd1
 
-MovementData_0x185cd1: ; 0x185cd1
-	db $59 ; movement
+BurnedTower1FMovement_PlayerStartsToFall:
+	skyfall_top
 	step_end
-; 0x185cd3
 
-MovementData_0x185cd3: ; 0x185cd3
+BurnedTower1FEusineMovement:
 	step_down
 	step_left
 	step_left
 	step_left
 	step_down
 	step_end
-; 0x185cd9
 
-UnknownText_0x185cd9: ; 0x185cd9
-	text $56, " ", $56, " ", $56
+BurnedTowerSilver_BeforeText:
+	text "<......> <......> <......>"
 
 	para "…Oh, it's you."
 
@@ -204,9 +189,8 @@ UnknownText_0x185cd9: ; 0x185cd9
 	para "It's all your"
 	line "fault!"
 	done
-; 0x185d9b
 
-UnknownText_0x185d9b: ; 0x185d9b
+BurnedTowerSilver_WinText:
 	text "…Humph!"
 
 	para "This is why I hate"
@@ -215,9 +199,8 @@ UnknownText_0x185d9b: ; 0x185d9b
 	para "There's no"
 	line "challenge in it."
 	done
-; 0x185de2
 
-UnknownText_0x185de2: ; 0x185de2
+BurnedTowerSilver_AfterText1:
 	text "…Aw, whatever."
 
 	para "You would never be"
@@ -226,9 +209,8 @@ UnknownText_0x185de2: ; 0x185de2
 	para "legendary #MON"
 	line "anyway."
 	done
-; 0x185e2c
 
-UnknownText_0x185e2c: ; 0x185e2c
+BurnedTowerSilver_LossText:
 	text "…Humph!"
 
 	para "This is why I hate"
@@ -237,9 +219,8 @@ UnknownText_0x185e2c: ; 0x185e2c
 	para "It's just a waste"
 	line "of my time."
 	done
-; 0x185e75
 
-UnknownText_0x185e75: ; 0x185e75
+BurnedTowerSilver_AfterText2:
 	text "Humph!"
 
 	para "What are you doing"
@@ -250,9 +231,8 @@ UnknownText_0x185e75: ; 0x185e75
 
 	para "Serves you right!"
 	done
-; 0x185ecc
 
-UnknownText_0x185ecc: ; 0x185ecc
+BurnedTower1FEusineIntroText:
 	text "EUSINE: My name's"
 	line "EUSINE."
 
@@ -262,7 +242,7 @@ UnknownText_0x185ecc: ; 0x185ecc
 
 	para "And you are…?"
 
-	para $52, "? Glad to"
+	para "<PLAYER>? Glad to"
 	line "meet you!"
 
 	para "I heard rumors"
@@ -274,9 +254,8 @@ UnknownText_0x185ecc: ; 0x185ecc
 	para "But where exactly"
 	line "could it be?"
 	done
-; 0x185f99
 
-UnknownText_0x185f99: ; 0x185f99
+BurnedTower1FEusineText:
 	text "EUSINE: I heard"
 	line "that SUICUNE is in"
 
@@ -286,9 +265,8 @@ UnknownText_0x185f99: ; 0x185f99
 	para "But where exactly"
 	line "could it be?"
 	done
-; 0x186002
 
-UnknownText_0x186002: ; 0x186002
+BurnedTower1FMortyText:
 	text "MORTY: ECRUTEAK's"
 	line "GYM LEADER has to"
 
@@ -305,44 +283,41 @@ UnknownText_0x186002: ; 0x186002
 	para "investigate the"
 	line "TOWER with him."
 	done
-; 0x1860b2
 
-BurnedTower1F_MapEventHeader: ; 0x1860b2
+BurnedTower1F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 14
-	warp_def $f, $9, 13, GROUP_ECRUTEAK_CITY, MAP_ECRUTEAK_CITY
-	warp_def $f, $a, 13, GROUP_ECRUTEAK_CITY, MAP_ECRUTEAK_CITY
-	warp_def $9, $a, 1, GROUP_BURNED_TOWER_B1F, MAP_BURNED_TOWER_B1F
-	warp_def $5, $5, 1, GROUP_BURNED_TOWER_B1F, MAP_BURNED_TOWER_B1F
-	warp_def $6, $5, 1, GROUP_BURNED_TOWER_B1F, MAP_BURNED_TOWER_B1F
-	warp_def $6, $4, 1, GROUP_BURNED_TOWER_B1F, MAP_BURNED_TOWER_B1F
-	warp_def $4, $f, 2, GROUP_BURNED_TOWER_B1F, MAP_BURNED_TOWER_B1F
-	warp_def $5, $f, 2, GROUP_BURNED_TOWER_B1F, MAP_BURNED_TOWER_B1F
-	warp_def $7, $a, 3, GROUP_BURNED_TOWER_B1F, MAP_BURNED_TOWER_B1F
-	warp_def $e, $5, 4, GROUP_BURNED_TOWER_B1F, MAP_BURNED_TOWER_B1F
-	warp_def $e, $4, 4, GROUP_BURNED_TOWER_B1F, MAP_BURNED_TOWER_B1F
-	warp_def $e, $e, 5, GROUP_BURNED_TOWER_B1F, MAP_BURNED_TOWER_B1F
-	warp_def $e, $f, 5, GROUP_BURNED_TOWER_B1F, MAP_BURNED_TOWER_B1F
-	warp_def $f, $7, 6, GROUP_BURNED_TOWER_B1F, MAP_BURNED_TOWER_B1F
+	warp_def $f, $9, 13, ECRUTEAK_CITY
+	warp_def $f, $a, 13, ECRUTEAK_CITY
+	warp_def $9, $a,  1, BURNED_TOWER_B1F
+	warp_def $5, $5,  1, BURNED_TOWER_B1F
+	warp_def $6, $5,  1, BURNED_TOWER_B1F
+	warp_def $6, $4,  1, BURNED_TOWER_B1F
+	warp_def $4, $f,  2, BURNED_TOWER_B1F
+	warp_def $5, $f,  2, BURNED_TOWER_B1F
+	warp_def $7, $a,  3, BURNED_TOWER_B1F
+	warp_def $e, $5,  4, BURNED_TOWER_B1F
+	warp_def $e, $4,  4, BURNED_TOWER_B1F
+	warp_def $e, $e,  5, BURNED_TOWER_B1F
+	warp_def $e, $f,  5, BURNED_TOWER_B1F
+	warp_def $f, $7,  6, BURNED_TOWER_B1F
 
-	; xy triggers
+.XYTriggers:
 	db 1
-	xy_trigger 1, $9, $b, $0, UnknownScript_0x185c25, $0, $0
+	xy_trigger 1, $9, $b, $0, BurnedTowerRivalBattleScript, $0, $0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 7, 8, $7, MapBurnedTower1FSignpostItem0
-	signpost 11, 13, $7, MapBurnedTower1FSignpostItem1
+	signpost  7,  8, SIGNPOST_ITEM, BurnedTower1FHiddenEther
+	signpost 11, 13, SIGNPOST_ITEM, BurnedTower1FHiddenUltraBall
 
-	; people-events
+.PersonEvents:
 	db 5
-	person_event SPRITE_ROCK, 8, 19, $18, $0, 255, 255, $0, 0, RockScript_0x185cc2, $ffff
-	person_event SPRITE_SUPER_NERD, 16, 16, $3, $0, 255, 255, $90, 0, SuperNerdScript_0x185cbc, $0765
-	person_event SPRITE_SILVER, 13, 12, $8, $0, 255, 255, $2, 3, ObjectEvent, $06c5
-	person_event SPRITE_MORTY, 18, 18, $2, $11, 255, 255, $b0, 0, MortyScript_0x185cbf, $0764
-	person_event SPRITE_POKE_BALL, 6, 18, $1, $0, 255, 255, $1, 0, ItemFragment_0x185ccb, $0656
-; 0x186151
-
+	person_event SPRITE_ROCK, 4, 15, SPRITEMOVEDATA_SMASHABLE_ROCK, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, BurnedTower1FRock, -1
+	person_event SPRITE_SUPER_NERD, 12, 12, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, BurnedTower1FEusineScript, EVENT_BURNED_TOWER_1F_EUSINE
+	person_event SPRITE_SILVER, 9, 8, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, PERSONTYPE_TRAINER, 3, ObjectEvent, EVENT_RIVAL_BURNED_TOWER
+	person_event SPRITE_MORTY, 14, 14, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_SCRIPT, 0, BurnedTower1FMortyScript, EVENT_BURNED_TOWER_MORTY
+	person_event SPRITE_POKE_BALL, 2, 14, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, BurnedTower1FHPUp, EVENT_BURNED_TOWER_1F_HP_UP

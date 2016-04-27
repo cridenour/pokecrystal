@@ -1,27 +1,28 @@
-CeruleanMart_MapScriptHeader: ; 0x188abe
-	; trigger count
+const_value set 2
+	const CERULEANMART_CLERK
+	const CERULEANMART_COOLTRAINER_M
+	const CERULEANMART_COOLTRAINER_F
+
+CeruleanMart_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x188ac0
 
-ClerkScript_0x188ac0: ; 0x188ac0
-	loadfont
-	pokemart $0, $0014
-	loadmovesprites
+ClerkScript_0x188ac0:
+	opentext
+	pokemart MARTTYPE_STANDARD, MART_CERULEAN
+	closetext
 	end
-; 0x188ac7
 
-CooltrainerMScript_0x188ac7: ; 0x188ac7
+CooltrainerMScript_0x188ac7:
 	jumptextfaceplayer UnknownText_0x188acd
-; 0x188aca
 
-CooltrainerFScript_0x188aca: ; 0x188aca
+CooltrainerFScript_0x188aca:
 	jumptextfaceplayer UnknownText_0x188b46
-; 0x188acd
 
-UnknownText_0x188acd: ; 0x188acd
+UnknownText_0x188acd:
 	text "You'll run into"
 	line "many trainers on"
 
@@ -34,9 +35,8 @@ UnknownText_0x188acd: ; 0x188acd
 	para "up against other"
 	line "trainers."
 	done
-; 0x188b46
 
-UnknownText_0x188b46: ; 0x188b46
+UnknownText_0x188b46:
 	text "MISTY is about the"
 	line "only person in"
 
@@ -44,27 +44,24 @@ UnknownText_0x188b46: ; 0x188b46
 	line "the trainers at"
 	cont "CERULEAN's CAPE."
 	done
-; 0x188b9b
 
-CeruleanMart_MapEventHeader: ; 0x188b9b
+CeruleanMart_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 6, GROUP_CERULEAN_CITY, MAP_CERULEAN_CITY
-	warp_def $7, $3, 6, GROUP_CERULEAN_CITY, MAP_CERULEAN_CITY
+	warp_def $7, $2, 6, CERULEAN_CITY
+	warp_def $7, $3, 6, CERULEAN_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_CLERK, 7, 5, $9, $0, 255, 255, $0, 0, ClerkScript_0x188ac0, $ffff
-	person_event SPRITE_COOLTRAINER_M, 10, 5, $6, $0, 255, 255, $a0, 0, CooltrainerMScript_0x188ac7, $ffff
-	person_event SPRITE_COOLTRAINER_F, 6, 11, $5, $2, 255, 255, $80, 0, CooltrainerFScript_0x188aca, $ffff
-; 0x188bd2
-
+	person_event SPRITE_CLERK, 3, 1, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ClerkScript_0x188ac0, -1
+	person_event SPRITE_COOLTRAINER_M, 6, 1, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, CooltrainerMScript_0x188ac7, -1
+	person_event SPRITE_COOLTRAINER_F, 2, 7, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 2, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, CooltrainerFScript_0x188aca, -1

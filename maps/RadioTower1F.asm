@@ -1,262 +1,229 @@
-RadioTower1F_MapScriptHeader: ; 0x5cd27
-	; trigger count
+const_value set 2
+	const RADIOTOWER1F_RECEPTIONIST
+	const RADIOTOWER1F_LASS
+	const RADIOTOWER1F_YOUNGSTER
+	const RADIOTOWER1F_ROCKET
+	const RADIOTOWER1F_GENTLEMAN
+	const RADIOTOWER1F_COOLTRAINER_F
+
+RadioTower1F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x5cd29
 
-ReceptionistScript_0x5cd29: ; 0x5cd29
+ReceptionistScript_0x5cd29:
 	faceplayer
-	loadfont
-	checkflag $0013
+	opentext
+	checkflag ENGINE_ROCKETS_IN_RADIO_TOWER
 	iftrue UnknownScript_0x5cd37
-	2writetext UnknownText_0x5ce77
-	closetext
-	loadmovesprites
-	end
-; 0x5cd37
-
-UnknownScript_0x5cd37: ; 0x5cd37
-	2writetext UnknownText_0x5ce81
-	closetext
-	loadmovesprites
-	end
-; 0x5cd3d
-
-GentlemanScript_0x5cd3d: ; 0x5cd3d
-	faceplayer
-	loadfont
-	2writetext UnknownText_0x5ceba
-	keeptextopen
-	special $0053
-	iffalse UnknownScript_0x5cd4c
-	special $0054
-UnknownScript_0x5cd4c: ; 0x5cd4c
-	special $0055
-	checkflag $004e
-	iftrue UnknownScript_0x5cd84
-	2writetext UnknownText_0x5cf3a
-	keeptextopen
-	loadmovesprites
-	applymovement $6, MovementData_0x5ce71
-	loadfont
-	2writetext UnknownText_0x5cf5a
-	keeptextopen
+	writetext UnknownText_0x5ce77
 	waitbutton
-	2writetext UnknownText_0x5cf79
+	closetext
+	end
+
+UnknownScript_0x5cd37:
+	writetext UnknownText_0x5ce81
+	waitbutton
+	closetext
+	end
+
+GentlemanScript_0x5cd3d:
+	faceplayer
+	opentext
+	writetext UnknownText_0x5ceba
+	buttonsound
+	special Special_CheckLuckyNumberShowFlag
+	iffalse .skip
+	special Special_ResetLuckyNumberShowFlag
+.skip
+	special Special_PrintTodaysLuckyNumber
+	checkflag ENGINE_LUCKY_NUMBER_SHOW
+	iftrue .GameOver
+	writetext UnknownText_0x5cf3a
+	buttonsound
+	closetext
+	applymovement RADIOTOWER1F_GENTLEMAN, MovementData_0x5ce71
+	opentext
+	writetext UnknownText_0x5cf5a
+	buttonsound
+	waitsfx
+	writetext UnknownText_0x5cf79
 	playsound SFX_DEX_FANFARE_20_49
-	waitbutton
-	keeptextopen
-	special $0052
-	loadmovesprites
-	applymovement $6, MovementData_0x5ce74
-	loadfont
-	if_equal $1, UnknownScript_0x5cd8a
-	if_equal $2, UnknownScript_0x5cd9f
-	if_equal $3, UnknownScript_0x5cdb4
-	2jump UnknownScript_0x5cdc9
-; 0x5cd84
-
-UnknownScript_0x5cd84: ; 0x5cd84
-	2writetext UnknownText_0x5cf7e
+	waitsfx
+	buttonsound
+	special Special_CheckForLuckyNumberWinners
 	closetext
-	loadmovesprites
-	end
-; 0x5cd8a
+	applymovement RADIOTOWER1F_GENTLEMAN, MovementData_0x5ce74
+	opentext
+	if_equal 1, .FirstPlace
+	if_equal 2, .SecondPlace
+	if_equal 3, .ThirdPlace
+	jump .NoPrize
 
-UnknownScript_0x5cd8a: ; 0x5cd8a
-	2writetext UnknownText_0x5cfb5
+.GameOver:
+	writetext UnknownText_0x5cf7e
+	waitbutton
+	closetext
+	end
+
+.FirstPlace:
+	writetext UnknownText_0x5cfb5
 	playsound SFX_1ST_PLACE
-	waitbutton
-	keeptextopen
-	giveitem MASTER_BALL, $1
-	iffalse UnknownScript_0x5cdcf
+	waitsfx
+	buttonsound
+	giveitem MASTER_BALL
+	iffalse .BagFull
 	itemnotify
-	setflag $004e
-	2jump UnknownScript_0x5cd84
-; 0x5cd9f
+	setflag ENGINE_LUCKY_NUMBER_SHOW
+	jump .GameOver
 
-UnknownScript_0x5cd9f: ; 0x5cd9f
-	2writetext UnknownText_0x5d023
+.SecondPlace:
+	writetext UnknownText_0x5d023
 	playsound SFX_2ND_PLACE
-	waitbutton
-	keeptextopen
-	giveitem EXP_SHARE, $1
-	iffalse UnknownScript_0x5cdcf
+	waitsfx
+	buttonsound
+	giveitem EXP_SHARE
+	iffalse .BagFull
 	itemnotify
-	setflag $004e
-	2jump UnknownScript_0x5cd84
-; 0x5cdb4
+	setflag ENGINE_LUCKY_NUMBER_SHOW
+	jump .GameOver
 
-UnknownScript_0x5cdb4: ; 0x5cdb4
-	2writetext UnknownText_0x5d076
+.ThirdPlace:
+	writetext UnknownText_0x5d076
 	playsound SFX_3RD_PLACE
-	waitbutton
-	keeptextopen
-	giveitem PP_UP, $1
-	iffalse UnknownScript_0x5cdcf
+	waitsfx
+	buttonsound
+	giveitem PP_UP
+	iffalse .BagFull
 	itemnotify
-	setflag $004e
-	2jump UnknownScript_0x5cd84
-; 0x5cdc9
+	setflag ENGINE_LUCKY_NUMBER_SHOW
+	jump .GameOver
 
-UnknownScript_0x5cdc9: ; 0x5cdc9
-	2writetext UnknownText_0x5d0c0
+.NoPrize:
+	writetext UnknownText_0x5d0c0
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x5cdcf
 
-UnknownScript_0x5cdcf: ; 0x5cdcf
-	2writetext UnknownText_0x5d0e6
+.BagFull:
+	writetext UnknownText_0x5d0e6
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x5cdd5
 
-CooltrainerFScript_0x5cdd5: ; 0x5cdd5
+CooltrainerFScript_0x5cdd5:
 	faceplayer
-	loadfont
-	checkflag $0000
+	opentext
+	checkflag ENGINE_RADIO_CARD
 	iftrue UnknownScript_0x5ce2d
-	2writetext UnknownText_0x5d12d
+	writetext UnknownText_0x5d12d
 	yesorno
 	iffalse UnknownScript_0x5ce4b
-	2writetext UnknownText_0x5d1f2
+	writetext UnknownText_0x5d1f2
 	yesorno
 	iffalse UnknownScript_0x5ce42
 	playsound SFX_ELEVATOR_END
-	waitbutton
-	2writetext UnknownText_0x5d231
+	waitsfx
+	writetext UnknownText_0x5d231
 	yesorno
 	iffalse UnknownScript_0x5ce42
 	playsound SFX_ELEVATOR_END
-	waitbutton
-	2writetext UnknownText_0x5d282
+	waitsfx
+	writetext UnknownText_0x5d282
 	yesorno
 	iftrue UnknownScript_0x5ce42
 	playsound SFX_ELEVATOR_END
-	waitbutton
-	2writetext UnknownText_0x5d2bc
+	waitsfx
+	writetext UnknownText_0x5d2bc
 	yesorno
 	iffalse UnknownScript_0x5ce42
 	playsound SFX_ELEVATOR_END
-	waitbutton
-	2writetext UnknownText_0x5d30e
+	waitsfx
+	writetext UnknownText_0x5d30e
 	yesorno
 	iftrue UnknownScript_0x5ce42
 	playsound SFX_ELEVATOR_END
-	waitbutton
-	2writetext UnknownText_0x5d37b
-	keeptextopen
+	waitsfx
+	writetext UnknownText_0x5d37b
+	buttonsound
 	stringtotext RadioCardText, $1
-	2call UnknownScript_0x5ce3e
-	2writetext UnknownText_0x5d3c0
-	keeptextopen
-	setflag $0000
-UnknownScript_0x5ce2d: ; 0x5ce2d
-	2writetext UnknownText_0x5d3e5
+	scall UnknownScript_0x5ce3e
+	writetext UnknownText_0x5d3c0
+	buttonsound
+	setflag ENGINE_RADIO_CARD
+UnknownScript_0x5ce2d:
+	writetext UnknownText_0x5d3e5
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x5ce33
 
-RadioCardText: ; 0x5ce33
+RadioCardText:
 	db "RADIO CARD@"
-; 0x5ce3d
 
-UnknownScript_0x5ce3e: ; 0x5ce3e
-	jumpstd $002f
+UnknownScript_0x5ce3e:
+	jumpstd receiveitem
 	end
-; 0x5ce42
 
-UnknownScript_0x5ce42: ; 0x5ce42
+UnknownScript_0x5ce42:
 	playsound SFX_WRONG
-	2writetext UnknownText_0x5d409
+	writetext UnknownText_0x5d409
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x5ce4b
 
-UnknownScript_0x5ce4b: ; 0x5ce4b
-	2writetext UnknownText_0x5d443
+UnknownScript_0x5ce4b:
+	writetext UnknownText_0x5d443
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x5ce51
 
-LassScript_0x5ce51: ; 0x5ce51
+LassScript_0x5ce51:
 	jumptextfaceplayer UnknownText_0x5d476
-; 0x5ce54
 
-YoungsterScript_0x5ce54: ; 0x5ce54
+YoungsterScript_0x5ce54:
 	jumptextfaceplayer UnknownText_0x5d4ac
-; 0x5ce57
 
-TrainerGruntM3: ; 0x5ce57
-	; bit/flag number
-	dw $4f3
+TrainerGruntM3:
+	trainer EVENT_BEAT_ROCKET_GRUNTM_3, GRUNTM, 3, GruntM3SeenText, GruntM3BeatenText, 0, GruntM3Script
 
-	; trainer group && trainer id
-	db GRUNTM, 3
-
-	; text when seen
-	dw GruntM3SeenText
-
-	; text when trainer beaten
-	dw GruntM3BeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw GruntM3Script
-; 0x5ce63
-
-GruntM3Script: ; 0x5ce63
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x5d5a2
+GruntM3Script:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x5d5a2
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x5ce6b
 
-MapRadioTower1FSignpost0Script: ; 0x5ce6b
+MapRadioTower1FSignpost0Script:
 	jumptext UnknownText_0x5d5e7
-; 0x5ce6e
 
-MapRadioTower1FSignpost1Script: ; 0x5ce6e
+MapRadioTower1FSignpost1Script:
 	jumptext UnknownText_0x5d631
-; 0x5ce71
 
-MovementData_0x5ce71: ; 0x5ce71
+MovementData_0x5ce71:
 	step_right
 	turn_head_up
 	step_end
-; 0x5ce74
 
-MovementData_0x5ce74: ; 0x5ce74
+MovementData_0x5ce74:
 	step_left
 	turn_head_up
 	step_end
-; 0x5ce77
 
-UnknownText_0x5ce77: ; 0x5ce77
+UnknownText_0x5ce77:
 	text "Welcome!"
 	done
-; 0x5ce81
 
-UnknownText_0x5ce81: ; 0x5ce81
+UnknownText_0x5ce81:
 	text "Hello. I'm sorry,"
 	line "but we're not"
 	cont "offering any tours"
 	cont "today."
 	done
-; 0x5ceba
 
-UnknownText_0x5ceba: ; 0x5ceba
+UnknownText_0x5ceba:
 	text "Hi, are you here"
 	line "for the LUCKY NUM-"
 	cont "BER SHOW?"
@@ -268,35 +235,31 @@ UnknownText_0x5ceba: ; 0x5ceba
 	para "If you get lucky,"
 	line "you win a prize."
 	done
-; 0x5cf3a
 
-UnknownText_0x5cf3a: ; 0x5cf3a
+UnknownText_0x5cf3a:
 	text "This week's ID"
 	line "number is @"
-	text_from_ram $d099
+	text_from_ram StringBuffer3
 	text "."
 	done
-; 0x5cf5a
 
-UnknownText_0x5cf5a: ; 0x5cf5a
+UnknownText_0x5cf5a:
 	text "Let's see if you"
 	line "have a match."
 	done
-; 0x5cf79
 
-UnknownText_0x5cf79: ; 0x5cf79
-	db $0, $56, $4f
-	db $56, $57
-; 0x5cf7e
+UnknownText_0x5cf79:
+	text $56
+	line $56
+	done
 
-UnknownText_0x5cf7e: ; 0x5cf7e
+UnknownText_0x5cf7e:
 	text "Please come back"
 	line "next week for the"
 	cont "next LUCKY NUMBER."
 	done
-; 0x5cfb5
 
-UnknownText_0x5cfb5: ; 0x5cfb5
+UnknownText_0x5cfb5:
 	text "Wow! You have a"
 	line "perfect match of"
 	cont "all five numbers!"
@@ -307,9 +270,8 @@ UnknownText_0x5cfb5: ; 0x5cfb5
 	para "You have won a"
 	line "MASTER BALL!"
 	done
-; 0x5d023
 
-UnknownText_0x5d023: ; 0x5d023
+UnknownText_0x5d023:
 	text "Hey! You've"
 	line "matched the last"
 	cont "three numbers!"
@@ -318,9 +280,8 @@ UnknownText_0x5d023: ; 0x5d023
 	line "prize, an EXP."
 	cont "SHARE!"
 	done
-; 0x5d076
 
-UnknownText_0x5d076: ; 0x5d076
+UnknownText_0x5d076:
 	text "Ooh, you've"
 	line "matched the last"
 	cont "two numbers."
@@ -328,24 +289,21 @@ UnknownText_0x5d076: ; 0x5d076
 	para "You've won third"
 	line "prize, a PP UP."
 	done
-; 0x5d0c0
 
-UnknownText_0x5d0c0: ; 0x5d0c0
+UnknownText_0x5d0c0:
 	text "Nope, none of your"
 	line "ID numbers match."
 	done
-; 0x5d0e6
 
-UnknownText_0x5d0e6: ; 0x5d0e6
+UnknownText_0x5d0e6:
 	text "You've got no room"
 	line "for your prize."
 
 	para "Make room and come"
 	line "back right away."
 	done
-; 0x5d12d
 
-UnknownText_0x5d12d: ; 0x5d12d
+UnknownText_0x5d12d:
 	text "We have a special"
 	line "quiz campaign on"
 	cont "right now."
@@ -363,18 +321,16 @@ UnknownText_0x5d12d: ; 0x5d12d
 	para "Would you like to"
 	line "take the quiz?"
 	done
-; 0x5d1f2
 
-UnknownText_0x5d1f2: ; 0x5d1f2
+UnknownText_0x5d1f2:
 	text "Question 1:"
 
 	para "Is there a #MON"
 	line "that appears only"
 	cont "in the morning?"
 	done
-; 0x5d231
 
-UnknownText_0x5d231: ; 0x5d231
+UnknownText_0x5d231:
 	text "Correct!"
 	line "Question 2:"
 
@@ -384,18 +340,16 @@ UnknownText_0x5d231: ; 0x5d231
 	para "You can't buy a"
 	line "BERRY at a MART."
 	done
-; 0x5d282
 
-UnknownText_0x5d282: ; 0x5d282
+UnknownText_0x5d282:
 	text "Bull's-eye!"
 	line "Question 3:"
 
 	para "Does HM01 contain"
 	line "the move FLASH?"
 	done
-; 0x5d2bc
 
-UnknownText_0x5d2bc: ; 0x5d2bc
+UnknownText_0x5d2bc:
 	text "So far so good!"
 	line "Question 4:"
 
@@ -405,9 +359,8 @@ UnknownText_0x5d2bc: ; 0x5d2bc
 	para "who uses bird"
 	line "#MON?"
 	done
-; 0x5d30e
 
-UnknownText_0x5d30e: ; 0x5d30e
+UnknownText_0x5d30e:
 	text "Wow! Right again!"
 	line "Here's the final"
 	cont "question:"
@@ -418,56 +371,49 @@ UnknownText_0x5d30e: ; 0x5d30e
 	para "have CHARMANDER"
 	line "on their reels?"
 	done
-; 0x5d37b
 
-UnknownText_0x5d37b: ; 0x5d37b
+UnknownText_0x5d37b:
 	text "Bingo! You got it!"
 	line "Congratulations!"
 
 	para "Here's your prize,"
 	line "a RADIO CARD!"
 	done
-; 0x5d3c0
 
-UnknownText_0x5d3c0: ; 0x5d3c0
-	text $52, "'s #GEAR"
+UnknownText_0x5d3c0:
+	text "<PLAYER>'s #GEAR"
 	line "can now double as"
 	cont "a radio!"
 	done
-; 0x5d3e5
 
-UnknownText_0x5d3e5: ; 0x5d3e5
+UnknownText_0x5d3e5:
 	text "Please tune in to"
 	line "our radio shows."
 	done
-; 0x5d409
 
-UnknownText_0x5d409: ; 0x5d409
+UnknownText_0x5d409:
 	text "Oh, dear."
 	line "Sorry, but you"
 
 	para "got it wrong."
 	line "Please try again!"
 	done
-; 0x5d443
 
-UnknownText_0x5d443: ; 0x5d443
+UnknownText_0x5d443:
 	text "Oh. I see. Please"
 	line "see me if you"
 	cont "change your mind."
 	done
-; 0x5d476
 
-UnknownText_0x5d476: ; 0x5d476
+UnknownText_0x5d476:
 	text "BEN is a fabulous"
 	line "DJ."
 
 	para "His sweet voice"
 	line "makes me melt!"
 	done
-; 0x5d4ac
 
-UnknownText_0x5d4ac: ; 0x5d4ac
+UnknownText_0x5d4ac:
 	text "I love MARY, from"
 	line "#MON TALK."
 
@@ -475,9 +421,8 @@ UnknownText_0x5d4ac: ; 0x5d4ac
 	line "she sounds like,"
 	cont "though."
 	done
-; 0x5d4f4
 
-GruntM3SeenText: ; 0x5d4f4
+GruntM3SeenText:
 	text "We've finally"
 	line "taken over the"
 	cont "RADIO TOWER!"
@@ -491,24 +436,21 @@ GruntM3SeenText: ; 0x5d4f4
 	para "We'll show you"
 	line "how scary we are!"
 	done
-; 0x5d582
 
-GruntM3BeatenText: ; 0x5d582
+GruntM3BeatenText:
 	text "Too strong! We"
 	line "must watch you…"
 	done
-; 0x5d5a2
 
-UnknownText_0x5d5a2: ; 0x5d5a2
+UnknownText_0x5d5a2:
 	text "You're too strong."
 
 	para "Our plan could be"
 	line "ruined. I must"
 	cont "warn the others…"
 	done
-; 0x5d5e7
 
-UnknownText_0x5d5e7: ; 0x5d5e7
+UnknownText_0x5d5e7:
 	text "1F RECEPTION"
 	line "2F SALES"
 
@@ -518,9 +460,8 @@ UnknownText_0x5d5e7: ; 0x5d5e7
 	para "5F DIRECTOR'S"
 	line "   OFFICE"
 	done
-; 0x5d631
 
-UnknownText_0x5d631: ; 0x5d631
+UnknownText_0x5d631:
 	text "LUCKY CHANNEL!"
 
 	para "Win with #MON"
@@ -530,33 +471,30 @@ UnknownText_0x5d631: ; 0x5d631
 	line "to collect differ-"
 	cont "ent ID numbers!"
 	done
-; 0x5d68e
 
-RadioTower1F_MapEventHeader: ; 0x5d68e
+RadioTower1F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 3
-	warp_def $7, $2, 11, GROUP_GOLDENROD_CITY, MAP_GOLDENROD_CITY
-	warp_def $7, $3, 11, GROUP_GOLDENROD_CITY, MAP_GOLDENROD_CITY
-	warp_def $0, $f, 2, GROUP_RADIO_TOWER_2F, MAP_RADIO_TOWER_2F
+	warp_def $7, $2, 11, GOLDENROD_CITY
+	warp_def $7, $3, 11, GOLDENROD_CITY
+	warp_def $0, $f, 2, RADIO_TOWER_2F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 0, 3, $0, MapRadioTower1FSignpost0Script
-	signpost 0, 13, $0, MapRadioTower1FSignpost1Script
+	signpost 0, 3, SIGNPOST_READ, MapRadioTower1FSignpost0Script
+	signpost 0, 13, SIGNPOST_READ, MapRadioTower1FSignpost1Script
 
-	; people-events
+.PersonEvents:
 	db 6
-	person_event SPRITE_RECEPTIONIST, 10, 9, $8, $0, 255, 255, $80, 0, ReceptionistScript_0x5cd29, $ffff
-	person_event SPRITE_LASS, 8, 20, $8, $0, 255, 255, $80, 0, LassScript_0x5ce51, $06cf
-	person_event SPRITE_YOUNGSTER, 8, 19, $9, $0, 255, 255, $90, 0, YoungsterScript_0x5ce54, $06cf
-	person_event SPRITE_ROCKET, 5, 18, $6, $0, 255, 255, $2, 3, TrainerGruntM3, $06ce
-	person_event SPRITE_GENTLEMAN, 10, 12, $7, $0, 255, 255, $90, 0, GentlemanScript_0x5cd3d, $06cf
-	person_event SPRITE_COOLTRAINER_F, 10, 16, $7, $0, 255, 255, $a0, 0, CooltrainerFScript_0x5cdd5, $06cf
-; 0x5d6fb
-
+	person_event SPRITE_RECEPTIONIST, 6, 5, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, ReceptionistScript_0x5cd29, -1
+	person_event SPRITE_LASS, 4, 16, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, LassScript_0x5ce51, EVENT_GOLDENROD_CITY_CIVILIANS
+	person_event SPRITE_YOUNGSTER, 4, 15, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, YoungsterScript_0x5ce54, EVENT_GOLDENROD_CITY_CIVILIANS
+	person_event SPRITE_ROCKET, 1, 14, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_TRAINER, 3, TrainerGruntM3, EVENT_RADIO_TOWER_ROCKET_TAKEOVER
+	person_event SPRITE_GENTLEMAN, 6, 8, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, GentlemanScript_0x5cd3d, EVENT_GOLDENROD_CITY_CIVILIANS
+	person_event SPRITE_COOLTRAINER_F, 6, 12, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, CooltrainerFScript_0x5cdd5, EVENT_GOLDENROD_CITY_CIVILIANS

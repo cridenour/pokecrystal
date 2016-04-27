@@ -1,72 +1,67 @@
-VictoryRoadGate_MapScriptHeader: ; 0x9b9f1
-	; trigger count
+const_value set 2
+	const VICTORYROADGATE_OFFICER
+	const VICTORYROADGATE_BLACK_BELT1
+	const VICTORYROADGATE_BLACK_BELT2
+
+VictoryRoadGate_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x9b9fb, $0000
-	dw UnknownScript_0x9b9fc, $0000
+	dw UnknownScript_0x9b9fb, 0
+	dw UnknownScript_0x9b9fc, 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x9b9fb
 
-UnknownScript_0x9b9fb: ; 0x9b9fb
+UnknownScript_0x9b9fb:
 	end
-; 0x9b9fc
 
-UnknownScript_0x9b9fc: ; 0x9b9fc
+UnknownScript_0x9b9fc:
 	end
-; 0x9b9fd
 
-UnknownScript_0x9b9fd: ; 0x9b9fd
-	spriteface $0, $2
-	2jump UnknownScript_0x9ba04
-; 0x9ba03
+UnknownScript_0x9b9fd:
+	spriteface PLAYER, LEFT
+	jump UnknownScript_0x9ba04
 
-OfficerScript_0x9ba03: ; 0x9ba03
+OfficerScript_0x9ba03:
 	faceplayer
-UnknownScript_0x9ba04: ; 0x9ba04
-	loadfont
-	2writetext UnknownText_0x9ba29
-	keeptextopen
-	checkcode $7
-	if_greater_than $7, UnknownScript_0x9ba19
-	2writetext UnknownText_0x9ba5f
+UnknownScript_0x9ba04:
+	opentext
+	writetext UnknownText_0x9ba29
+	buttonsound
+	checkcode VAR_BADGES
+	if_greater_than 7, UnknownScript_0x9ba19
+	writetext UnknownText_0x9ba5f
+	waitbutton
 	closetext
-	loadmovesprites
-	applymovement $0, MovementData_0x9ba27
+	applymovement PLAYER, MovementData_0x9ba27
 	end
-; 0x9ba19
 
-UnknownScript_0x9ba19: ; 0x9ba19
-	2writetext UnknownText_0x9bab4
+UnknownScript_0x9ba19:
+	writetext UnknownText_0x9bab4
+	waitbutton
 	closetext
-	loadmovesprites
 	dotrigger $1
 	end
-; 0x9ba21
 
-BlackBeltScript_0x9ba21: ; 0x9ba21
+BlackBeltScript_0x9ba21:
 	jumptextfaceplayer UnknownText_0x9baf1
-; 0x9ba24
 
-BlackBeltScript_0x9ba24: ; 0x9ba24
+BlackBeltScript_0x9ba24:
 	jumptextfaceplayer UnknownText_0x9bb37
-; 0x9ba27
 
-MovementData_0x9ba27: ; 0x9ba27
+MovementData_0x9ba27:
 	step_down
 	step_end
-; 0x9ba29
 
-UnknownText_0x9ba29: ; 0x9ba29
+UnknownText_0x9ba29:
 	text "Only trainers who"
 	line "have proven them-"
 	cont "selves may pass."
 	done
-; 0x9ba5f
 
-UnknownText_0x9ba5f: ; 0x9ba5f
+UnknownText_0x9ba5f:
 	text "You don't have all"
 	line "the GYM BADGES of"
 	cont "JOHTO."
@@ -75,18 +70,16 @@ UnknownText_0x9ba5f: ; 0x9ba5f
 	line "can't let you go"
 	cont "through."
 	done
-; 0x9bab4
 
-UnknownText_0x9bab4: ; 0x9bab4
+UnknownText_0x9bab4:
 	text "Oh! The eight"
 	line "BADGES of JOHTO!"
 
 	para "Please, go right"
 	line "on through!"
 	done
-; 0x9baf1
 
-UnknownText_0x9baf1: ; 0x9baf1
+UnknownText_0x9baf1:
 	text "This way leads to"
 	line "MT.SILVER."
 
@@ -94,9 +87,8 @@ UnknownText_0x9baf1: ; 0x9baf1
 	line "strong #MON out"
 	cont "there."
 	done
-; 0x9bb37
 
-UnknownText_0x9bb37: ; 0x9bb37
+UnknownText_0x9bb37:
 	text "Off to the #MON"
 	line "LEAGUE, are you?"
 
@@ -106,36 +98,31 @@ UnknownText_0x9bb37: ; 0x9bb37
 	para "scary, and they're"
 	line "ready for you!"
 	done
-; 0x9bb9b
 
-VictoryRoadGate_MapEventHeader: ; 0x9bb9b
+VictoryRoadGate_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 8
-	warp_def $7, $11, 1, GROUP_ROUTE_22, MAP_ROUTE_22
-	warp_def $7, $12, 1, GROUP_ROUTE_22, MAP_ROUTE_22
-	warp_def $11, $9, 1, GROUP_ROUTE_26, MAP_ROUTE_26
-	warp_def $11, $a, 1, GROUP_ROUTE_26, MAP_ROUTE_26
-	warp_def $0, $9, 1, GROUP_VICTORY_ROAD, MAP_VICTORY_ROAD
-	warp_def $0, $a, 1, GROUP_VICTORY_ROAD, MAP_VICTORY_ROAD
-	warp_def $7, $1, 2, GROUP_ROUTE_28, MAP_ROUTE_28
-	warp_def $7, $2, 2, GROUP_ROUTE_28, MAP_ROUTE_28
+	warp_def $7, $11, 1, ROUTE_22
+	warp_def $7, $12, 1, ROUTE_22
+	warp_def $11, $9, 1, ROUTE_26
+	warp_def $11, $a, 1, ROUTE_26
+	warp_def $0, $9, 1, VICTORY_ROAD
+	warp_def $0, $a, 1, VICTORY_ROAD
+	warp_def $7, $1, 2, ROUTE_28
+	warp_def $7, $2, 2, ROUTE_28
 
-	; xy triggers
+.XYTriggers:
 	db 1
 	xy_trigger 0, $b, $a, $0, UnknownScript_0x9b9fd, $0, $0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_OFFICER, 15, 12, $9, $0, 255, 255, $0, 0, OfficerScript_0x9ba03, $ffff
-	person_event SPRITE_BLACK_BELT, 9, 11, $9, $0, 255, 255, $0, 0, BlackBeltScript_0x9ba21, $074f
-	person_event SPRITE_BLACK_BELT, 9, 16, $8, $0, 255, 255, $0, 0, BlackBeltScript_0x9ba24, $0750
-; 0x9bbf8
-
-
-
+	person_event SPRITE_OFFICER, 11, 8, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, OfficerScript_0x9ba03, -1
+	person_event SPRITE_BLACK_BELT, 5, 7, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, BlackBeltScript_0x9ba21, EVENT_OPENED_MT_SILVER
+	person_event SPRITE_BLACK_BELT, 5, 12, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, BlackBeltScript_0x9ba24, EVENT_FOUGHT_SNORLAX

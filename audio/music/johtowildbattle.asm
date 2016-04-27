@@ -1,7 +1,7 @@
 Music_JohtoWildBattle: ; f5dc5
-	dbw $80, Music_JohtoWildBattle_Ch1
-	dbw $01, Music_JohtoWildBattle_Ch2
-	dbw $02, Music_JohtoWildBattle_Ch3
+	musicheader 3, 1, Music_JohtoWildBattle_Ch1
+	musicheader 1, 2, Music_JohtoWildBattle_Ch2
+	musicheader 1, 3, Music_JohtoWildBattle_Ch3
 ; f5dce
 
 Music_JohtoWildBattle_Ch1: ; f5dce
@@ -492,8 +492,9 @@ Music_JohtoWildBattle_branch_f5fdb: ; f5fdb
 	note G_, 2
 	loopchannel 7, Music_JohtoWildBattle_branch_f5fdb
 	note F#, 4
+rept 2
 	callchannel Music_JohtoWildBattle_branch_f6055
-	callchannel Music_JohtoWildBattle_branch_f6055
+endr
 Music_JohtoWildBattle_branch_f5fe8: ; f5fe8
 	note D_, 2
 	note G_, 2
@@ -588,5 +589,3 @@ Music_JohtoWildBattle_branch_f6055: ; f6055
 	loopchannel 4, Music_JohtoWildBattle_branch_f6055
 	endchannel
 ; f605c
-
-

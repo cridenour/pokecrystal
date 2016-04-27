@@ -1,36 +1,36 @@
 FruitTreeScript:: ; 44000
-	3callasm GetCurTreeFruit
-	loadfont
+	callasm GetCurTreeFruit
+	opentext
 	copybytetovar CurFruit
 	itemtotext $0, $0
-	2writetext FruitBearingTreeText
-	keeptextopen
-	3callasm TryResetFruitTrees
-	3callasm CheckFruitTree
+	writetext FruitBearingTreeText
+	buttonsound
+	callasm TryResetFruitTrees
+	callasm CheckFruitTree
 	iffalse .fruit
-	2writetext NothingHereText
-	closetext
-	2jump .end
+	writetext NothingHereText
+	waitbutton
+	jump .end
 
 .fruit
-	2writetext HeyItsFruitText
+	writetext HeyItsFruitText
 	copybytetovar CurFruit
-	giveitem $ff, 1
+	giveitem ITEM_FROM_MEM
 	iffalse .packisfull
-	keeptextopen
-	2writetext ObtainedFruitText
-	3callasm PickedFruitTree
+	buttonsound
+	writetext ObtainedFruitText
+	callasm PickedFruitTree
 	specialsound
 	itemnotify
-	2jump .end
+	jump .end
 
 .packisfull
-	keeptextopen
-	2writetext FruitPackIsFullText
-	closetext
+	buttonsound
+	writetext FruitPackIsFullText
+	waitbutton
 
 .end
-	loadmovesprites
+	closetext
 	end
 ; 44041
 
@@ -43,7 +43,7 @@ GetCurTreeFruit: ; 44041
 ; 4404c
 
 TryResetFruitTrees: ; 4404c
-	ld hl, $dc1e
+	ld hl, DailyFlags
 	bit 4, [hl]
 	ret nz
 	jp ResetFruitTrees
@@ -58,7 +58,7 @@ CheckFruitTree: ; 44055
 ; 4405f
 
 PickedFruitTree: ; 4405f
-	callba Function10609b ; empty function
+	callba MobileFn_10609b ; empty function
 	ld b, 1
 	jp GetFruitTreeFlag
 ; 4406a
@@ -66,11 +66,11 @@ PickedFruitTree: ; 4405f
 ResetFruitTrees: ; 4406a
 	xor a
 	ld hl, FruitTreeFlags
+rept 3
 	ld [hli], a
-	ld [hli], a
-	ld [hli], a
+endr
 	ld [hl], a
-	ld hl, $dc1e
+	ld hl, DailyFlags
 	set 4, [hl]
 	ret
 ; 44078
@@ -159,4 +159,3 @@ NothingHereText: ; 440c9
 	text_jump _NothingHereText
 	db "@"
 ; 440ce
-

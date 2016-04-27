@@ -1,493 +1,450 @@
-KurtsHouse_MapScriptHeader: ; 0x18e14f
-	; trigger count
+const_value set 2
+	const KURTSHOUSE_KURT1
+	const KURTSHOUSE_TWIN1
+	const KURTSHOUSE_SLOWPOKE
+	const KURTSHOUSE_KURT2
+	const KURTSHOUSE_TWIN2
+
+KurtsHouse_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
 
-	dbw 2, UnknownScript_0x18e154
-; 0x18e154
+	dbw MAPCALLBACK_OBJECTS, UnknownScript_0x18e154
 
-UnknownScript_0x18e154: ; 0x18e154
+UnknownScript_0x18e154:
 	checkevent EVENT_CLEARED_SLOWPOKE_WELL
 	iffalse UnknownScript_0x18e177
-	checkevent $00c0
+	checkevent EVENT_FOREST_IS_RESTLESS
 	iftrue UnknownScript_0x18e177
-	checkflag $0050
+	checkflag ENGINE_KURT_MAKING_BALLS
 	iftrue UnknownScript_0x18e16f
-	disappear $5
-	appear $2
-	disappear $6
-	appear $3
+	disappear KURTSHOUSE_KURT2
+	appear KURTSHOUSE_KURT1
+	disappear KURTSHOUSE_TWIN2
+	appear KURTSHOUSE_TWIN1
 	return
-; 0x18e16f
 
-UnknownScript_0x18e16f: ; 0x18e16f
-	disappear $2
-	appear $5
-	disappear $3
-	appear $6
-UnknownScript_0x18e177: ; 0x18e177
+UnknownScript_0x18e16f:
+	disappear KURTSHOUSE_KURT1
+	appear KURTSHOUSE_KURT2
+	disappear KURTSHOUSE_TWIN1
+	appear KURTSHOUSE_TWIN2
+UnknownScript_0x18e177:
 	return
-; 0x18e178
 
-KurtScript_0x18e178: ; 0x18e178
+KurtScript_0x18e178:
 	faceplayer
-	loadfont
-	checkevent $0035
-	iftrue UnknownScript_0x18e1cc
+	opentext
+	checkevent EVENT_KURT_GAVE_YOU_LURE_BALL
+	iftrue .GotLureBall
 	checkevent EVENT_CLEARED_SLOWPOKE_WELL
-	iftrue UnknownScript_0x18e1bf
-	2writetext UnknownText_0x18e473
+	iftrue .ClearedSlowpokeWell
+	writetext UnknownText_0x18e473
+	waitbutton
 	closetext
-	loadmovesprites
-	special $006a
-	setevent $06fa
-	checkcode $9
-	if_equal $1, UnknownScript_0x18e1ab
-	spriteface $0, $0
+	special Special_FadeOutMusic
+	setevent EVENT_AZALEA_TOWN_SLOWPOKETAIL_ROCKET
+	checkcode VAR_FACING
+	if_equal UP, .RunAround
+	spriteface PLAYER, DOWN
 	playsound SFX_FLY
-	applymovement $2, MovementData_0x18e466
+	applymovement KURTSHOUSE_KURT1, MovementData_0x18e466
 	playsound SFX_EXIT_BUILDING
-	disappear $2
-	waitbutton
-	special $003d
+	disappear KURTSHOUSE_KURT1
+	waitsfx
+	special RestartMapMusic
 	end
-; 0x18e1ab
 
-UnknownScript_0x18e1ab: ; 0x18e1ab
-	spriteface $0, $0
+.RunAround:
+	spriteface PLAYER, DOWN
 	playsound SFX_FLY
-	applymovement $2, MovementData_0x18e46c
+	applymovement KURTSHOUSE_KURT1, MovementData_0x18e46c
 	playsound SFX_EXIT_BUILDING
-	disappear $2
-	waitbutton
-	special $003d
+	disappear KURTSHOUSE_KURT1
+	waitsfx
+	special RestartMapMusic
 	end
-; 0x18e1bf
 
-UnknownScript_0x18e1bf: ; 0x18e1bf
-	2writetext UnknownText_0x18e615
-	keeptextopen
-	verbosegiveitem LURE_BALL, 1
-	iffalse UnknownScript_0x18e2b2
-	setevent $0035
-UnknownScript_0x18e1cc: ; 0x18e1cc
-	checkevent $0000
-	iftrue UnknownScript_0x18e29f
-	checkevent $0258
-	iftrue UnknownScript_0x18e2b4
-	checkevent $0259
-	iftrue UnknownScript_0x18e2ca
-	checkevent $025a
-	iftrue UnknownScript_0x18e2e0
-	checkevent $025b
-	iftrue UnknownScript_0x18e2f6
-	checkevent $025c
-	iftrue UnknownScript_0x18e30c
-	checkevent $025d
-	iftrue UnknownScript_0x18e322
-	checkevent $025e
-	iftrue UnknownScript_0x18e338
+.ClearedSlowpokeWell:
+	writetext UnknownText_0x18e615
+	buttonsound
+	verbosegiveitem LURE_BALL
+	iffalse .NoRoomForBall
+	setevent EVENT_KURT_GAVE_YOU_LURE_BALL
+.GotLureBall:
+	checkevent EVENT_GAVE_KURT_APRICORNS
+	iftrue .WaitForApricorns
+	checkevent EVENT_GAVE_KURT_RED_APRICORN
+	iftrue .GiveLevelBall
+	checkevent EVENT_GAVE_KURT_BLU_APRICORN
+	iftrue .GiveLureBall
+	checkevent EVENT_GAVE_KURT_YLW_APRICORN
+	iftrue .GiveMoonBall
+	checkevent EVENT_GAVE_KURT_GRN_APRICORN
+	iftrue .GiveFriendBall
+	checkevent EVENT_GAVE_KURT_WHT_APRICORN
+	iftrue .GiveFastBall
+	checkevent EVENT_GAVE_KURT_BLK_APRICORN
+	iftrue .GiveHeavyBall
+	checkevent EVENT_GAVE_KURT_PNK_APRICORN
+	iftrue .GiveLoveBall
 	checkevent EVENT_CAN_GIVE_GS_BALL_TO_KURT
-	iftrue UnknownScript_0x18e34e
-UnknownScript_0x18e202: ; 0x18e202
-	checkevent $0001
-	iftrue UnknownScript_0x18e212
-	checkevent $0002
-	iftrue UnknownScript_0x18e212
-	2writetext UnknownText_0x18e6c9
-	closetext
-UnknownScript_0x18e212: ; 0x18e212
-	checkitem RED_APRICORN
-	iftrue UnknownScript_0x18e249
-	checkitem BLU_APRICORN
-	iftrue UnknownScript_0x18e249
-	checkitem YLW_APRICORN
-	iftrue UnknownScript_0x18e249
-	checkitem GRN_APRICORN
-	iftrue UnknownScript_0x18e249
-	checkitem WHT_APRICORN
-	iftrue UnknownScript_0x18e249
-	checkitem BLK_APRICORN
-	iftrue UnknownScript_0x18e249
-	checkitem PNK_APRICORN
-	iftrue UnknownScript_0x18e249
-	checkevent $0001
-	iftrue UnknownScript_0x18e2ae
-	checkevent $0002
-	iftrue UnknownScript_0x18e243
-	loadmovesprites
-	end
-; 0x18e243
-
-UnknownScript_0x18e243: ; 0x18e243
-	2writetext UnknownText_0x18e6c9
-	closetext
-	loadmovesprites
-	end
-; 0x18e249
-
-UnknownScript_0x18e249: ; 0x18e249
-	2writetext UnknownText_0x18e736
-	keeptextopen
-	setevent $0002
-	special $0056
-	if_equal $0, UnknownScript_0x18e2a5
-	if_equal $59, UnknownScript_0x18e275
-	if_equal $5c, UnknownScript_0x18e27b
-	if_equal $5d, UnknownScript_0x18e281
-	if_equal $61, UnknownScript_0x18e287
-	if_equal $63, UnknownScript_0x18e28d
-	if_equal $65, UnknownScript_0x18e293
-	setevent $0258
-	2jump UnknownScript_0x18e299
-; 0x18e275
-
-UnknownScript_0x18e275: ; 0x18e275
-	setevent $0259
-	2jump UnknownScript_0x18e299
-; 0x18e27b
-
-UnknownScript_0x18e27b: ; 0x18e27b
-	setevent $025a
-	2jump UnknownScript_0x18e299
-; 0x18e281
-
-UnknownScript_0x18e281: ; 0x18e281
-	setevent $025b
-	2jump UnknownScript_0x18e299
-; 0x18e287
-
-UnknownScript_0x18e287: ; 0x18e287
-	setevent $025c
-	2jump UnknownScript_0x18e299
-; 0x18e28d
-
-UnknownScript_0x18e28d: ; 0x18e28d
-	setevent $025d
-	2jump UnknownScript_0x18e299
-; 0x18e293
-
-UnknownScript_0x18e293: ; 0x18e293
-	setevent $025e
-	2jump UnknownScript_0x18e299
-; 0x18e299
-
-UnknownScript_0x18e299: ; 0x18e299
-	setevent $0000
-	setflag $0050
-UnknownScript_0x18e29f: ; 0x18e29f
-	2writetext UnknownText_0x18e779
-	closetext
-	loadmovesprites
-	end
-; 0x18e2a5
-
-UnknownScript_0x18e2a5: ; 0x18e2a5
-	2writetext UnknownText_0x18e7bc
-	closetext
-	loadmovesprites
-	end
-; 0x18e2ab
-
-UnknownScript_0x18e2ab: ; 0x18e2ab
-	setevent $0001
-UnknownScript_0x18e2ae: ; 0x18e2ae
-	2writetext UnknownText_0x18e82a
-	closetext
-UnknownScript_0x18e2b2: ; 0x18e2b2
-	loadmovesprites
-	end
-; 0x18e2b4
-
-UnknownScript_0x18e2b4: ; 0x18e2b4
-	checkflag $0050
-	iftrue UnknownScript_0x18e3c5
-	2writetext UnknownText_0x18e7fb
-	keeptextopen
-	verbosegiveitem2 LEVEL_BALL, $16
-	iffalse UnknownScript_0x18e2b2
-UnknownScript_0x18e2c4: ; 0x18e2c4
-	clearevent $0258
-	2jump UnknownScript_0x18e2ab
-; 0x18e2ca
-
-UnknownScript_0x18e2ca: ; 0x18e2ca
-	checkflag $0050
-	iftrue UnknownScript_0x18e3c5
-	2writetext UnknownText_0x18e7fb
-	keeptextopen
-	verbosegiveitem2 LURE_BALL, $16
-	iffalse UnknownScript_0x18e2b2
-UnknownScript_0x18e2da: ; 0x18e2da
-	clearevent $0259
-	2jump UnknownScript_0x18e2ab
-; 0x18e2e0
-
-UnknownScript_0x18e2e0: ; 0x18e2e0
-	checkflag $0050
-	iftrue UnknownScript_0x18e3c5
-	2writetext UnknownText_0x18e7fb
-	keeptextopen
-	verbosegiveitem2 MOON_BALL, $16
-	iffalse UnknownScript_0x18e2b2
-UnknownScript_0x18e2f0: ; 0x18e2f0
-	clearevent $025a
-	2jump UnknownScript_0x18e2ab
-; 0x18e2f6
-
-UnknownScript_0x18e2f6: ; 0x18e2f6
-	checkflag $0050
-	iftrue UnknownScript_0x18e3c5
-	2writetext UnknownText_0x18e7fb
-	keeptextopen
-	verbosegiveitem2 FRIEND_BALL, $16
-	iffalse UnknownScript_0x18e2b2
-UnknownScript_0x18e306: ; 0x18e306
-	clearevent $025b
-	2jump UnknownScript_0x18e2ab
-; 0x18e30c
-
-UnknownScript_0x18e30c: ; 0x18e30c
-	checkflag $0050
-	iftrue UnknownScript_0x18e3c5
-	2writetext UnknownText_0x18e7fb
-	keeptextopen
-	verbosegiveitem2 FAST_BALL, $16
-	iffalse UnknownScript_0x18e2b2
-UnknownScript_0x18e31c: ; 0x18e31c
-	clearevent $025c
-	2jump UnknownScript_0x18e2ab
-; 0x18e322
-
-UnknownScript_0x18e322: ; 0x18e322
-	checkflag $0050
-	iftrue UnknownScript_0x18e3c5
-	2writetext UnknownText_0x18e7fb
-	keeptextopen
-	verbosegiveitem2 HEAVY_BALL, $16
-	iffalse UnknownScript_0x18e2b2
-UnknownScript_0x18e332: ; 0x18e332
-	clearevent $025d
-	2jump UnknownScript_0x18e2ab
-; 0x18e338
-
-UnknownScript_0x18e338: ; 0x18e338
-	checkflag $0050
-	iftrue UnknownScript_0x18e3c5
-	2writetext UnknownText_0x18e7fb
-	keeptextopen
-	verbosegiveitem2 LOVE_BALL, $16
-	iffalse UnknownScript_0x18e2b2
-UnknownScript_0x18e348: ; 0x18e348
-	clearevent $025e
-	2jump UnknownScript_0x18e2ab
-; 0x18e34e
-
-UnknownScript_0x18e34e: ; 0x18e34e
-	checkevent $00bf
-	iftrue UnknownScript_0x18e368
-	checkitem GS_BALL
-	iffalse UnknownScript_0x18e202
-	2writetext UnknownText_0x18e8ab
-	closetext
-	loadmovesprites
-	setevent $00bf
-	takeitem GS_BALL, 1
-	setflag $0050
-	end
-; 0x18e368
-
-UnknownScript_0x18e368: ; 0x18e368
-	checkflag $0050
-	iffalse UnknownScript_0x18e378
-	2writetext UnknownText_0x18e934
-	closetext
-	2writetext UnknownText_0x18e949
-	closetext
-	loadmovesprites
-	end
-; 0x18e378
-
-UnknownScript_0x18e378: ; 0x18e378
-	2writetext UnknownText_0x18e95c
-	closetext
-	loadmovesprites
-	setevent $00c0
-	clearevent EVENT_CAN_GIVE_GS_BALL_TO_KURT
-	clearevent $00bf
-	special $006a
-	pause 20
-	showemote $0, $2, 30
-	checkcode $9
-	if_equal $1, UnknownScript_0x18e3a2
-	spriteface $0, $0
-	playsound SFX_FLY
-	applymovement $2, MovementData_0x18e466
-	2jump UnknownScript_0x18e3ac
-; 0x18e3a2
-
-UnknownScript_0x18e3a2: ; 0x18e3a2
-	spriteface $0, $0
-	playsound SFX_FLY
-	applymovement $2, MovementData_0x18e46c
-UnknownScript_0x18e3ac: ; 0x18e3ac
-	playsound SFX_EXIT_BUILDING
-	disappear $2
-	clearevent $07a4
+	iftrue .CanGiveGSBallToKurt
+.NoGSBall:
+	checkevent EVENT_RECEIVED_BALLS_FROM_KURT
+	iftrue .CheckApricorns
+	checkevent EVENT_DRAGON_SHRINE_QUESTION_2
+	iftrue .CheckApricorns
+	writetext UnknownText_0x18e6c9
 	waitbutton
-	special $003d
-	domaptrigger GROUP_AZALEA_TOWN, MAP_AZALEA_TOWN, $2
+.CheckApricorns:
+	checkitem RED_APRICORN
+	iftrue .AskApricorn
+	checkitem BLU_APRICORN
+	iftrue .AskApricorn
+	checkitem YLW_APRICORN
+	iftrue .AskApricorn
+	checkitem GRN_APRICORN
+	iftrue .AskApricorn
+	checkitem WHT_APRICORN
+	iftrue .AskApricorn
+	checkitem BLK_APRICORN
+	iftrue .AskApricorn
+	checkitem PNK_APRICORN
+	iftrue .AskApricorn
+	checkevent EVENT_RECEIVED_BALLS_FROM_KURT
+	iftrue .ThatTurnedOutGreat
+	checkevent EVENT_DRAGON_SHRINE_QUESTION_2
+	iftrue .IMakeBallsFromApricorns
+	closetext
 	end
-; 0x18e3bd
 
-KurtScript_0x18e3bd: ; 0x18e3bd
+.IMakeBallsFromApricorns:
+	writetext UnknownText_0x18e6c9
+	waitbutton
+	closetext
+	end
+
+.AskApricorn:
+	writetext UnknownText_0x18e736
+	buttonsound
+	setevent EVENT_DRAGON_SHRINE_QUESTION_2
+	special Special_SelectApricornForKurt
+	if_equal $0, .Cancel
+	if_equal BLU_APRICORN, .Blu
+	if_equal YLW_APRICORN, .Ylw
+	if_equal GRN_APRICORN, .Grn
+	if_equal WHT_APRICORN, .Wht
+	if_equal BLK_APRICORN, .Blk
+	if_equal PNK_APRICORN, .Pnk
+; .Red
+	setevent EVENT_GAVE_KURT_RED_APRICORN
+	jump .GaveKurtApricorns
+
+.Blu:
+	setevent EVENT_GAVE_KURT_BLU_APRICORN
+	jump .GaveKurtApricorns
+
+.Ylw:
+	setevent EVENT_GAVE_KURT_YLW_APRICORN
+	jump .GaveKurtApricorns
+
+.Grn:
+	setevent EVENT_GAVE_KURT_GRN_APRICORN
+	jump .GaveKurtApricorns
+
+.Wht:
+	setevent EVENT_GAVE_KURT_WHT_APRICORN
+	jump .GaveKurtApricorns
+
+.Blk:
+	setevent EVENT_GAVE_KURT_BLK_APRICORN
+	jump .GaveKurtApricorns
+
+.Pnk:
+	setevent EVENT_GAVE_KURT_PNK_APRICORN
+	jump .GaveKurtApricorns
+
+.GaveKurtApricorns:
+	setevent EVENT_GAVE_KURT_APRICORNS
+	setflag ENGINE_KURT_MAKING_BALLS
+.WaitForApricorns:
+	writetext UnknownText_0x18e779
+	waitbutton
+	closetext
+	end
+
+.Cancel:
+	writetext UnknownText_0x18e7bc
+	waitbutton
+	closetext
+	end
+
+._ThatTurnedOutGreat:
+	setevent EVENT_RECEIVED_BALLS_FROM_KURT
+.ThatTurnedOutGreat:
+	writetext UnknownText_0x18e82a
+	waitbutton
+.NoRoomForBall:
+	closetext
+	end
+
+.GiveLevelBall:
+	checkflag ENGINE_KURT_MAKING_BALLS
+	iftrue KurtMakingBallsScript
+	writetext UnknownText_0x18e7fb
+	buttonsound
+	verbosegiveitem2 LEVEL_BALL, VAR_KURT_APRICORNS
+	iffalse .NoRoomForBall
+	clearevent EVENT_GAVE_KURT_RED_APRICORN
+	jump ._ThatTurnedOutGreat
+
+.GiveLureBall:
+	checkflag ENGINE_KURT_MAKING_BALLS
+	iftrue KurtMakingBallsScript
+	writetext UnknownText_0x18e7fb
+	buttonsound
+	verbosegiveitem2 LURE_BALL, VAR_KURT_APRICORNS
+	iffalse .NoRoomForBall
+	clearevent EVENT_GAVE_KURT_BLU_APRICORN
+	jump ._ThatTurnedOutGreat
+
+.GiveMoonBall:
+	checkflag ENGINE_KURT_MAKING_BALLS
+	iftrue KurtMakingBallsScript
+	writetext UnknownText_0x18e7fb
+	buttonsound
+	verbosegiveitem2 MOON_BALL, VAR_KURT_APRICORNS
+	iffalse .NoRoomForBall
+	clearevent EVENT_GAVE_KURT_YLW_APRICORN
+	jump ._ThatTurnedOutGreat
+
+.GiveFriendBall:
+	checkflag ENGINE_KURT_MAKING_BALLS
+	iftrue KurtMakingBallsScript
+	writetext UnknownText_0x18e7fb
+	buttonsound
+	verbosegiveitem2 FRIEND_BALL, VAR_KURT_APRICORNS
+	iffalse .NoRoomForBall
+	clearevent EVENT_GAVE_KURT_GRN_APRICORN
+	jump ._ThatTurnedOutGreat
+
+.GiveFastBall:
+	checkflag ENGINE_KURT_MAKING_BALLS
+	iftrue KurtMakingBallsScript
+	writetext UnknownText_0x18e7fb
+	buttonsound
+	verbosegiveitem2 FAST_BALL, VAR_KURT_APRICORNS
+	iffalse .NoRoomForBall
+	clearevent EVENT_GAVE_KURT_WHT_APRICORN
+	jump ._ThatTurnedOutGreat
+
+.GiveHeavyBall:
+	checkflag ENGINE_KURT_MAKING_BALLS
+	iftrue KurtMakingBallsScript
+	writetext UnknownText_0x18e7fb
+	buttonsound
+	verbosegiveitem2 HEAVY_BALL, VAR_KURT_APRICORNS
+	iffalse .NoRoomForBall
+	clearevent EVENT_GAVE_KURT_BLK_APRICORN
+	jump ._ThatTurnedOutGreat
+
+.GiveLoveBall:
+	checkflag ENGINE_KURT_MAKING_BALLS
+	iftrue KurtMakingBallsScript
+	writetext UnknownText_0x18e7fb
+	buttonsound
+	verbosegiveitem2 LOVE_BALL, VAR_KURT_APRICORNS
+	iffalse .NoRoomForBall
+	clearevent EVENT_GAVE_KURT_PNK_APRICORN
+	jump ._ThatTurnedOutGreat
+
+.CanGiveGSBallToKurt:
+	checkevent EVENT_GAVE_GS_BALL_TO_KURT
+	iftrue .GaveGSBallToKurt
+	checkitem GS_BALL
+	iffalse .NoGSBall
+	writetext UnknownText_0x18e8ab
+	waitbutton
+	closetext
+	setevent EVENT_GAVE_GS_BALL_TO_KURT
+	takeitem GS_BALL
+	setflag ENGINE_KURT_MAKING_BALLS
+	end
+
+.GaveGSBallToKurt:
+	checkflag ENGINE_KURT_MAKING_BALLS
+	iffalse .NotMakingBalls
+	writetext UnknownText_0x18e934
+	waitbutton
+	writetext UnknownText_0x18e949
+	waitbutton
+	closetext
+	end
+
+.NotMakingBalls:
+	writetext UnknownText_0x18e95c
+	waitbutton
+	closetext
+	setevent EVENT_FOREST_IS_RESTLESS
+	clearevent EVENT_CAN_GIVE_GS_BALL_TO_KURT
+	clearevent EVENT_GAVE_GS_BALL_TO_KURT
+	special Special_FadeOutMusic
+	pause 20
+	showemote EMOTE_SHOCK, KURTSHOUSE_KURT1, 30
+	checkcode VAR_FACING
+	if_equal UP, .GSBallRunAround
+	spriteface PLAYER, DOWN
+	playsound SFX_FLY
+	applymovement KURTSHOUSE_KURT1, MovementData_0x18e466
+	jump .KurtHasLeftTheBuilding
+
+.GSBallRunAround:
+	spriteface PLAYER, DOWN
+	playsound SFX_FLY
+	applymovement KURTSHOUSE_KURT1, MovementData_0x18e46c
+.KurtHasLeftTheBuilding:
+	playsound SFX_EXIT_BUILDING
+	disappear KURTSHOUSE_KURT1
+	clearevent EVENT_AZALEA_TOWN_KURT
+	waitsfx
+	special RestartMapMusic
+	domaptrigger AZALEA_TOWN, $2
+	end
+
+KurtScript_0x18e3bd:
 	faceplayer
-	loadfont
-	checkevent $00bf
-	iftrue UnknownScript_0x18e3e0
-UnknownScript_0x18e3c5: ; 0x18e3c5
-	checkevent $00bb
-	iffalse UnknownScript_0x18e3d4
-	2writetext UnknownText_0x18e7d8
+	opentext
+	checkevent EVENT_GAVE_GS_BALL_TO_KURT
+	iftrue KurtScript_ImCheckingItNow
+KurtMakingBallsScript:
+	checkevent EVENT_BUGGING_KURT_TOO_MUCH
+	iffalse Script_FirstTimeBuggingKurt
+	writetext UnknownText_0x18e7d8
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $5, $1
+	spriteface KURTSHOUSE_KURT2, UP
 	end
-; 0x18e3d4
 
-UnknownScript_0x18e3d4: ; 0x18e3d4
-	2writetext UnknownText_0x18e863
+Script_FirstTimeBuggingKurt:
+	writetext UnknownText_0x18e863
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $5, $1
-	setevent $00bb
+	spriteface KURTSHOUSE_KURT2, UP
+	setevent EVENT_BUGGING_KURT_TOO_MUCH
 	end
-; 0x18e3e0
 
-UnknownScript_0x18e3e0: ; 0x18e3e0
-	2writetext UnknownText_0x18e934
+KurtScript_ImCheckingItNow:
+	writetext UnknownText_0x18e934
+	waitbutton
+	spriteface KURTSHOUSE_KURT2, UP
+	writetext UnknownText_0x18e949
+	waitbutton
 	closetext
-	spriteface $5, $1
-	2writetext UnknownText_0x18e949
-	closetext
-	loadmovesprites
 	end
-; 0x18e3ed
 
-TwinScript_0x18e3ed: ; 0x18e3ed
+KurtsGranddaughter1:
 	faceplayer
-	checkevent $0000
-	iftrue UnknownScript_0x18e42f
-	checkevent $0001
-	iftrue UnknownScript_0x18e448
-	checkevent $00c0
-	iftrue UnknownScript_0x18e420
-	checkevent $0030
-	iftrue UnknownScript_0x18e427
+	checkevent EVENT_GAVE_KURT_APRICORNS
+	iftrue KurtsGranddaughter2Subscript
+	checkevent EVENT_RECEIVED_BALLS_FROM_KURT
+	iftrue KurtsGranddaughterFunScript
+	checkevent EVENT_FOREST_IS_RESTLESS
+	iftrue .Lonely
+	checkevent EVENT_FAST_SHIP_FIRST_TIME
+	iftrue .Dad
 	checkevent EVENT_CLEARED_SLOWPOKE_WELL
-	iftrue UnknownScript_0x18e419
-	checkevent $06fa
-	iftrue UnknownScript_0x18e420
-	loadfont
-	2writetext UnknownText_0x18e9b5
+	iftrue .SlowpokeBack
+	checkevent EVENT_AZALEA_TOWN_SLOWPOKETAIL_ROCKET
+	iftrue .Lonely
+	opentext
+	writetext KurtsGranddaughterSlowpokeGoneText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18e419
 
-UnknownScript_0x18e419: ; 0x18e419
-	loadfont
-	2writetext UnknownText_0x18ea0f
+.SlowpokeBack:
+	opentext
+	writetext KurtsGranddaughterSlowpokeBackText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18e420
 
-UnknownScript_0x18e420: ; 0x18e420
-	loadfont
-	2writetext UnknownText_0x18e9f1
+.Lonely:
+	opentext
+	writetext KurtsGranddaughterLonelyText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18e427
 
-UnknownScript_0x18e427: ; 0x18e427
-	loadfont
-	2writetext UnknownText_0x18ea55
+.Dad:
+	opentext
+	writetext KurtsGranddaughterDadText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18e42e
 
-TwinScript_0x18e42e: ; 0x18e42e
+KurtsGranddaughter2:
 	faceplayer
-UnknownScript_0x18e42f: ; 0x18e42f
-	loadfont
-	checkevent $00bf
-	iftrue UnknownScript_0x18e43f
-	2writetext UnknownText_0x18eab2
+KurtsGranddaughter2Subscript:
+	opentext
+	checkevent EVENT_GAVE_GS_BALL_TO_KURT
+	iftrue .GSBall
+	writetext KurtsGranddaughterHelpText
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $6, $3
+	spriteface KURTSHOUSE_TWIN2, RIGHT
 	end
-; 0x18e43f
 
-UnknownScript_0x18e43f: ; 0x18e43f
-	2writetext UnknownText_0x18eb14
+.GSBall:
+	writetext KurtsGranddaughterGSBallText
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $6, $3
+	spriteface KURTSHOUSE_TWIN2, RIGHT
 	end
-; 0x18e448
 
-UnknownScript_0x18e448: ; 0x18e448
-	loadfont
-	2writetext UnknownText_0x18eafc
+KurtsGranddaughterFunScript:
+	opentext
+	writetext KurtsGranddaughterFunText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18e44f
 
-SlowpokeScript_0x18e44f: ; 0x18e44f
+KurtsHouseSlowpoke:
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x18eb56
+	opentext
+	writetext KurtsHouseSlowpokeText
 	cry SLOWPOKE
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18e45a
 
-MapKurtsHouseSignpost2Script: ; 0x18e45a
-	jumptext UnknownText_0x18eb69
-; 0x18e45d
+KurtsHouseOakPhoto:
+	jumptext KurtsHouseOakPhotoText
 
-MapKurtsHouseSignpost6Script: ; 0x18e45d
-	jumptext UnknownText_0x18eb7e
-; 0x18e460
+KurtsHouseCelebiStatue:
+	jumptext KurtsHouseCelebiStatueText
 
-MapKurtsHouseSignpost5Script: ; 0x18e460
-	jumpstd $0001
-; 0x18e463
+KurtsHouseBookshelf:
+	jumpstd difficultbookshelf
 
-MapKurtsHouseSignpost0Script: ; 0x18e463
-	jumpstd $000c
-; 0x18e466
+KurtsHouseRadio:
+	jumpstd radio2
 
-MovementData_0x18e466: ; 0x18e466
+MovementData_0x18e466:
 	big_step_down
 	big_step_down
 	big_step_down
 	big_step_down
 	big_step_down
 	step_end
-; 0x18e46c
 
-MovementData_0x18e46c: ; 0x18e46c
+MovementData_0x18e46c:
 	big_step_right
 	big_step_down
 	big_step_down
@@ -495,12 +452,11 @@ MovementData_0x18e46c: ; 0x18e46c
 	big_step_down
 	big_step_down
 	step_end
-; 0x18e473
 
-UnknownText_0x18e473: ; 0x18e473
+UnknownText_0x18e473:
 	text "Hm? Who are you?"
 
-	para $52, ", eh? You"
+	para "<PLAYER>, eh? You"
 	line "want me to make"
 	cont "some BALLS?"
 
@@ -537,10 +493,9 @@ UnknownText_0x18e473: ; 0x18e473
 	line "Old KURT is on his"
 	cont "way!"
 	done
-; 0x18e615
 
-UnknownText_0x18e615: ; 0x18e615
-	text "KURT: Hi, ", $52, "!"
+UnknownText_0x18e615:
+	text "KURT: Hi, <PLAYER>!"
 
 	para "You handled your-"
 	line "self like a real"
@@ -557,9 +512,8 @@ UnknownText_0x18e615: ; 0x18e615
 	para "This is all I have"
 	line "now, but take it."
 	done
-; 0x18e6c9
 
-UnknownText_0x18e6c9: ; 0x18e6c9
+UnknownText_0x18e6c9:
 	text "KURT: I make BALLS"
 	line "from APRICORNS."
 
@@ -570,64 +524,56 @@ UnknownText_0x18e6c9: ; 0x18e6c9
 	para "I'll make BALLS"
 	line "out of them."
 	done
-; 0x18e736
 
-UnknownText_0x18e736: ; 0x18e736
+UnknownText_0x18e736:
 	text "KURT: You have an"
 	line "APRICORN for me?"
 
 	para "Fine! I'll turn it"
 	line "into a BALL."
 	done
-; 0x18e779
 
-UnknownText_0x18e779: ; 0x18e779
+UnknownText_0x18e779:
 	text "KURT: It'll take a"
 	line "day to make you a"
 
 	para "BALL. Come back"
 	line "for it later."
 	done
-; 0x18e7bc
 
-UnknownText_0x18e7bc: ; 0x18e7bc
+UnknownText_0x18e7bc:
 	text "KURT: Oh…"
 	line "That's a letdown."
 	done
-; 0x18e7d8
 
-UnknownText_0x18e7d8: ; 0x18e7d8
+UnknownText_0x18e7d8:
 	text "KURT: I'm working!"
 	line "Don't bother me!"
 	done
-; 0x18e7fb
 
-UnknownText_0x18e7fb: ; 0x18e7fb
-	text "KURT: Ah, ", $52, "!"
+UnknownText_0x18e7fb:
+	text "KURT: Ah, <PLAYER>!"
 	line "I just finished"
 	cont "your BALL. Here!"
 	done
-; 0x18e82a
 
-UnknownText_0x18e82a: ; 0x18e82a
+UnknownText_0x18e82a:
 	text "KURT: That turned"
 	line "out great."
 
 	para "Try catching"
 	line "#MON with it."
 	done
-; 0x18e863
 
-UnknownText_0x18e863: ; 0x18e863
+UnknownText_0x18e863:
 	text "KURT: Now that my"
 	line "granddaughter is"
 
 	para "helping me, I can"
 	line "work much faster."
 	done
-; 0x18e8ab
 
-UnknownText_0x18e8ab: ; 0x18e8ab
+UnknownText_0x18e8ab:
 	text "Wh-what is that?"
 
 	para "I've never seen"
@@ -642,22 +588,19 @@ UnknownText_0x18e8ab: ; 0x18e8ab
 	para "Let me check it"
 	line "for you."
 	done
-; 0x18e934
 
-UnknownText_0x18e934: ; 0x18e934
+UnknownText_0x18e934:
 	text "I'm checking it"
 	line "now."
 	done
-; 0x18e949
 
-UnknownText_0x18e949: ; 0x18e949
+UnknownText_0x18e949:
 	text "Ah-ha! I see!"
 	line "So…"
 	done
-; 0x18e95c
 
-UnknownText_0x18e95c: ; 0x18e95c
-	text $52, "!"
+UnknownText_0x18e95c:
+	text "<PLAYER>!"
 
 	para "This BALL started"
 	line "to shake while I"
@@ -666,33 +609,29 @@ UnknownText_0x18e95c: ; 0x18e95c
 	para "There must be"
 	line "something to this!"
 	done
-; 0x18e9b5
 
-UnknownText_0x18e9b5: ; 0x18e9b5
+KurtsGranddaughterSlowpokeGoneText:
 	text "The SLOWPOKE are"
 	line "gone… Were they"
 
 	para "taken away by bad"
 	line "people?"
 	done
-; 0x18e9f1
 
-UnknownText_0x18e9f1: ; 0x18e9f1
+KurtsGranddaughterLonelyText:
 	text "Grandpa's gone…"
 	line "I'm so lonely…"
 	done
-; 0x18ea0f
 
-UnknownText_0x18ea0f: ; 0x18ea0f
+KurtsGranddaughterSlowpokeBackText:
 	text "The SLOWPOKE my"
 	line "dad gave me came"
 
 	para "back! Its TAIL is"
 	line "growing back too!"
 	done
-; 0x18ea55
 
-UnknownText_0x18ea55: ; 0x18ea55
+KurtsGranddaughterDadText:
 	text "Dad works at SILPH"
 	line "where he studies"
 	cont "# BALLS."
@@ -701,9 +640,8 @@ UnknownText_0x18ea55: ; 0x18ea55
 	line "home with Grandpa"
 	cont "and SLOWPOKE."
 	done
-; 0x18eab2
 
-UnknownText_0x18eab2: ; 0x18eab2
+KurtsGranddaughterHelpText:
 	text "I get to help"
 	line "Grandpa now!"
 
@@ -711,70 +649,62 @@ UnknownText_0x18eab2: ; 0x18eab2
 	line "BALLS for you, so"
 	cont "please wait!"
 	done
-; 0x18eafc
 
-UnknownText_0x18eafc: ; 0x18eafc
+KurtsGranddaughterFunText:
 	text "It's fun to make"
 	line "BALLS!"
 	done
-; 0x18eb14
 
-UnknownText_0x18eb14: ; 0x18eb14
+KurtsGranddaughterGSBallText:
 	text "Grandpa's checking"
 	line "a BALL right now."
 
 	para "So I'm waiting"
 	line "till he's done."
 	done
-; 0x18eb56
 
-UnknownText_0x18eb56: ; 0x18eb56
+KurtsHouseSlowpokeText:
 	text "SLOWPOKE: …"
 	line "Yawn?"
 	done
-; 0x18eb69
 
-UnknownText_0x18eb69: ; 0x18eb69
+KurtsHouseOakPhotoText:
 	text "…A young PROF."
 	line "OAK?"
 	done
-; 0x18eb7e
 
-UnknownText_0x18eb7e: ; 0x18eb7e
+KurtsHouseCelebiStatueText:
 	text "It's a statue of"
 	line "the forest's pro-"
 	cont "tector."
 	done
-; 0x18eba8
 
-KurtsHouse_MapEventHeader: ; 0x18eba8
+KurtsHouse_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $3, 4, GROUP_AZALEA_TOWN, MAP_AZALEA_TOWN
-	warp_def $7, $4, 4, GROUP_AZALEA_TOWN, MAP_AZALEA_TOWN
+	warp_def $7, $3, 4, AZALEA_TOWN
+	warp_def $7, $4, 4, AZALEA_TOWN
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 7
-	signpost 1, 6, $0, MapKurtsHouseSignpost0Script
-	signpost 0, 8, $0, MapKurtsHouseSignpost2Script
-	signpost 0, 9, $0, MapKurtsHouseSignpost2Script
-	signpost 1, 5, $0, MapKurtsHouseSignpost5Script
-	signpost 1, 2, $0, MapKurtsHouseSignpost5Script
-	signpost 1, 3, $0, MapKurtsHouseSignpost5Script
-	signpost 1, 4, $0, MapKurtsHouseSignpost6Script
+	signpost 1, 6, SIGNPOST_READ, KurtsHouseRadio
+	signpost 0, 8, SIGNPOST_READ, KurtsHouseOakPhoto
+	signpost 0, 9, SIGNPOST_READ, KurtsHouseOakPhoto
+	signpost 1, 5, SIGNPOST_READ, KurtsHouseBookshelf
+	signpost 1, 2, SIGNPOST_READ, KurtsHouseBookshelf
+	signpost 1, 3, SIGNPOST_READ, KurtsHouseBookshelf
+	signpost 1, 4, SIGNPOST_READ, KurtsHouseCelebiStatue
 
-	; people-events
+.PersonEvents:
 	db 5
-	person_event SPRITE_KURT, 6, 7, $6, $0, 255, 255, $0, 0, KurtScript_0x18e178, $073e
-	person_event SPRITE_TWIN, 7, 9, $3, $0, 255, 255, $0, 0, TwinScript_0x18e3ed, $078c
-	person_event SPRITE_SLOWPOKE, 7, 10, $1, $0, 255, 255, $0, 0, SlowpokeScript_0x18e44f, $06fd
-	person_event SPRITE_KURT, 7, 18, $7, $0, 255, 255, $0, 0, KurtScript_0x18e3bd, $073f
-	person_event SPRITE_TWIN, 8, 15, $9, $0, 255, 255, $0, 0, TwinScript_0x18e42e, $078d
-; 0x18ec1c
-
+	person_event SPRITE_KURT, 2, 3, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, KurtScript_0x18e178, EVENT_KURTS_HOUSE_KURT_1
+	person_event SPRITE_TWIN, 3, 5, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, KurtsGranddaughter1, EVENT_KURTS_HOUSE_GRANDDAUGHTER_1
+	person_event SPRITE_SLOWPOKE, 3, 6, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, KurtsHouseSlowpoke, EVENT_KURTS_HOUSE_SLOWPOKE
+	person_event SPRITE_KURT, 3, 14, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, KurtScript_0x18e3bd, EVENT_KURTS_HOUSE_KURT_2
+	person_event SPRITE_TWIN, 4, 11, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, KurtsGranddaughter2, EVENT_KURTS_HOUSE_GRANDDAUGHTER_2

@@ -1,49 +1,59 @@
 ; A library included as part of the Mobile Adapter GB SDK.
 
-INCLUDE "gbhw.asm"
+charmap "<CR>", $d
 
+INCLUDE "gbhw.asm"
 
 SECTION "Main", ROMX
 
-; known jump sources: 110004 (44:4004), 111bdd (44:5bdd), 111bfd (44:5bfd), 111c0e (44:5c0e), 111c7d (44:5c7d), 111cbd (44:5cbd), 111cf4 (44:5cf4), 111d30 (44:5d30)
 Function110000: ; 110000 (44:4000)
+; Copy b bytes from hl to de
+.loop
 	ld a, [hli]
 	ld [de], a
 	inc de
 	dec b
-	jr nz, Function110000
+	jr nz, .loop
 	ret
 ; 110007 (44:4007)
 
 Function110007: ; 110007
-.asm_110007
+; Copy bytes from hl to de until a 0 is encountered.
+; Include the 0 in the copy, and count the number of
+; nonzero bytes copied.  Keep the de pointer at the
+; copied zero.
+.loop
 	ld a, [hli]
 	ld [de], a
 	or a
 	ret z
 	inc de
 	inc bc
-	jr .asm_110007
+	jr .loop
 ; 11000f
 
 Function11000f: ; 11000f
+; Copy bytes from hl to de until a 0 is encountered,
+; or a bytes have been copied, whichever comes first.
+; Add the byte count to the count previously stored
+; in bc.
 	push bc
 	ld c, $0
 	ld b, a
 	dec b
-.asm_110014
+.loop
 	ld a, [hli]
 	ld [de], a
 	or a
-	jr z, .asm_110020
+	jr z, .done
 	inc de
 	inc c
 	dec b
-	jr nz, .asm_110014
+	jr nz, .loop
 	xor a
 	ld [de], a
 
-.asm_110020
+.done
 	ld a, c
 	pop bc
 	add c
@@ -54,37 +64,40 @@ Function11000f: ; 11000f
 	ret
 ; 110029
 
-; known jump sources: 111aa8 (44:5aa8), 111ad4 (44:5ad4)
 Function110029: ; 110029 (44:4029)
+; Clear two bytes at $ca3a.
 	xor a
 	ld hl, $ca3a
 	ld [hli], a
 	ld [hl], a
 	ret
 
-; known jump sources: 3e5d (0:3e5d)
 Function110030:: ; 110030 (44:4030)
+; Use the byte at $c988 as a parameter
+; for a dw.
+; If [$c988] in {12, 14, 16},
+; clear [$c835].
 	push de
 	ld a, [$c988]
-	cp $c
-	jr z, .asm_110047
-	cp $e
-	jr z, .asm_110047
-	cp $10
-	jr z, .asm_110047
+	cp 2 * 6
+	jr z, .noreset
+	cp 2 * 7
+	jr z, .noreset
+	cp 2 * 8
+	jr z, .noreset
 	xor a
 	ld [$c835], a
 	ld a, [$c988]
-.asm_110047
+.noreset
 	ld d, $0
 	ld e, a
-	ld hl, Jumptable_110070
+	ld hl, .dw
 	add hl, de
 	ld a, [hli]
 	ld [$c988], a
 	ld a, [hl]
 	pop de
-	ld hl, $3e60
+	ld hl, Function3e60
 	push hl
 	ld h, a
 	ld a, [$c988]
@@ -92,19 +105,19 @@ Function110030:: ; 110030 (44:4030)
 	push hl
 	ld a, $36
 	cp l
-	jr nz, .asm_110066
+	jr nz, .okay
 	ld a, $42
 	cp h
-.asm_110066
+.okay
 	call nz, Function1100b4
 	ld hl, $c986
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ret
+	ret ; indirectly jump to the function loaded from the dw, which returns to Function3e60.
 ; 110070 (44:4070)
 
-Jumptable_110070: ; 110070
+.dw ; 110070
 	dw Function110115
 	dw Function110236
 	dw Function110291
@@ -141,10 +154,9 @@ Jumptable_110070: ; 110070
 	dw Function111540
 ; 1100b4
 
-; known jump sources: 110066 (44:4066), 111f07 (44:5f07)
 Function1100b4: ; 1100b4 (44:40b4)
 	push bc
-.asm_1100b5
+.loop
 	di
 	ld a, [$c800]
 	ld b, a
@@ -154,19 +166,19 @@ Function1100b4: ; 1100b4 (44:40b4)
 	ei
 	or a
 	bit 0, a
-	jr z, .asm_1100da
+	jr z, .done
 	ld a, b
 	or a
-	jr nz, .asm_1100b5
+	jr nz, .loop
 	ld a, c
 	cp $4
-	jr z, .asm_1100b5
+	jr z, .loop
 	xor a
 	ld [$c80f], a
 	ld hl, $c821
 	set 1, [hl]
 	scf
-.asm_1100da
+.done
 	pop bc
 	ret
 ; 1100dc (44:40dc)
@@ -247,7 +259,7 @@ Function110115: ; 110115
 	cp $0
 	jr z, .asm_11015d
 .asm_110158
-	ld hl, $0000
+	ld hl, 0
 .asm_11015b
 	ld a, e
 	ret
@@ -368,7 +380,6 @@ Function110115: ; 110115
 	jp .asm_11015b
 ; 110226
 
-; known jump sources: 111f12 (44:5f12)
 Function110226: ; 110226 (44:4226)
 	ld a, $21
 
@@ -599,7 +610,7 @@ Function11032c: ; 11032c
 ; 110393
 
 Function110393: ; 110393
-	ld c, $ff
+	ld c, rIE % $100
 	ld a, [$ff00+c]
 	or $c
 	ld [$ff00+c], a
@@ -670,17 +681,18 @@ Function1103ac: ; 1103ac
 	ld hl, Unknown_112037
 	ld de, $cb74
 	call Function110000
+rept 2
 	inc de
-	inc de
+endr
 	pop hl
-	ld bc, $0000
+	ld bc, 0
 	call Function110007
 	ld a, c
 	ld [$cb7a], a
 	ld [$c86b], a
 	push de
 	inc de
-	ld bc, $0000
+	ld bc, 0
 	ld a, $20
 	call Function11000f
 	ld l, e
@@ -729,9 +741,9 @@ Function110438: ; 110438
 	ld a, $c8
 	ld [hli], a
 	xor a
+rept 3
 	ld [hli], a
-	ld [hli], a
-	ld [hli], a
+endr
 	ld [hl], a
 	ld a, $ff
 	ld [$c86e], a
@@ -952,9 +964,9 @@ Function1105dd: ; 1105dd
 	ld a, $c8
 	ld [hli], a
 	xor a
+rept 3
 	ld [hli], a
-	ld [hli], a
-	ld [hli], a
+endr
 	ld [hl], a
 	ld a, $ff
 	ld [$c86e], a
@@ -1010,7 +1022,7 @@ Function110615: ; 110615
 	push de
 	inc de
 	ld a, b
-	ld bc, $0000
+	ld bc, 0
 	call Function11000f
 	ld a, c
 	pop hl
@@ -1115,8 +1127,9 @@ Function1106ef: ; 1106ef
 	ld hl, Unknown_112072
 	ld b, $5
 	call Function110000
+rept 2
 	inc de
-	inc de
+endr
 	ld bc, $0001
 	ld hl, Unknown_11209e
 	call Function110007
@@ -1382,8 +1395,9 @@ Function110905: ; 110905
 	ld hl, Unknown_112072
 	ld b, $5
 	call Function110000
+rept 2
 	inc de
-	inc de
+endr
 	ld hl, Unknown_1120c8
 	call Function110007
 	pop hl
@@ -1547,10 +1561,12 @@ Function110a5b: ; 110a5b
 	ld [hli], a
 	ld a, d
 	ld [hli], a
+rept 2
 	inc de
-	inc de
+endr
+rept 2
 	dec bc
-	dec bc
+endr
 	ld hl, $c98f
 	ld a, e
 	ld [hli], a
@@ -1570,8 +1586,9 @@ Function110a5b: ; 110a5b
 	xor a
 	ld [hli], a
 	xor a
+rept 2
 	ld [hli], a
-	ld [hli], a
+endr
 	xor a
 	ld [$c86b], a
 	ld de, $cb47
@@ -1611,8 +1628,9 @@ Function110af4: ; 110af4
 	ld [hli], a
 	ld a, d
 	ld [hli], a
+rept 2
 	inc de
-	inc de
+endr
 	ld a, e
 	ld [hli], a
 	ld a, d
@@ -1623,8 +1641,9 @@ Function110af4: ; 110af4
 	ld [$c86e], a
 	ld [$c86f], a
 	jr z, .asm_110b5c
+rept 2
 	dec bc
-	dec bc
+endr
 	ld a, [$c993]
 	or a
 	jp nz, .asm_110bd5
@@ -1890,10 +1909,12 @@ Function110c9e: ; 110c9e
 	ld [hli], a
 	ld a, d
 	ld [hli], a
+rept 2
 	inc de
-	inc de
+endr
+rept 2
 	dec bc
-	dec bc
+endr
 	ld hl, $c98f
 	ld a, e
 	ld [hli], a
@@ -1913,8 +1934,9 @@ Function110c9e: ; 110c9e
 	xor a
 	ld [hli], a
 	xor a
+rept 2
 	ld [hli], a
-	ld [hli], a
+endr
 	xor a
 	ld [$c86b], a
 	ld de, $cb47
@@ -1951,87 +1973,87 @@ Function110c9e: ; 110c9e
 Function110d37: ; 110d37
 	push bc
 	push de
-	ld b, $0
-.asm_110d3b
-	ld a, $27
+	ld b, 0
+.check_under_10k
+	ld a, 10000 / $100
 	cp h
-	jr c, .asm_110d49
-	jr nz, .asm_110d52
-	ld a, $10
+	jr c, .subtract_10k
+	jr nz, .done_10k
+	ld a, 10000 % $100
 	cp l
-	jr z, .asm_110d49
-	jr nc, .asm_110d52
+	jr z, .subtract_10k
+	jr nc, .done_10k
 
-.asm_110d49
+.subtract_10k
 	inc b
 	ld a, b
-	ld bc, $d8f0
+	ld bc, -10000
 	add hl, bc
 	ld b, a
-	jr .asm_110d3b
+	jr .check_under_10k
 
-.asm_110d52
+.done_10k
 	ld a, $30
 	or b
 	ld [de], a
 	inc de
-	ld b, $0
-.asm_110d59
-	ld a, $3
+	ld b, 0
+.check_under_1k
+	ld a, 1000 / $100
 	cp h
-	jr c, .asm_110d67
-	jr nz, .asm_110d70
-	ld a, $e8
+	jr c, .subtract_1k
+	jr nz, .done_1k
+	ld a, 1000 % $100
 	cp l
-	jr z, .asm_110d67
-	jr nc, .asm_110d70
+	jr z, .subtract_1k
+	jr nc, .done_1k
 
-.asm_110d67
+.subtract_1k
 	inc b
 	ld a, b
-	ld bc, $fc18
+	ld bc, -1000
 	add hl, bc
 	ld b, a
-	jr .asm_110d59
+	jr .check_under_1k
 
-.asm_110d70
+.done_1k
 	ld a, $30
 	or b
 	ld [de], a
 	inc de
-	ld b, $0
-.asm_110d77
-	ld a, $0
+	ld b, 0
+.check_under_100
+	ld a, 100 / $100
 	cp h
-	jr nz, .asm_110d83
-	ld a, $64
+	jr nz, .subtract_100
+	ld a, 100 % $100
 	cp l
-	jr z, .asm_110d83
-	jr nc, .asm_110d8c
+	jr z, .subtract_100
+	jr nc, .check_under_10
 
-.asm_110d83
+.subtract_100
 	inc b
 	ld a, b
-	ld bc, $ff9c
+	ld bc, -100
 	add hl, bc
 	ld b, a
-	jr .asm_110d77
+	jr .check_under_100
 
-.asm_110d8c
+.check_under_10
 	ld a, $30
 	or b
 	ld [de], a
 	inc de
 	ld b, $0
 	ld a, l
-.asm_110d94
-	cp $a
-	jr c, .asm_110d9d
-	sub $a
+.subtract_10
+	cp 10
+	jr c, .done_10
+	sub 10
 	inc b
-	jr .asm_110d94
+	jr .subtract_10
 
-.asm_110d9d
+.done_10
 	ld l, a
 	ld a, $30
 	or b
@@ -2044,19 +2066,19 @@ Function110d37: ; 110d37
 	ld l, e
 	ld h, d
 	ld b, $5
-.asm_110dac
+.find_first_digit
 	ld a, [hl]
 	cp $30
-	jr nz, .asm_110db7
+	jr nz, .found_first_digit
 	inc hl
 	dec b
-	jr nz, .asm_110dac
-	jr .asm_110dd5
+	jr nz, .find_first_digit
+	jr .done
 
-.asm_110db7
+.found_first_digit
 	ld a, $5
 	cp b
-	jr z, .asm_110dd5
+	jr z, .done
 	sub b
 	ld c, a
 	ld a, [$cb4c]
@@ -2065,23 +2087,23 @@ Function110d37: ; 110d37
 	ld [$cb4c], a
 	push hl
 	ld b, $1
-.asm_110dc9
+.penultimate_loop
 	inc b
 	ld a, [hli]
 	cp $d
-	jr nz, .asm_110dc9
+	jr nz, .penultimate_loop
 	pop hl
 	call Function110000
 	pop hl
 	ret
 
-.asm_110dd5
+.done
 	pop bc
-.asm_110dd6
+.last_loop
 	ld a, [de]
 	inc de
 	cp $a
-	jr nz, .asm_110dd6
+	jr nz, .last_loop
 	ret
 ; 110ddd
 
@@ -2129,14 +2151,16 @@ Function110ddd: ; 110ddd
 	ld [$c833], a
 	ld a, [hli]
 	ld [$c834], a
+rept 2
 	inc hl
-	inc hl
+endr
 	ld a, l
 	ld [$c97f], a
 	ld a, h
 	ld [$c980], a
+rept 2
 	dec hl
-	dec hl
+endr
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
@@ -2258,9 +2282,9 @@ Function110ddd: ; 110ddd
 .asm_110ee3
 	ld hl, $c98b
 	xor a
+rept 3
 	ld [hli], a
-	ld [hli], a
-	ld [hli], a
+endr
 	ld [hl], a
 	pop bc
 	pop de
@@ -2278,8 +2302,9 @@ Function110ddd: ; 110ddd
 	ld [hli], a
 	ld a, d
 	ld [hli], a
+rept 2
 	inc hl
-	inc hl
+endr
 	xor a
 	ld [$c994], a
 
@@ -2325,8 +2350,9 @@ Function110f07: ; 110f07
 	ld hl, $c866
 	ld b, $4
 	call Function110000
+rept 2
 	inc de
-	inc de
+endr
 	ld b, $6
 	call Function111f63
 	ld a, [$cabc]
@@ -2373,23 +2399,23 @@ Function110f07: ; 110f07
 ; 110fad
 
 URIPrefix: ; 0x110fad
-	ascii "http://"
+	db "http://"
 URIPrefixEnd
 
 HTTPDownloadURL: ; 0x110fb4
-	ascii "gameboy.datacenter.ne.jp/cgb/download"
+	db "gameboy.datacenter.ne.jp/cgb/download"
 HTTPDownloadURLEnd
 
 HTTPUploadURL: ; 0x110fd9
-	ascii "gameboy.datacenter.ne.jp/cgb/upload"
+	db "gameboy.datacenter.ne.jp/cgb/upload"
 HTTPUploadURLEnd
 
 HTTPUtilityURL: ; 0x110ffc
-	ascii "gameboy.datacenter.ne.jp/cgb/utility"
+	db "gameboy.datacenter.ne.jp/cgb/utility"
 HTTPUtilityURLEnd
 
 HTTPRankingURL: ; 0x111020
-	ascii "gameboy.datacenter.ne.jp/cgb/ranking"
+	db "gameboy.datacenter.ne.jp/cgb/ranking"
 HTTPRankingURLEnd
 
 Function111044: ; 111044
@@ -2398,8 +2424,9 @@ Function111044: ; 111044
 	ld [hli], a
 	ld a, d
 	ld [hli], a
+rept 2
 	inc de
-	inc de
+endr
 	ld a, e
 	ld [hli], a
 	ld a, d
@@ -2409,8 +2436,9 @@ Function111044: ; 111044
 	or c
 	ld [$c86e], a
 	ld [$c86f], a
+rept 2
 	dec bc
-	dec bc
+endr
 	jp z, Function1111ca
 	ld a, [$c991]
 	or a
@@ -2671,7 +2699,7 @@ Function1111d7: ; 1111d7
 	dec hl
 
 .asm_1111ee
-	ld bc, rIE
+	ld bc, -1
 .asm_1111f1
 	ld a, [hli]
 	inc bc
@@ -2706,22 +2734,23 @@ Function1111fe: ; 1111fe
 	push de
 	push bc
 	push hl
+rept 4
 	inc hl
-	inc hl
-	inc hl
-	inc hl
+endr
 	ld a, [hli]
 	ld [$c833], a
 	ld a, [hli]
 	ld [$c834], a
+rept 2
 	inc hl
-	inc hl
+endr
 	ld a, l
 	ld [$c97f], a
 	ld a, h
 	ld [$c980], a
+rept 2
 	dec hl
-	dec hl
+endr
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
@@ -2799,8 +2828,9 @@ Function1111fe: ; 1111fe
 	ld a, [hld]
 	cp $2f
 	jr nz, .asm_1112a4
+rept 2
 	inc hl
-	inc hl
+endr
 	ld a, [hl]
 	cp $30
 	jr c, .asm_1112cc
@@ -2854,8 +2884,9 @@ Function1111fe: ; 1111fe
 	ld [hli], a
 	ld a, d
 	ld [hli], a
+rept 2
 	inc hl
-	inc hl
+endr
 	ld a, e
 	ld [hli], a
 	ld a, d
@@ -2873,8 +2904,9 @@ Function1111fe: ; 1111fe
 	ld [$c9ac], a
 	ld a, [hli]
 	ld [$c9ad], a
+rept 2
 	inc hl
-	inc hl
+endr
 	ld a, [hli]
 	ld [$c876], a
 	ld a, [hl]
@@ -2890,8 +2922,9 @@ Function111335: ; 111335
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
+rept 2
 	inc hl
-	inc hl
+endr
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
@@ -3066,9 +3099,9 @@ Function1113fe: ; 1113fe
 	push hl
 	ld hl, $c829
 	xor a
+rept 3
 	ld [hli], a
-	ld [hli], a
-	ld [hli], a
+endr
 	ld [hl], a
 	ld de, $cb47
 	ld hl, Unknown_112072
@@ -3081,8 +3114,9 @@ Function1113fe: ; 1113fe
 	cp $81
 	jr nc, .asm_111485
 	ld c, a
+rept 2
 	inc a
-	inc a
+endr
 	ld [de], a
 	inc de
 	ld a, $ff
@@ -3094,8 +3128,9 @@ Function1113fe: ; 1113fe
 	ld b, c
 	call Function110000
 	ld b, c
+rept 2
 	inc b
-	inc b
+endr
 	call Function111f63
 	ld hl, $c822
 	set 7, [hl]
@@ -3412,7 +3447,6 @@ Function11162d: ; 11162d
 	ret
 ; 11164f
 
-; known jump sources: 111aab (44:5aab)
 Function11164f: ; 11164f (44:564f)
 	ld hl, $c815
 	xor a
@@ -3423,12 +3457,12 @@ Function11164f: ; 11164f (44:564f)
 	ld a, b
 	srl a
 	srl a
+rept 2
 	add b
-	add b
+endr
 	ld [hl], a
 	ret
 
-; known jump sources: 111895 (44:5895), 1118d6 (44:58d6)
 Function111664: ; 111664 (44:5664)
 	ld hl, $ca3a
 	ld a, [hli]
@@ -3453,10 +3487,9 @@ Function111664: ; 111664 (44:5664)
 	ld [hl], d
 	ret
 
-; known jump sources: 11198b (44:598b), 111996 (44:5996)
 Function111686: ; 111686 (44:5686)
 	xor a
-	ld [rTAC], a ; $ff00+$7
+	ld [rTAC], a
 	ld c, $ff
 	ld a, [$ff00+c]
 	and $f3
@@ -3499,8 +3532,7 @@ Function1116a9: ; 1116a9
 	ret
 ; 1116c5
 
-; known jump sources: 3e89 (0:3e89)
-Function1116c5:: ; 1116c5 (44:56c5)
+_MobileReceive:: ; 1116c5 (44:56c5)
 	ld a, [$c800]
 	rrca
 	jp nc, Function1118bc
@@ -3522,7 +3554,7 @@ Function1116c5:: ; 1116c5 (44:56c5)
 	jp nz, Function1118bc
 	ld hl, $c808
 	add hl, de
-	ld a, [rSB] ; $ff00+$1
+	ld a, [rSB]
 	ld [hl], a
 	ld a, $8
 	cp l
@@ -3567,9 +3599,9 @@ Function1116c5:: ; 1116c5 (44:56c5)
 	ld [$c800], a
 	xor a
 	ld hl, $c80a
+rept 3
 	ld [hli], a
-	ld [hli], a
-	ld [hli], a
+endr
 	ld hl, $c81f
 	ld a, [hli]
 	ld b, a
@@ -3606,8 +3638,6 @@ Function1116c5:: ; 1116c5 (44:56c5)
 .asm_111778
 	xor a
 	ld [$c800], a
-
-; known jump sources: 111861 (44:5861)
 Function11177c: ; 11177c (44:577c)
 	ld hl, $c820
 	ld a, [hld]
@@ -3628,7 +3658,6 @@ Function11177c: ; 11177c (44:577c)
 	ld [hl], e
 	jp Function1118bc
 
-; known jump sources: 1116fc (44:56fc)
 Function111796: ; 111796 (44:5796)
 	ld b, $a
 	jr asm_1117a2
@@ -3638,7 +3667,6 @@ asm_11179a: ; 11179a (44:579a)
 	ld [hl], a
 	jp Function1118bc
 
-; known jump sources: 111701 (44:5701), 111706 (44:5706)
 Function1117a0: ; 1117a0 (44:57a0)
 	ld b, $3
 asm_1117a2: ; 1117a2 (44:57a2)
@@ -3678,7 +3706,6 @@ asm_1117a2: ; 1117a2 (44:57a2)
 	ld [hl], a
 	jp Function1118bc
 
-; known jump sources: 1116cd (44:56cd)
 Function1117e7: ; 1117e7 (44:57e7)
 	ld a, [$c80b]
 	or a
@@ -3698,7 +3725,7 @@ Function1117e7: ; 1117e7 (44:57e7)
 .asm_111803
 	ld b, $66
 .asm_111805
-	ld a, [rSB] ; $ff00+$1
+	ld a, [rSB]
 	cp b
 	jr z, .asm_111840
 	cp $d2
@@ -3758,7 +3785,6 @@ Function1117e7: ; 1117e7 (44:57e7)
 	ld [hl], a
 	jr Function1118bc
 
-; known jump sources: 1117ee (44:57ee)
 Function11186e: ; 11186e (44:586e)
 	call Function1118c2
 	ld a, $4
@@ -3766,7 +3792,7 @@ Function11186e: ; 11186e (44:586e)
 	jr nz, Function1118bc
 	xor a
 	ld [hli], a
-	ld a, [rSB] ; $ff00+$1
+	ld a, [rSB]
 	ld [$c80c], a
 	inc [hl]
 	or a
@@ -3774,7 +3800,6 @@ Function11186e: ; 11186e (44:586e)
 	inc [hl]
 	jr Function1118bc
 
-; known jump sources: 1117f2 (44:57f2)
 Function111884: ; 111884 (44:5884)
 	call Function1118c2
 	ld a, [$c80c]
@@ -3785,9 +3810,8 @@ Function111884: ; 111884 (44:5884)
 	inc [hl]
 	jr Function1118bc
 
-; known jump sources: 1117f5 (44:57f5)
 Function111892: ; 111892 (44:5892)
-	ld a, [rSB] ; $ff00+$1
+	ld a, [rSB]
 	ld c, a
 	call Function111664
 	ld hl, $c80a
@@ -3812,16 +3836,13 @@ Function111892: ; 111892 (44:5892)
 	xor a
 	ld [hli], a
 	inc [hl]
-
-; known jump sources: 1116c9 (44:56c9), 1116dd (44:56dd), 1116e2 (44:56e2), 1116ef (44:56ef), 111775 (44:5775), 111793 (44:5793), 11179d (44:579d), 1117bc (44:57bc), 1117e4 (44:57e4), 111814 (44:5814), 11183e (44:583e), 111844 (44:5844), 11186c (44:586c), 111874 (44:5874), 11187f (44:587f), 111882 (44:5882), 11188b (44:588b), 111890 (44:5890), 1118ab (44:58ab), 1118b2 (44:58b2), 1118b7 (44:58b7)
 Function1118bc: ; 1118bc (44:58bc)
 	ld hl, $c822
 	res 1, [hl]
 	ret
 
-; known jump sources: 11186e (44:586e), 111884 (44:5884)
 Function1118c2: ; 1118c2 (44:58c2)
-	ld a, [rSB] ; $ff00+$1
+	ld a, [rSB]
 	ld c, a
 	ld b, $0
 	ld hl, $c812
@@ -3838,8 +3859,7 @@ Function1118c2: ; 1118c2 (44:58c2)
 	inc [hl]
 	ret
 
-; known jump sources: 3ec1 (0:3ec1)
-Function1118de:: ; 1118de (44:58de)
+_Timer:: ; 1118de (44:58de)
 	ld a, [$c80b]
 	cp $4
 	call z, Function111b3c
@@ -3975,7 +3995,6 @@ Function1118de:: ; 1118de (44:58de)
 	ld [$c80f], a
 	jr .asm_1119a9
 
-; known jump sources: 11195a (44:595a)
 Function1119f0: ; 1119f0 (44:59f0)
 	ld a, $90
 	ld [$c81e], a
@@ -3988,7 +4007,6 @@ Function1119f0: ; 1119f0 (44:59f0)
 	ld [$c806], a
 	jp Function111b3b
 
-; known jump sources: 111950 (44:5950)
 Function111a0b: ; 111a0b (44:5a0b)
 	ld a, [hl]
 	cp $6
@@ -4008,7 +4026,6 @@ Function111a0b: ; 111a0b (44:5a0b)
 	call Function111f07
 	jp Function111b3b
 
-; known jump sources: 111931 (44:5931)
 Function111a2a: ; 111a2a (44:5a2a)
 	ld hl, $c80b
 	ld a, [hld]
@@ -4024,9 +4041,8 @@ Function111a2a: ; 111a2a (44:5a2a)
 asm_111a40: ; 111a40 (44:5a40)
 	ld a, $4b
 
-; known jump sources: 111abb (44:5abb), 111ac8 (44:5ac8), 111b1e (44:5b1e)
 Function111a42: ; 111a42 (44:5a42)
-	ld [rSB], a ; $ff00+$1
+	ld [rSB], a
 	jp Function111b2e
 asm_111a47: ; 111a47 (44:5a47)
 	ld hl, $c815
@@ -4088,12 +4104,10 @@ asm_111a47: ; 111a47 (44:5a47)
 	ei
 	jp Function111b3b
 
-; known jump sources: 111a38 (44:5a38)
 Function111ab9: ; 111ab9 (44:5ab9)
 	ld a, $80
 	jr Function111a42
 
-; known jump sources: 111a3d (44:5a3d)
 Function111abd: ; 111abd (44:5abd)
 	ld a, [$c814]
 	or a
@@ -4112,8 +4126,9 @@ Function111abd: ; 111abd (44:5abd)
 	ld [$c800], a
 	xor a
 	ld hl, $c80a
+rept 2
 	ld [hli], a
-	ld [hli], a
+endr
 	ld [hl], a
 	ld hl, $c815
 	ld a, [$c820]
@@ -4149,33 +4164,29 @@ Function111abd: ; 111abd (44:5abd)
 	ld a, $f1
 	jp Function111a42
 
-; known jump sources: 11192c (44:592c)
 Function111b21: ; 111b21 (44:5b21)
 	ld hl, $c803
 	ld a, [hli]
 	ld e, a
 	ld d, [hl]
 	ld a, [de]
-	ld [rSB], a ; $ff00+$1
+	ld [rSB], a
 	inc de
 	ld a, d
 	ld [hld], a
 	ld [hl], e
 
-; known jump sources: 111a44 (44:5a44)
 Function111b2e: ; 111b2e (44:5b2e)
 	ld hl, $c822
 	set 1, [hl]
 	ld a, $3
-	ld [rSC], a ; $ff00+$2
+	ld [rSC], a
 	ld a, $83
-	ld [rSC], a ; $ff00+$2
+	ld [rSC], a
 
-; known jump sources: 111904 (44:5904), 111924 (44:5924), 111939 (44:5939), 111940 (44:5940), 111945 (44:5945), 11197a (44:597a), 111981 (44:5981), 11198e (44:598e), 111999 (44:5999), 11199f (44:599f), 1119bb (44:59bb), 1119da (44:59da), 111a08 (44:5a08), 111a0e (44:5a0e), 111a27 (44:5a27), 111ab6 (44:5ab6)
 Function111b3b: ; 111b3b (44:5b3b)
 	ret
 
-; known jump sources: 1118e3 (44:58e3)
 Function111b3c: ; 111b3c (44:5b3c)
 	xor a
 	ld [$c819], a
@@ -4278,7 +4289,6 @@ Function111b3c: ; 111b3c (44:5b3c)
 	ld [$c807], a
 	ret
 
-; known jump sources: 111b90 (44:5b90)
 Function111c06: ; 111c06 (44:5c06)
 	ld de, $c872
 	ld hl, $ca40
@@ -4288,7 +4298,6 @@ Function111c06: ; 111c06 (44:5c06)
 	ld [$c807], a
 	ret
 
-; known jump sources: 111b76 (44:5b76)
 Function111c17: ; 111c17 (44:5c17)
 	ld a, [$ca3c]
 	cp $9f
@@ -4322,8 +4331,9 @@ Function111c17: ; 111c17 (44:5c17)
 .asm_111c52
 	ld b, a
 	ld a, [$ca3f]
+rept 2
 	dec a
-	dec a
+endr
 	cp b
 	jr c, .asm_111c6e
 .asm_111c5b
@@ -4388,7 +4398,6 @@ Function111c17: ; 111c17 (44:5c17)
 	call Function110000
 	jr Function111d07
 
-; known jump sources: 111c3d (44:5c3d)
 Function111cc2: ; 111cc2 (44:5cc2)
 	xor a
 	cp d
@@ -4438,7 +4447,6 @@ Function111cc2: ; 111cc2 (44:5cc2)
 	jr nc, Function111d07
 	inc [hl]
 
-; known jump sources: 111c1c (44:5c1c), 111c27 (44:5c27), 111c34 (44:5c34), 111c6b (44:5c6b), 111c80 (44:5c80), 111c87 (44:5c87), 111cc0 (44:5cc0), 111cf1 (44:5cf1), 111d04 (44:5d04)
 Function111d07: ; 111d07 (44:5d07)
 	ld a, [$c822]
 	bit 4, a
@@ -4454,7 +4462,6 @@ Function111d07: ; 111d07 (44:5d07)
 	ld [$c807], a
 	ret
 
-; known jump sources: 111b7b (44:5b7b)
 Function111d23: ; 111d23 (44:5d23)
 	ld a, [$c829]
 	ld e, a
@@ -4467,7 +4474,6 @@ Function111d23: ; 111d23 (44:5d23)
 	ld [$c807], a
 	ret
 
-; known jump sources: 111ba2 (44:5ba2)
 Function111d39: ; 111d39 (44:5d39)
 	ld de, $ca3f
 	ld hl, Unknown_112006
@@ -4498,7 +4504,6 @@ Function111d39: ; 111d39 (44:5d39)
 	xor a
 	jr .asm_111d59
 
-; known jump sources: 111ba7 (44:5ba7), 111bac (44:5bac)
 Function111d65: ; 111d65 (44:5d65)
 	ld a, $3
 	ld [$c807], a
@@ -4506,7 +4511,6 @@ Function111d65: ; 111d65 (44:5d65)
 	set 4, [hl]
 	ret
 
-; known jump sources: 111b95 (44:5b95)
 Function111d70: ; 111d70 (44:5d70)
 	ld hl, $c822
 	bit 0, [hl]
@@ -4562,7 +4566,6 @@ Function111d70: ; 111d70 (44:5d70)
 	ld [$c807], a
 	ret
 
-; known jump sources: 111d81 (44:5d81), 111dca (44:5dca)
 Function111dd9: ; 111dd9 (44:5dd9)
 	cp $ff
 	jr z, .asm_111de7
@@ -4604,7 +4607,6 @@ Function111dd9: ; 111dd9 (44:5dd9)
 	ld b, $3
 	ret
 
-; known jump sources: 111d84 (44:5d84), 111dcd (44:5dcd)
 Function111e15: ; 111e15 (44:5e15)
 	ld a, b
 	and $7
@@ -4625,7 +4627,6 @@ Function111e28: ; 111e28
 	jp Function110029
 ; 111e2b
 
-; known jump sources: 111b69 (44:5b69)
 Function111e2b: ; 111e2b (44:5e2b)
 	ld a, [$c81e]
 	cp $ff
@@ -4741,7 +4742,6 @@ Function111e2b: ; 111e2b (44:5e2b)
 	ld [$c807], a
 	ret
 
-; known jump sources: 111b71 (44:5b71), 111e30 (44:5e30)
 Function111ef8: ; 111ef8 (44:5ef8)
 	ld a, [$c805]
 	ld [$c807], a
@@ -4751,12 +4751,10 @@ Function111ef8: ; 111ef8 (44:5ef8)
 Function111eff: ; 111eff
 	ld de, $000a
 
-; known jump sources: 1119b8 (44:59b8)
 Function111f02: ; 111f02 (44:5f02)
 	ld [$c81e], a
 	ld b, $5
 
-; known jump sources: 1119d7 (44:59d7), 111a00 (44:5a00), 111a24 (44:5a24), 111fe0 (44:5fe0), 111fef (44:5fef)
 Function111f07: ; 111f07 (44:5f07)
 	call Function1100b4
 	ret c
@@ -4767,7 +4765,7 @@ Function111f07: ; 111f07 (44:5f07)
 	scf
 	ret
 .asm_111f17
-	ld a, [rSC] ; $ff00+$2
+	ld a, [rSC]
 	and $80
 	jr nz, .asm_111f17
 	di
@@ -4811,7 +4809,7 @@ Function111f07: ; 111f07 (44:5f07)
 
 Function111f63: ; 111f63
 	push de
-	ld hl, $0000
+	ld hl, 0
 	ld c, b
 	xor a
 	cp b
@@ -4857,7 +4855,6 @@ Function111f8d: ; 111f8d
 	ret
 ; 111f97
 
-; known jump sources: 111977 (44:5977)
 Function111f97: ; 111f97 (44:5f97)
 	ld hl, $c822
 	bit 0, [hl]
@@ -4910,98 +4907,104 @@ Function111f97: ; 111f97 (44:5f97)
 	ds 14
 
 Unknown_112000: ; 112000
-INCBIN "baserom.gbc", $112000, $112001 - $112000
+	db $4b
 
 Unknown_112001: ; 112001
-INCBIN "baserom.gbc", $112001, $112006 - $112001
+	db $99, $66, $10, $00, $00
 
 Unknown_112006: ; 112006
-INCBIN "baserom.gbc", $112006, $112013 - $112006
+	db $08, "NINTENDO", $02, $77, $80, $00
 
 Unknown_112013: ; 112013
-INCBIN "baserom.gbc", $112013, $11201d - $112013
+	db $99, $66, $11, $00, $00, $00, $00, $11, $80, $00
 
 Unknown_11201d: ; 11201d
-INCBIN "baserom.gbc", $11201d, $112023 - $11201d
+	db $99, $66, $12, $00, $00, $00
 
 Unknown_112023: ; 112023
-INCBIN "baserom.gbc", $112023, $11202d - $112023
+	db $99, $66, $13, $00, $00, $00, $00, $13, $80, $00
 
 Unknown_11202d: ; 11202d
-INCBIN "baserom.gbc", $11202d, $112037 - $11202d
+	db $99, $66, $17, $00, $00, $00, $00, $17, $80, $00
 
 Unknown_112037: ; 112037
-INCBIN "baserom.gbc", $112037, $11203c - $112037
+	db $99, $66, $21, $00, $00
 
 Unknown_11203c: ; 11203c
-INCBIN "baserom.gbc", $11203c, $112046 - $11203c
+	db $99, $66, $22, $00, $00, $00, $00, $22, $80, $00
 
 Unknown_112046: ; 112046
-INCBIN "baserom.gbc", $112046, $112052 - $112046
+	db $99, $66, $19, $00, $00, $02, $00, $60, $00, $7b, $80, $00
 
 Unknown_112052: ; 112052
-INCBIN "baserom.gbc", $112052, $11205e - $112052
+	db $99, $66, $19, $00, $00, $02, $60, $60, $00, $db, $80, $00
 
 Unknown_11205e: ; 11205e
-INCBIN "baserom.gbc", $11205e, $112063 - $11205e
+	db $99, $66, $1a, $00, $00
 
 Unknown_112063: ; 112063
-INCBIN "baserom.gbc", $112063, $112068 - $112063
+	db $99, $66, $28, $00, $00
 
 Unknown_112068: ; 112068
-INCBIN "baserom.gbc", $112068, $112072 - $112068
+	db $99, $66, $14, $00, $00, $00, $00, $14, $80, $00
 
 Unknown_112072: ; 112072
-INCBIN "baserom.gbc", $112072, $11207d - $112072
+	db $99, $66, $15, $00, $00, $01, $ff, $01, $15, $80, $00
 
 Unknown_11207d: ; 11207d
-INCBIN "baserom.gbc", $11207d, $112083 - $11207d
+	db $99, $66, $23, $00, $00, $06
 
 Unknown_112083: ; 112083
-INCBIN "baserom.gbc", $112083, $112089 - $112083
+	db $99, $66, $24, $00, $00, $01
 
 Unknown_112089: ; 112089
-INCBIN "baserom.gbc", $112089, $11209e - $112089
+	db $ec, $14, $c9
+	db $e4, $0f, $0e
+	db $e0, $0c, $53
+	db $c4, $07, $94
+	db $b0, $05, $ee
+	db $ec, $10, $b4
+	db $e4, $0c, $dd
+; 11209e
 
 Unknown_11209e:
-	ascii "HELO ", $0
+	db "HELO ", 0
 Unknown_1120a4:
-	ascii "MAIL FROM:<", $0
+	db "MAIL FROM:<", 0
 Unknown_1120b0:
-	ascii "RCPT TO:<", $0
+	db "RCPT TO:<", 0
 Unknown_1120ba:
-	ascii "DATA", $d, "\n", $0
+	db "DATA<CR>\n", 0
 Unknown_1120c1:
-	ascii "QUIT", $d, "\n", $0
+	db "QUIT<CR>\n", 0
 Unknown_1120c8:
-	ascii "USER ", $0
+	db "USER ", 0
 Unknown_1120ce:
-	ascii "PASS ", $0
+	db "PASS ", 0
 Unknown_1120d4:
-	ascii "STAT", $d, "\n", $0
+	db "STAT<CR>\n", 0
 Unknown_1120db:
-	ascii "LIST 00000", $d, "\n", $0
+	db "LIST 00000<CR>\n", 0
 Unknown_1120e8:
-	ascii "RETR 00000", $d, "\n", $0
+	db "RETR 00000<CR>\n", 0
 Unknown_1120f5:
-	ascii "DELE 00000", $d, "\n", $0
+	db "DELE 00000<CR>\n", 0
 Unknown_112102:
-	ascii "TOP 00000 0", $d, "\n", $0
+	db "TOP 00000 0<CR>\n", 0
 Unknown_112110:
-	ascii "GET ", $0
+	db "GET ", 0
 Unknown_112115:
-	ascii " HTTP/1.0", $d, "\n", $0
+	db " HTTP/1.0<CR>\n", 0
 Unknown_112121:
-	ascii "User-Agent: CGB-", $0
+	db "User-Agent: CGB-", 0
 Unknown_112132:
-	ascii $d, "\n", $d, "\n", $0
+	db "<CR>\n<CR>\n", 0
 Unknown_112137:
-	ascii "POST ", $0
+	db "POST ", 0
 Unknown_11213d:
-	ascii "Content-Length: ", $0
+	db "Content-Length: ", 0
 ; 11214e
 
-; known jump sources: 1118e6 (44:58e6)
 Function11214e: ; 11214e (44:614e)
 	ld a, [$c822]
 	bit 5, a
@@ -5229,7 +5232,7 @@ Function112271: ; 112271
 	cp $41
 	jr nz, .asm_1122f5
 	ld b, $be
-	ld de, $0000
+	ld de, 0
 .asm_1122b3
 	ld a, [hli]
 	add e
@@ -5601,8 +5604,9 @@ Function112451: ; 112451
 	xor a
 	ld [hli], a
 	xor a
+rept 2
 	ld [hli], a
-	ld [hli], a
+endr
 	pop de
 	ld a, $1
 	ld [$c994], a
@@ -5727,21 +5731,24 @@ Function1125c7: ; 1125c7
 	ld [hli], a
 	ld a, d
 	ld [hli], a
+rept 2
 	inc de
-	inc de
+endr
 	ld a, $80
 	ld [hli], a
 	ld a, $c8
 	ld [hli], a
+rept 2
 	dec bc
-	dec bc
+endr
 	ld a, $fa
 	ld [hli], a
 	ld a, $0
 	ld [hli], a
 	xor a
+rept 2
 	ld [hli], a
-	ld [hli], a
+endr
 	ld de, $cb47
 	ld hl, Unknown_112072
 	ld b, $6
@@ -6229,8 +6236,9 @@ Function1128db: ; 1128db
 	ld de, $cb4c
 	ld a, $1
 	ld [de], a
+rept 2
 	inc de
-	inc de
+endr
 	ld b, $1
 	call Function111f63
 	jr .asm_112941
@@ -6463,8 +6471,9 @@ Function112a56: ; 112a56
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
+rept 2
 	inc hl
-	inc hl
+endr
 	ld a, e
 	ld [hli], a
 	ld a, d
@@ -6496,8 +6505,8 @@ Function112aac: ; 112aac
 	push af
 	ld a, [$c874]
 	push af
-	ld bc, $0000
-	ld de, $0000
+	ld bc, 0
+	ld de, 0
 .asm_112abe
 	ld a, [hli]
 	cp $d
@@ -6574,7 +6583,7 @@ Function112b11: ; 112b11
 .asm_112b36
 	push hl
 	ld hl, $c872
-	ld de, $0000
+	ld de, 0
 	ld a, b
 	or a
 	jr z, .asm_112b49
@@ -6961,8 +6970,9 @@ Function112d33: ; 112d33
 	ld hl, $c821
 	res 2, [hl]
 	ld hl, $c86b
+rept 2
 	dec [hl]
-	dec [hl]
+endr
 
 .asm_112d82
 	ld hl, $c86b
@@ -7121,8 +7131,9 @@ Function112d33: ; 112d33
 	cp $1
 	ld a, $32
 	jr z, .asm_112e95
+rept 2
 	inc de
-	inc de
+endr
 	inc a
 
 .asm_112e95
@@ -7353,7 +7364,7 @@ Function112fd5: ; 112fd5
 ; 113001
 
 Unknown_113001: ; 113001
-	ascii "date: ", $0
+	db "date: ", 0
 ; 113008
 
 Function113008: ; 113008
@@ -7501,8 +7512,9 @@ Function113095: ; 113095
 .asm_1130d6
 	ld a, [$c82b]
 	ld c, a
+rept 2
 	dec b
-	dec b
+endr
 	ld a, b
 	ld [$c82d], a
 	jr z, .asm_11310d
@@ -7510,8 +7522,9 @@ Function113095: ; 113095
 	ld d, a
 	ld a, [$c872]
 	ld e, a
+rept 2
 	dec de
-	dec de
+endr
 	xor a
 	or d
 	jr nz, .asm_1130f5
@@ -7530,8 +7543,9 @@ Function113095: ; 113095
 	ld e, a
 	ld a, [$c875]
 	ld d, a
+rept 2
 	inc de
-	inc de
+endr
 	call Function110000
 
 .asm_11310d
@@ -7644,8 +7658,9 @@ Function113197: ; 113197
 	ld a, b
 	ld [de], a
 	inc de
+rept 2
 	dec b
-	dec b
+endr
 	call Function110000
 	xor a
 	ld [de], a
@@ -7667,8 +7682,9 @@ Function1131a9: ; 1131a9
 	inc b
 	cp $a
 	jr nz, .asm_1131b7
+rept 2
 	inc hl
-	inc hl
+endr
 	dec b
 	ld c, b
 	call Function110000
@@ -7712,8 +7728,9 @@ Function1131a9: ; 1131a9
 	ld hl, $c821
 	res 2, [hl]
 	ld hl, $c86b
+rept 2
 	dec [hl]
-	dec [hl]
+endr
 	ld a, $4
 	ret
 ; 113206
@@ -7736,8 +7753,9 @@ Function113206: ; 113206
 	ld e, a
 	ld a, [$c875]
 	ld d, a
+rept 2
 	inc de
-	inc de
+endr
 	call Function110000
 	ld a, [$c991]
 	ld [$c993], a
@@ -7847,17 +7865,17 @@ Function11329d: ; 11329d
 ; 1132a6
 
 Unknown_1132a6:
-	ascii "Gb-Status: ", $0
+	db "Gb-Status: ", 0
 Unknown_1132b2:
-	ascii "Gb-Auth-ID: ", $0
+	db "Gb-Auth-ID: ", 0
 Unknown_1132bf:
-	ascii "WWW-Authenticate: GB00 name=", $22, $0
+	db "WWW-Authenticate: GB00 name=", $22, 0
 Unknown_1132dd:
-	ascii "Content-Type: application/x-cgb", $d, "\n", $0
+	db "Content-Type: application/x-cgb", $d, "\n", 0
 Unknown_1132ff:
-	ascii "URI-header: ", $0
+	db "URI-header: ", 0
 Unknown_11330c:
-	ascii "Location: ", $0
+	db "Location: ", 0
 ; 113317
 
 Function113317: ; 113317
@@ -7910,7 +7928,7 @@ Function113317: ; 113317
 ; 113372
 
 Unknown_113372: ; 113372
-	ascii "Content-Length: 0", $d, "\n", $0
+	db "Content-Length: 0", $d, "\n", 0
 ; 113386
 
 Function113386: ; 113386
@@ -8008,8 +8026,9 @@ Function1133fe: ; 1133fe
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
+rept 2
 	inc hl
-	inc hl
+endr
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
@@ -8020,8 +8039,9 @@ Function1133fe: ; 1133fe
 	ld a, [hld]
 	cp $2f
 	jr nz, .asm_11344c
+rept 2
 	inc hl
-	inc hl
+endr
 	ld e, l
 	ld d, h
 .asm_113455
@@ -8039,8 +8059,9 @@ Function1133fe: ; 1133fe
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
+rept 2
 	inc hl
-	inc hl
+endr
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
@@ -8137,8 +8158,9 @@ Function1134cb: ; 1134cb
 	ret
 
 .asm_1134f0
+rept 2
 	inc [hl]
-	inc [hl]
+endr
 	jr .asm_1134fc
 
 .asm_1134f4
@@ -8203,7 +8225,7 @@ Function113519: ; 113519
 	cp $41
 	jr nz, .asm_113586
 	ld b, $be
-	ld de, $0000
+	ld de, 0
 .asm_113551
 	ld a, [hli]
 	add e
@@ -8541,14 +8563,14 @@ Function1136c1: ; 1136c1
 
 .asm_113734
 	ld hl, $cc0c
-	ld a, $8e
+	ld a, Unknown_113b8e % $100
 	ld [hli], a
-	ld a, $7b
+	ld a, Unknown_113b8e / $100
 	ld [hl], a
 	ld hl, $cc0e
-	ld a, $70
+	ld a, Unknown_113a70 % $100
 	ld [hli], a
-	ld a, $7a
+	ld a, Unknown_113a70 / $100
 	ld [hl], a
 	ld hl, $cbe7
 	ld de, $cc18
@@ -8623,15 +8645,14 @@ Function1136c1: ; 1136c1
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
+rept 4
 	inc hl
-	inc hl
-	inc hl
-	inc hl
+endr
 	ld a, h
 	ld [$cc0d], a
 	ld a, l
 	ld [$cc0c], a
-	cp $8e
+	cp $8e ; XXX (Unknown_113b8e + $100) % $100 ???
 	jp nz, .asm_113751
 	ld de, $cc18
 	ld hl, $cbe7
@@ -9062,16 +9083,58 @@ Function113a40: ; 113a40
 ; 113a55
 
 Unknown_113a55: ; 113a55
-	ascii "Authorization: GB00 name=", $22, $0
+	db "Authorization: GB00 name=", $22, 0
 ; 113a70
 
-INCBIN "baserom.gbc", $113a70, $113b70 - $113a70
+Unknown_113a70:
+	db $00, $00, $00, $07, $06, $04, $00, $0c, $04, $08, $00, $11, $02, $0c, $00, $16
+	db $00, $10, $00, $07, $06, $14, $00, $0c, $04, $18, $00, $11, $02, $1c, $00, $16
+	db $00, $20, $00, $07, $06, $24, $00, $0c, $04, $28, $00, $11, $02, $2c, $00, $16
+	db $00, $30, $00, $07, $06, $34, $00, $0c, $04, $38, $00, $11, $02, $3c, $00, $16
+	db $10, $04, $00, $05, $16, $18, $00, $09, $14, $2c, $00, $0e, $12, $00, $00, $14
+	db $10, $14, $00, $05, $16, $28, $00, $09, $14, $3c, $00, $0e, $12, $10, $00, $14
+	db $10, $24, $00, $05, $16, $38, $00, $09, $14, $0c, $00, $0e, $12, $20, $00, $14
+	db $10, $34, $00, $05, $16, $08, $00, $09, $14, $1c, $00, $0e, $12, $30, $00, $14
+	db $20, $14, $00, $04, $26, $20, $00, $0b, $24, $2c, $00, $10, $22, $38, $00, $17
+	db $20, $04, $00, $04, $26, $10, $00, $0b, $24, $1c, $00, $10, $22, $28, $00, $17
+	db $20, $34, $00, $04, $26, $00, $00, $0b, $24, $0c, $00, $10, $22, $18, $00, $17
+	db $20, $24, $00, $04, $26, $30, $00, $0b, $24, $3c, $00, $10, $22, $08, $00, $17
+	db $30, $00, $00, $06, $36, $1c, $00, $0a, $34, $38, $00, $0f, $32, $14, $00, $15
+	db $30, $30, $00, $06, $36, $0c, $00, $0a, $34, $28, $00, $0f, $32, $04, $00, $15
+	db $30, $20, $00, $06, $36, $3c, $00, $0a, $34, $18, $00, $0f, $32, $34, $00, $15
+	db $30, $10, $00, $06, $36, $2c, $00, $0a, $34, $08, $00, $0f, $32, $24, $00, $15
+; 113b70
 
 Unknown_113b70: ; 113b70
-INCBIN "baserom.gbc", $113b70, $113b7e - $113b70
+	dw $cbe7
+	dw $cbeb
+	dw $cbef
+	dw $cbf3
+	dw $cbe7
+	dw $cbeb
+	dw $cbef
 
 Unknown_113b7e: ; 113b7e
-INCBIN "baserom.gbc", $113b7e, $113c8e - $113b7e
+	db $01,$23,$45,$67,$89,$ab,$cd,$ef
+	db $fe,$dc,$ba,$98,$76,$54,$32,$10
+
+Unknown_113b8e:
+	db $78, $a4, $6a, $d7, $56, $b7, $c7, $e8, $db, $70, $20, $24, $ee, $ce, $bd, $c1
+	db $af, $0f, $7c, $f5, $2a, $c6, $87, $47, $13, $46, $30, $a8, $01, $95, $46, $fd
+	db $d8, $98, $80, $69, $af, $f7, $44, $8b, $b1, $5b, $ff, $ff, $be, $d7, $5c, $89
+	db $22, $11, $90, $6b, $93, $71, $98, $fd, $8e, $43, $79, $a6, $21, $08, $b4, $49
+	db $62, $25, $1e, $f6, $40, $b3, $40, $c0, $51, $5a, $5e, $26, $aa, $c7, $b6, $e9
+	db $5d, $10, $2f, $d6, $53, $14, $44, $02, $81, $e6, $a1, $d8, $c8, $fb, $d3, $e7
+	db $e6, $cd, $e1, $21, $d6, $07, $37, $c3, $87, $0d, $d5, $f4, $ed, $14, $5a, $45
+	db $05, $e9, $e3, $a9, $f8, $a3, $ef, $fc, $d9, $02, $6f, $67, $8a, $4c, $2a, $8d
+	db $42, $39, $fa, $ff, $81, $f6, $71, $87, $22, $61, $9d, $6d, $0c, $38, $e5, $fd
+	db $44, $ea, $be, $a4, $a9, $cf, $de, $4b, $60, $4b, $bb, $f6, $70, $bc, $bf, $be
+	db $c6, $7e, $9b, $28, $fa, $27, $a1, $ea, $85, $30, $ef, $d4, $05, $1d, $88, $04
+	db $39, $d0, $d4, $d9, $e5, $99, $db, $e6, $f8, $7c, $a2, $1f, $65, $56, $ac, $c4
+	db $44, $22, $29, $f4, $97, $ff, $2a, $43, $a7, $23, $94, $ab, $39, $a0, $93, $fc
+	db $c3, $59, $5b, $65, $92, $cc, $0c, $8f, $7d, $f4, $ef, $ff, $d1, $5d, $84, $85
+	db $4f, $7e, $a8, $6f, $e0, $e6, $2c, $fe, $14, $43, $01, $a3, $a1, $11, $08, $4e
+	db $82, $7e, $53, $f7, $35, $f2, $3a, $bd, $bb, $d2, $d7, $2a, $91, $d3, $86, $eb
 
 Function113c8e: ; 113c8e
 	ld a, c
@@ -9122,9 +9185,9 @@ Function113c8e: ; 113c8e
 	ld bc, $0003
 
 .asm_113ccf
+rept 3
 	dec bc
-	dec bc
-	dec bc
+endr
 	ld a, c
 	ld [$cc10], a
 	ld a, b
@@ -9160,8 +9223,9 @@ Function113c8e: ; 113c8e
 	ld a, $3f
 	and c
 	ld [hld], a
+rept 2
 	dec hl
-	dec hl
+endr
 	pop de
 	ld b, h
 	ld c, l
@@ -9272,10 +9336,9 @@ Function113d66: ; 113d66
 	ld c, a
 	ld a, [$cc11]
 	ld b, a
+rept 4
 	dec bc
-	dec bc
-	dec bc
-	dec bc
+endr
 	ld a, b
 	or c
 	jr z, .asm_113dae
@@ -9350,7 +9413,7 @@ Function113d66: ; 113d66
 	ld [hl], a
 	ret
 
-.Function113dfa
+.Function113dfa:
 	cp $2b
 	jr c, .asm_113e24
 	jr z, .asm_113e31
@@ -9509,8 +9572,9 @@ Function113ec7: ; 113ec7
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
+rept 2
 	inc hl
-	inc hl
+endr
 	ld a, [hld]
 	dec hl
 	xor $80
@@ -9551,8 +9615,9 @@ Function113ef2: ; 113ef2
 	ld l, a
 	ld e, l
 	ld d, h
+rept 2
 	add hl, de
-	add hl, de
+endr
 	ld e, l
 	ld d, h
 	ld hl, $c815
@@ -9612,8 +9677,9 @@ Function113f2d: ; 113f2d
 	ld l, a
 	ld e, l
 	ld d, h
+rept 2
 	add hl, de
-	add hl, de
+endr
 	ld e, l
 	ld d, h
 	ld hl, $c815
@@ -9630,4 +9696,3 @@ Function113f2d: ; 113f2d
 	ld [hl], a
 	ret
 ; 113f84
-

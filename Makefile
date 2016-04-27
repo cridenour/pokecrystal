@@ -1,82 +1,71 @@
 PYTHON := python
+MD5 := md5sum -c --quiet
 
 .SUFFIXES:
-.SUFFIXES: .asm .tx .o .gbc .png .2bpp .1bpp .lz .pal .bin .blk .tilemap
-.PHONY: all clean crystal pngs
+.PHONY: all clean crystal crystal11
 .SECONDEXPANSION:
+.PRECIOUS: %.2bpp %.1bpp
 
-POKEMONTOOLS := extras/pokemontools
-GFX          := $(PYTHON) $(POKEMONTOOLS)/gfx.py
-INCLUDES     := $(PYTHON) $(POKEMONTOOLS)/scan_includes.py
-PREPROCESS   := $(PYTHON) prequeue.py
+gfx       := $(PYTHON) gfx.py
+includes  := $(PYTHON) scan_includes.py
 
-TEXTQUEUE :=
 
-CRYSTAL_OBJS := \
+crystal_obj := \
 wram.o \
 main.o \
 lib/mobile/main.o \
 home.o \
 audio.o \
-maps_crystal.o \
+maps.o \
 engine/events.o \
-engine/scripting_crystal.o \
-engine/events_2.o \
-engine/credits_crystal.o \
-stats/egg_moves_crystal.o \
-stats/evos_attacks_crystal.o \
-stats/pokedex/entries_crystal.o \
+engine/credits.o \
+data/egg_moves.o \
+data/evos_attacks.o \
+data/pokedex/entries.o \
 misc/crystal_misc.o \
+text/common_text.o \
 gfx/pics.o
 
-OBJS := $(CRYSTAL_OBJS)
+crystal11_obj := $(crystal_obj:.o=11.o)
 
-ROMS := pokecrystal.gbc
 
-# object dependencies
-$(shell $(foreach obj, $(OBJS), $(eval $(obj:.o=)_DEPENDENCIES := $(shell $(INCLUDES) $(obj:.o=.asm)))))
+roms := pokecrystal.gbc
 
-all: $(ROMS)
-
+all: $(roms)
 crystal: pokecrystal.gbc
+crystal11: pokecrystal11.gbc
 
 clean:
-	rm -f $(ROMS)
-	rm -f $(OBJS)
-	find -iname '*.tx' -exec rm {} +
+	rm -f $(roms) $(crystal_obj) $(crystal11_obj) $(roms:.gbc=.map) $(roms:.gbc=.sym)
 
-baserom.gbc: ;
-	@echo "Wait! Need baserom.gbc first. Check README and INSTALL for details." && false
-
+compare: pokecrystal.gbc pokecrystal11.gbc
+	@$(MD5) roms.md5
 
 %.asm: ;
-.asm.tx:
-	$(eval TEXTQUEUE += $<)
-	@rm -f $@
 
-$(OBJS): $$*.tx $$(patsubst %.asm, %.tx, $$($$*_DEPENDENCIES))
-	@$(PREPROCESS) $(TEXTQUEUE)
-	$(eval TEXTQUEUE :=)
-	rgbasm -o $@ $*.tx
+%11.o: dep = $(shell $(includes) $(@D)/$*.asm)
+%11.o: %.asm $$(dep)
+	rgbasm -D CRYSTAL11 -o $@ $<
 
-pokecrystal.gbc: $(CRYSTAL_OBJS)
-	rgblink -n $*.sym -m $*.map -o $@ $^
+%.o: dep = $(shell $(includes) $(@D)/$*.asm)
+%.o: %.asm $$(dep)
+	rgbasm -o $@ $<
+
+pokecrystal11.gbc: $(crystal11_obj)
+	rgblink -n pokecrystal11.sym -m pokecrystal11.map -o $@ $^
+	rgbfix -Cjv -i BYTE -k 01 -l 0x33 -m 0x10 -n 1 -p 0 -r 3 -t PM_CRYSTAL $@
+
+pokecrystal.gbc: $(crystal_obj)
+	rgblink -n pokecrystal.sym -m pokecrystal.map -o $@ $^
 	rgbfix -Cjv -i BYTE -k 01 -l 0x33 -m 0x10 -p 0 -r 3 -t PM_CRYSTAL $@
-	cmp baserom.gbc $@
 
+%.png: ;
+%.2bpp: %.png ; $(gfx) 2bpp $<
+%.1bpp: %.png ; $(gfx) 1bpp $<
+%.lz: % ; $(gfx) lz $<
 
-pngs:
-	find . -iname "*.lz"      -exec $(GFX) unlz {} +
-	find . -iname "*.[12]bpp" -exec $(GFX) png  {} +
-	find . -iname "*.[12]bpp" -exec touch {} +
-	find . -iname "*.lz"      -exec touch {} +
-
-%.2bpp: %.png ; $(GFX) 2bpp $<
-%.1bpp: %.png ; $(GFX) 1bpp $<
-%.lz:   %     ; $(GFX) lz   $<
-
-%.pal: ;
+%.pal: %.2bpp ;
+gfx/pics/%/normal.pal gfx/pics/%/bitmask.asm gfx/pics/%/frames.asm: gfx/pics/%/front.2bpp ;
 %.bin: ;
 %.blk: ;
 %.tilemap: ;
-

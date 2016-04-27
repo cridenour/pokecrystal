@@ -1,8 +1,8 @@
 Music_GoldenrodCity: ; eb453
-	dbw $c0, Music_GoldenrodCity_Ch1
-	dbw $01, Music_GoldenrodCity_Ch2
-	dbw $02, Music_GoldenrodCity_Ch3
-	dbw $03, Music_GoldenrodCity_Ch4
+	musicheader 4, 1, Music_GoldenrodCity_Ch1
+	musicheader 1, 2, Music_GoldenrodCity_Ch2
+	musicheader 1, 3, Music_GoldenrodCity_Ch3
+	musicheader 1, 4, Music_GoldenrodCity_Ch4
 ; eb45f
 
 Music_GoldenrodCity_Ch1: ; eb45f
@@ -275,8 +275,9 @@ Music_GoldenrodCity_Ch3: ; eb584
 	vibrato $8, $23
 	notetype $c, $25
 Music_GoldenrodCity_branch_eb58c: ; eb58c
+rept 2
 	callchannel Music_GoldenrodCity_branch_eb5aa
-	callchannel Music_GoldenrodCity_branch_eb5aa
+endr
 	callchannel Music_GoldenrodCity_branch_eb5d2
 	note __, 3
 	octave 3
@@ -485,5 +486,3 @@ Music_GoldenrodCity_branch_eb66d: ; eb66d
 	note G_, 1
 	endchannel
 ; eb676
-
-

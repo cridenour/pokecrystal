@@ -1,90 +1,85 @@
-MountMoon_MapScriptHeader: ; 0x7407f
-	; trigger count
+const_value set 2
+	const MOUNTMOON_SILVER
+
+MountMoon_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x74089, $0000
-	dw UnknownScript_0x7408d, $0000
+	maptrigger .Trigger0
+	maptrigger .Trigger1
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x74089
 
-UnknownScript_0x74089: ; 0x74089
-	priorityjump UnknownScript_0x7408e
+.Trigger0:
+	priorityjump .RivalBattle
 	end
-; 0x7408d
 
-UnknownScript_0x7408d: ; 0x7408d
+.Trigger1:
 	end
-; 0x7408e
 
-UnknownScript_0x7408e: ; 0x7408e
-	spriteface $0, $3
-	showemote $0, $0, 15
-	special $006a
+.RivalBattle:
+	spriteface PLAYER, RIGHT
+	showemote EMOTE_SHOCK, PLAYER, 15
+	special Special_FadeOutMusic
 	pause 15
-	applymovement $2, MovementData_0x740f9
+	applymovement MOUNTMOON_SILVER, MountMoonSilverMovementBefore
 	playmusic MUSIC_RIVAL_ENCOUNTER
-	loadfont
-	2writetext UnknownText_0x74105
+	opentext
+	writetext MountMoonSilverTextBefore
+	waitbutton
 	closetext
-	loadmovesprites
 	checkevent EVENT_GOT_TOTODILE_FROM_ELM
-	iftrue UnknownScript_0x740c3
+	iftrue .Totodile
 	checkevent EVENT_GOT_CHIKORITA_FROM_ELM
-	iftrue UnknownScript_0x740d3
-	winlosstext UnknownText_0x7419d, UnknownText_0x742e0
-	setlasttalked $2
+	iftrue .Chikorita
+	winlosstext MountMoonSilverTextWin, MountMoonSilverTextLoss
+	setlasttalked MOUNTMOON_SILVER
 	loadtrainer RIVAL2, 3
 	startbattle
-	reloadmapmusic
-	returnafterbattle
-	2jump UnknownScript_0x740e3
-; 0x740c3
+	dontrestartmapmusic
+	reloadmapafterbattle
+	jump .FinishBattle
 
-UnknownScript_0x740c3: ; 0x740c3
-	winlosstext UnknownText_0x7419d, UnknownText_0x742e0
-	setlasttalked $2
+.Totodile:
+	winlosstext MountMoonSilverTextWin, MountMoonSilverTextLoss
+	setlasttalked MOUNTMOON_SILVER
 	loadtrainer RIVAL2, 1
 	startbattle
-	reloadmapmusic
-	returnafterbattle
-	2jump UnknownScript_0x740e3
-; 0x740d3
+	dontrestartmapmusic
+	reloadmapafterbattle
+	jump .FinishBattle
 
-UnknownScript_0x740d3: ; 0x740d3
-	winlosstext UnknownText_0x7419d, UnknownText_0x742e0
-	setlasttalked $2
+.Chikorita:
+	winlosstext MountMoonSilverTextWin, MountMoonSilverTextLoss
+	setlasttalked MOUNTMOON_SILVER
 	loadtrainer RIVAL2, 2
 	startbattle
-	reloadmapmusic
-	returnafterbattle
-	2jump UnknownScript_0x740e3
-; 0x740e3
+	dontrestartmapmusic
+	reloadmapafterbattle
+	jump .FinishBattle
 
-UnknownScript_0x740e3: ; 0x740e3
+.FinishBattle:
 	playmusic MUSIC_RIVAL_AFTER
-	loadfont
-	2writetext UnknownText_0x741fa
+	opentext
+	writetext MountMoonSilverTextAfter
+	waitbutton
 	closetext
-	loadmovesprites
-	applymovement $2, MovementData_0x740fd
-	disappear $2
+	applymovement MOUNTMOON_SILVER, MountMoonSilverMovementAfter
+	disappear MOUNTMOON_SILVER
 	dotrigger $1
 	setevent EVENT_BEAT_RIVAL_IN_MT_MOON
 	playmapmusic
 	end
-; 0x740f9
 
-MovementData_0x740f9: ; 0x740f9
+MountMoonSilverMovementBefore:
 	step_left
 	step_left
 	step_left
 	step_end
-; 0x740fd
 
-MovementData_0x740fd: ; 0x740fd
+MountMoonSilverMovementAfter:
 	step_right
 	step_right
 	step_down
@@ -93,13 +88,12 @@ MovementData_0x740fd: ; 0x740fd
 	step_down
 	step_down
 	step_end
-; 0x74105
 
-UnknownText_0x74105: ; 0x74105
-	text $56, " ", $56, " ", $56
+MountMoonSilverTextBefore:
+	text "<......> <......> <......>"
 
 	para "It's been a while,"
-	line $52, "."
+	line "<PLAYER>."
 
 	para "…Since I lost to"
 	line "you, I thought"
@@ -111,13 +105,12 @@ UnknownText_0x74105: ; 0x74105
 	para "And we came up"
 	line "with an answer."
 
-	para $52, ", now we'll"
+	para "<PLAYER>, now we'll"
 	line "show you!"
 	done
-; 0x7419d
 
-UnknownText_0x7419d: ; 0x7419d
-	text $56, " ", $56, " ", $56
+MountMoonSilverTextWin:
+	text "<......> <......> <......>"
 
 	para "I thought I raised"
 	line "my #MON to be"
@@ -128,10 +121,9 @@ UnknownText_0x7419d: ; 0x7419d
 	para "…But it still "
 	line "wasn't enough…"
 	done
-; 0x741fa
 
-UnknownText_0x741fa: ; 0x741fa
-	text $56, " ", $56, " ", $56
+MountMoonSilverTextAfter:
+	text "<......> <......> <......>"
 
 	para "…You won, fair"
 	line "and square."
@@ -147,7 +139,7 @@ UnknownText_0x741fa: ; 0x741fa
 	para "Because these guys"
 	line "are behind me."
 
-	para "…Listen, ", $52, "."
+	para "…Listen, <PLAYER>."
 
 	para "One of these days"
 	line "I'm going to prove"
@@ -155,10 +147,9 @@ UnknownText_0x741fa: ; 0x741fa
 	para "how good I am by"
 	line "beating you."
 	done
-; 0x742e0
 
-UnknownText_0x742e0: ; 0x742e0
-	text $56, " ", $56, " ", $56
+MountMoonSilverTextLoss:
+	text "<......> <......> <......>"
 
 	para "I've repaid my"
 	line "debt to you."
@@ -170,31 +161,28 @@ UnknownText_0x742e0: ; 0x742e0
 	line "become the world's"
 	cont "greatest trainer."
 	done
-; 0x74356
 
-MountMoon_MapEventHeader: ; 0x74356
+MountMoon_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 8
-	warp_def $3, $3, 1, GROUP_ROUTE_3, MAP_ROUTE_3
-	warp_def $f, $f, 1, GROUP_ROUTE_4, MAP_ROUTE_4
-	warp_def $3, $d, 7, GROUP_MOUNT_MOON, MAP_MOUNT_MOON
-	warp_def $b, $f, 8, GROUP_MOUNT_MOON, MAP_MOUNT_MOON
-	warp_def $5, $19, 1, GROUP_MOUNT_MOON_SQUARE, MAP_MOUNT_MOON_SQUARE
-	warp_def $f, $19, 2, GROUP_MOUNT_MOON_SQUARE, MAP_MOUNT_MOON_SQUARE
-	warp_def $3, $19, 3, GROUP_MOUNT_MOON, MAP_MOUNT_MOON
-	warp_def $d, $19, 4, GROUP_MOUNT_MOON, MAP_MOUNT_MOON
+	warp_def $3, $3, 1, ROUTE_3
+	warp_def $f, $f, 1, ROUTE_4
+	warp_def $3, $d, 7, MOUNT_MOON
+	warp_def $b, $f, 8, MOUNT_MOON
+	warp_def $5, $19, 1, MOUNT_MOON_SQUARE
+	warp_def $f, $19, 2, MOUNT_MOON_SQUARE
+	warp_def $3, $19, 3, MOUNT_MOON
+	warp_def $d, $19, 4, MOUNT_MOON
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_SILVER, 7, 11, $8, $0, 255, 255, $0, 0, ObjectEvent, $077a
-; 0x74391
-
+	person_event SPRITE_SILVER, 3, 7, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ObjectEvent, EVENT_MT_MOON_RIVAL

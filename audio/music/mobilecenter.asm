@@ -1,8 +1,8 @@
 Music_MobileCenter: ; 17961d
-	dbw $c0, Music_MobileCenter_Ch1
-	dbw $01, Music_MobileCenter_Ch2
-	dbw $02, Music_MobileCenter_Ch3
-	dbw $03, Music_MobileCenter_Ch4
+	musicheader 4, 1, Music_MobileCenter_Ch1
+	musicheader 1, 2, Music_MobileCenter_Ch2
+	musicheader 1, 3, Music_MobileCenter_Ch3
+	musicheader 1, 4, Music_MobileCenter_Ch4
 ; 179629
 
 Music_MobileCenter_Ch1: ; 179629
@@ -486,4 +486,3 @@ Music_MobileCenter_branch_179813: ; 179813
 	note C#, 1
 	loopchannel 0, Music_MobileCenter_branch_179813
 ; 17982d
-

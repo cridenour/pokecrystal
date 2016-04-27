@@ -13,17 +13,17 @@ TILESETS_7                EQU $77
 TILESETS_8                EQU $78
 
 
-; stats/egg_moves.o
+; data/egg_moves.o
 
 EGG_MOVES                 EQU $8
 
 
-; stats/evos_attacks.o
+; data/evos_attacks.o
 
 EVOS_ATTACKS              EQU $10
 
 
-; stats/pokedex/entries.o
+; data/pokedex/entries.o
 
 POKEDEX_ENTRIES_1         EQU $60
 POKEDEX_ENTRIES_2         EQU $6E
@@ -34,7 +34,6 @@ POKEDEX_ENTRIES_4         EQU $74
 ; engine/events.o
 ; engine/scripting.o
 ; engine/events_2.o
-
 EVENTS                    EQU $25
 
 
@@ -48,6 +47,8 @@ CREDITS                   EQU $42
 PIC_POINTERS              EQU $48
 UNOWN_PIC_POINTERS        EQU $49
 TRAINER_PIC_POINTERS      EQU $4A
+
+PICS_FIX                  EQU $36
 
 PICS_1                    EQU $48
 PICS_2                    EQU $49
@@ -127,5 +128,3 @@ CRIES                     EQU $3C
 ; misc.o
 
 MISC_CRYSTAL              EQU $5E
-
-

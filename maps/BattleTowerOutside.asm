@@ -1,52 +1,48 @@
-BattleTowerOutside_MapScriptHeader: ; 0x9f852
-	; trigger count
+const_value set 2
+	const BATTLETOWEROUTSIDE_STANDING_YOUNGSTER
+	const BATTLETOWEROUTSIDE_BUENA
+	const BATTLETOWEROUTSIDE_SAILOR
+	const BATTLETOWEROUTSIDE_LASS
+
+BattleTowerOutside_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 2
 
 	; callbacks
+	dbw MAPCALLBACK_TILES, .Callback1
+	dbw MAPCALLBACK_OBJECTS, .Callback2
 
-	dbw 1, UnknownScript_0x9f85a
-
-	dbw 2, UnknownScript_0x9f85b
-; 0x9f85a
-
-UnknownScript_0x9f85a: ; 0x9f85a
+.Callback1:
 	return
-; 0x9f85b
 
-UnknownScript_0x9f85b: ; 0x9f85b
-	clearevent $07cf
+.Callback2:
+	clearevent EVENT_BATTLE_TOWER_OUTSIDE_SAILOR
 	return
-; 0x9f85f
 
-StandingYoungsterScript_0x9f85f: ; 0x9f85f
-	jumptextfaceplayer UnknownText_0x9f930
-; 0x9f862
+BattleTowerOutsideYoungsterScript:
+	jumptextfaceplayer BattleTowerOutsideYoungsterText
 
-BuenaScript_0x9f862: ; 0x9f862
-	jumptextfaceplayer UnknownText_0x9f9db
-; 0x9f865
+BattleTowerOutsideBuenaScript:
+	jumptextfaceplayer BattleTowerOutsideBuenaText
 
-SailorScript_0x9f865: ; 0x9f865
-	jumptextfaceplayer UnknownText_0x9fa8c
-; 0x9f868
+BattleTowerOutsideSailorScript:
+	jumptextfaceplayer BattleTowerOutsideSailorText
 
-MapBattleTowerOutsideSignpost0Script: ; 0x9f868
-	jumptext UnknownText_0x9fafc
-; 0x9f86b
+MapBattleTowerOutsideSignpost0Script:
+	jumptext BattleTowerOutsideText_UltimateChallenge
 
-UnknownText_0x9f86b: ; 0x9f86b
+BattleTowerOutsideUnusedText1:
 	text "Wow, the BATTLE"
 	line "TOWER is huge! My"
 
 	para "neck is tired from"
 	line "looking up at it."
 	done
-; 0x9f8b3
 
-UnknownText_0x9f8b3: ; 0x9f8b3
+BattleTowerOutsideUnusedText2:
 	text "Wow, the BATTLE"
 	line "TOWER is huge!"
 
@@ -59,9 +55,8 @@ UnknownText_0x9f8b3: ; 0x9f8b3
 	para "a wide variety of"
 	line "#MON."
 	done
-; 0x9f930
 
-UnknownText_0x9f930: ; 0x9f930
+BattleTowerOutsideYoungsterText:
 	text "Wow, the BATTLE"
 	line "TOWER is huge!"
 
@@ -69,9 +64,8 @@ UnknownText_0x9f930: ; 0x9f930
 	line "kinds of #MON"
 	cont "in there!"
 	done
-; 0x9f97b
 
-UnknownText_0x9f97b: ; 0x9f97b
+BattleTowerOutsideUnusedText3:
 	text "What on earth do"
 	line "they do here?"
 
@@ -81,9 +75,8 @@ UnknownText_0x9f97b: ; 0x9f97b
 	para "it must be for"
 	line "#MON battles."
 	done
-; 0x9f9db
 
-UnknownText_0x9f9db: ; 0x9f9db
+BattleTowerOutsideBuenaText:
 	text "You can use only"
 	line "three #MON."
 
@@ -93,9 +86,8 @@ UnknownText_0x9f9db: ; 0x9f9db
 	para "should go into"
 	line "battle…"
 	done
-; 0x9fa32
 
-UnknownText_0x9fa32: ; 0x9fa32
+BattleTowerOutsideUnusedText4:
 	text "Ehehehe…"
 	line "I sneaked out of"
 	cont "work to come here."
@@ -104,9 +96,8 @@ UnknownText_0x9fa32: ; 0x9fa32
 	line "up until I become"
 	cont "a LEADER!"
 	done
-; 0x9fa8c
 
-UnknownText_0x9fa8c: ; 0x9fa8c
+BattleTowerOutsideSailorText:
 	text "Hehehe, I snuck"
 	line "out from work."
 
@@ -116,56 +107,48 @@ UnknownText_0x9fa8c: ; 0x9fa8c
 	para "I have to win it"
 	line "all. That I must!"
 	done
-; 0x9faee
 
-UnknownText_0x9faee: ; 0x9faee
+BattleTowerOutsideText_BattleTower:
 	text "BATTLE TOWER"
 	done
-; 0x9fafc
 
-UnknownText_0x9fafc: ; 0x9fafc
+BattleTowerOutsideText_UltimateChallenge:
 	text "BATTLE TOWER"
 
 	para "Take the Ultimate"
 	line "Trainer Challenge!"
 	done
-; 0x9fb2f
 
-UnknownText_0x9fb2f: ; 0x9fb2f
+BattleTowerOutsideText_DoorsClosed:
 	text "The BATTLE TOWER's"
 	line "doors are closed…"
 	done
-; 0x9fb54
 
-UnknownText_0x9fb54: ; 0x9fb54
+BattleTowerOutsideText_DoorsOpen:
 	text "It's open!"
 	done
-; 0x9fb5f
 
-BattleTowerOutside_MapEventHeader: ; 0x9fb5f
+BattleTowerOutside_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 4
-	warp_def $15, $8, 3, GROUP_ROUTE_40_BATTLE_TOWER_GATE, MAP_ROUTE_40_BATTLE_TOWER_GATE
-	warp_def $15, $9, 4, GROUP_ROUTE_40_BATTLE_TOWER_GATE, MAP_ROUTE_40_BATTLE_TOWER_GATE
-	warp_def $9, $8, 1, GROUP_BATTLE_TOWER_1F, MAP_BATTLE_TOWER_1F
-	warp_def $9, $9, 2, GROUP_BATTLE_TOWER_1F, MAP_BATTLE_TOWER_1F
+	warp_def $15, $8, 3, ROUTE_40_BATTLE_TOWER_GATE
+	warp_def $15, $9, 4, ROUTE_40_BATTLE_TOWER_GATE
+	warp_def $9, $8, 1, BATTLE_TOWER_1F
+	warp_def $9, $9, 2, BATTLE_TOWER_1F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 1
-	signpost 10, 10, $0, MapBattleTowerOutsideSignpost0Script
+	signpost 10, 10, SIGNPOST_READ, MapBattleTowerOutsideSignpost0Script
 
-	; people-events
+.PersonEvents:
 	db 4
-	person_event SPRITE_STANDING_YOUNGSTER, 16, 10, $7, $0, 255, 255, $80, 0, StandingYoungsterScript_0x9f85f, $ffff
-	person_event SPRITE_BUENA, 15, 17, $2, $11, 255, 255, $a0, 0, BuenaScript_0x9f862, $ffff
-	person_event SPRITE_SAILOR, 22, 16, $5, $1, 255, 255, $0, 0, SailorScript_0x9f865, $07cf
-	person_event SPRITE_LASS, 28, 16, $3, $0, 255, 255, $a0, 0, ObjectEvent, $ffff
-; 0x9fbb2
-
-
+	person_event SPRITE_STANDING_YOUNGSTER, 12, 6, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, BattleTowerOutsideYoungsterScript, -1
+	person_event SPRITE_BUENA, 11, 13, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, BattleTowerOutsideBuenaScript, -1
+	person_event SPRITE_SAILOR, 18, 12, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, 0, PERSONTYPE_SCRIPT, 0, BattleTowerOutsideSailorScript, EVENT_BATTLE_TOWER_OUTSIDE_SAILOR
+	person_event SPRITE_LASS, 24, 12, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, ObjectEvent, -1

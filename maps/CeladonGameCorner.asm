@@ -1,160 +1,155 @@
-CeladonGameCorner_MapScriptHeader: ; 0x7211b
-	; trigger count
+const_value set 2
+	const CELADONGAMECORNER_CLERK
+	const CELADONGAMECORNER_RECEPTIONIST
+	const CELADONGAMECORNER_POKEFAN_M
+	const CELADONGAMECORNER_TEACHER
+	const CELADONGAMECORNER_FISHING_GURU
+	const CELADONGAMECORNER_FISHER1
+	const CELADONGAMECORNER_FISHER2
+	const CELADONGAMECORNER_GYM_GUY
+	const CELADONGAMECORNER_GRAMPS
+
+CeladonGameCorner_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x7211d
 
-ClerkScript_0x7211d: ; 0x7211d
-	jumpstd $0032
-; 0x72120
+ClerkScript_0x7211d:
+	jumpstd gamecornercoinvendor
 
-ReceptionistScript_0x72120: ; 0x72120
+ReceptionistScript_0x72120:
 	jumptextfaceplayer UnknownText_0x721d0
-; 0x72123
 
-PokefanMScript_0x72123: ; 0x72123
+PokefanMScript_0x72123:
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x72215
+	opentext
+	writetext UnknownText_0x72215
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $4, $2
+	spriteface CELADONGAMECORNER_POKEFAN_M, LEFT
 	end
-; 0x7212e
 
-TeacherScript_0x7212e: ; 0x7212e
+TeacherScript_0x7212e:
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x72242
+	opentext
+	writetext UnknownText_0x72242
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $5, $3
+	spriteface CELADONGAMECORNER_TEACHER, RIGHT
 	end
-; 0x72139
 
-FishingGuruScript_0x72139: ; 0x72139
+FishingGuruScript_0x72139:
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x72295
+	opentext
+	writetext UnknownText_0x72295
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $6, $3
+	spriteface CELADONGAMECORNER_FISHING_GURU, RIGHT
 	end
-; 0x72144
 
-FisherScript_0x72144: ; 0x72144
+FisherScript_0x72144:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_COINS_FROM_GAMBLER_AT_CELADON
 	iftrue .UnknownScript_0x72169
-	2writetext UnknownText_0x722dc
-	keeptextopen
+	writetext UnknownText_0x722dc
+	buttonsound
 	checkitem COIN_CASE
 	iffalse UnknownScript_0x7217b
 	checkcoins 9998
 	if_equal $0, UnknownScript_0x72184
 	stringtotext .coinname, $1
-	2call .UnknownScript_0x72172
+	scall .UnknownScript_0x72172
 	givecoins 18
 	setevent EVENT_GOT_COINS_FROM_GAMBLER_AT_CELADON
-.UnknownScript_0x72169 ; 0x72169
-	2writetext UnknownText_0x72345
+.UnknownScript_0x72169:
+	writetext UnknownText_0x72345
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $fe, $2
+	spriteface LAST_TALKED, LEFT
 	end
-; 0x72172
 
-.UnknownScript_0x72172 ; 0x72172
-	jumpstd $002f
+.UnknownScript_0x72172:
+	jumpstd receiveitem
 	end
-; 0x72176
 
-.coinname ; 0x72176
+.coinname
 	db "COIN@"
-; 0x7217b
 
-UnknownScript_0x7217b: ; 0x7217b
-	2writetext UnknownText_0x7238a
+UnknownScript_0x7217b:
+	writetext UnknownText_0x7238a
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $fe, $2
+	spriteface LAST_TALKED, LEFT
 	end
-; 0x72184
 
-UnknownScript_0x72184: ; 0x72184
-	2writetext UnknownText_0x723d9
+UnknownScript_0x72184:
+	writetext UnknownText_0x723d9
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $fe, $2
+	spriteface LAST_TALKED, LEFT
 	end
-; 0x7218d
 
-CeladonGymGuyScript: ; 0x7218d
+CeladonGymGuyScript:
 	jumptextfaceplayer CeladonGymGuyText
-; 0x72190
 
-GrampsScript_0x72190: ; 0x72190
+GrampsScript_0x72190:
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x724ad
+	opentext
+	writetext UnknownText_0x724ad
+	waitbutton
 	closetext
-	loadmovesprites
-	spriteface $a, $2
+	spriteface CELADONGAMECORNER_GRAMPS, LEFT
 	end
-; 0x7219b
 
-MapCeladonGameCornerSignpost36Script: ; 0x7219b
+MapCeladonGameCornerSignpost36Script:
 	jumptext UnknownText_0x724f3
-; 0x7219e
 
-MapCeladonGameCornerSignpost37Script: ; 0x7219e
+MapCeladonGameCornerSignpost37Script:
 	jumptext UnknownText_0x72521
-; 0x721a1
 
-MapCeladonGameCornerSignpost35Script: ; 0x721a1
+MapCeladonGameCornerSignpost35Script:
 	random $6
 	if_equal $0, MapCeladonGameCornerSignpost16Script
 	refreshscreen $0
 	writebyte $0
-	special $002a
-	loadmovesprites
+	special Special_SlotMachine
+	closetext
 	end
-; 0x721b0
 
-MapCeladonGameCornerSignpost16Script: ; 0x721b0
+MapCeladonGameCornerSignpost16Script:
 	refreshscreen $0
 	writebyte $1
-	special $002a
-	loadmovesprites
-	end
-; 0x721b9
-
-MapCeladonGameCornerSignpost11Script: ; 0x721b9
-	refreshscreen $0
-	special $002b
-	loadmovesprites
-	end
-; 0x721c0
-
-MapCeladonGameCornerSignpost32Script: ; 0x721c0
-	jumptext UnknownText_0x7254f
-; 0x721c3
-
-MapCeladonGameCornerSignpost9Script: ; 0x721c3
-	loadfont
-	2writetext UnknownText_0x72567
+	special Special_SlotMachine
 	closetext
-	special $002b
-	loadmovesprites
 	end
-; 0x721cd
 
-INCBIN "baserom.gbc",$721cd,$721d0 - $721cd
+MapCeladonGameCornerSignpost11Script:
+	refreshscreen $0
+	special Special_CardFlip
+	closetext
+	end
 
-UnknownText_0x721d0: ; 0x721d0
+MapCeladonGameCornerSignpost32Script:
+	jumptext UnknownText_0x7254f
+
+MapCeladonGameCornerSignpost9Script:
+	opentext
+	writetext UnknownText_0x72567
+	waitbutton
+	special Special_CardFlip
+	closetext
+	end
+
+MovementData_0x721cd:
+; Unreferenced.
+	step_right
+	turn_head_left
+	step_end
+
+UnknownText_0x721d0:
 	text "Welcome!"
 
 	para "You may exchange"
@@ -163,16 +158,14 @@ UnknownText_0x721d0: ; 0x721d0
 	para "fabulous prizes"
 	line "next door."
 	done
-; 0x72215
 
-UnknownText_0x72215: ; 0x72215
+UnknownText_0x72215:
 	text "The slot machines"
 	line "are all state of"
 	cont "the art."
 	done
-; 0x72242
 
-UnknownText_0x72242: ; 0x72242
+UnknownText_0x72242:
 	text "It's this machine"
 	line "I want."
 
@@ -182,9 +175,8 @@ UnknownText_0x72242: ; 0x72242
 	para "should pay out"
 	line "today."
 	done
-; 0x72295
 
-UnknownText_0x72295: ; 0x72295
+UnknownText_0x72295:
 	text "I think this slot"
 	line "machine will pay"
 	cont "out…"
@@ -192,9 +184,8 @@ UnknownText_0x72295: ; 0x72295
 	para "The odds vary"
 	line "among machines."
 	done
-; 0x722dc
 
-UnknownText_0x722dc: ; 0x722dc
+UnknownText_0x722dc:
 	text "Gahahaha!"
 
 	para "The coins just"
@@ -206,9 +197,8 @@ UnknownText_0x722dc: ; 0x722dc
 	para "I'll share my luck"
 	line "with you!"
 	done
-; 0x72345
 
-UnknownText_0x72345: ; 0x72345
+UnknownText_0x72345:
 	text "Gahahaha!"
 
 	para "It makes me feel"
@@ -217,9 +207,8 @@ UnknownText_0x72345: ; 0x72345
 	para "things for other"
 	line "people!"
 	done
-; 0x7238a
 
-UnknownText_0x7238a: ; 0x7238a
+UnknownText_0x7238a:
 	text "Hey, you don't"
 	line "have a COIN CASE."
 
@@ -227,9 +216,8 @@ UnknownText_0x7238a: ; 0x7238a
 	line "to give you any"
 	cont "coins, kid?"
 	done
-; 0x723d9
 
-UnknownText_0x723d9: ; 0x723d9
+UnknownText_0x723d9:
 	text "Hey, your COIN"
 	line "CASE is full, kid."
 
@@ -237,9 +225,8 @@ UnknownText_0x723d9: ; 0x723d9
 	line "a winning streak"
 	cont "too."
 	done
-; 0x72425
 
-CeladonGymGuyText: ; 0x72425
+CeladonGymGuyText:
 	text "Hey! CHAMP in"
 	line "making!"
 
@@ -253,18 +240,16 @@ CeladonGymGuyText: ; 0x72425
 	para "But I don't have"
 	line "enough coins yet…"
 	done
-; 0x724ad
 
-UnknownText_0x724ad: ; 0x724ad
+UnknownText_0x724ad:
 	text "Hmmm… The odds are"
 	line "surely better for"
 
 	para "PIKACHU's line,"
 	line "but… What to do?"
 	done
-; 0x724f3
 
-UnknownText_0x724f3: ; 0x724f3
+UnknownText_0x724f3:
 	text "Hey!"
 
 	para "Underneath this"
@@ -272,9 +257,8 @@ UnknownText_0x724f3: ; 0x724f3
 
 	para "There's nothing!"
 	done
-; 0x72521
 
-UnknownText_0x72521: ; 0x72521
+UnknownText_0x72521:
 	text "Hey!"
 
 	para "Underneath this"
@@ -282,15 +266,13 @@ UnknownText_0x72521: ; 0x72521
 
 	para "There's nothing!"
 	done
-; 0x7254f
 
-UnknownText_0x7254f: ; 0x7254f
+UnknownText_0x7254f:
 	text "There's a lighter"
 	line "here."
 	done
-; 0x72567
 
-UnknownText_0x72567: ; 0x72567
+UnknownText_0x72567:
 	text "A can of soda…"
 
 	para "Someone must be"
@@ -298,71 +280,68 @@ UnknownText_0x72567: ; 0x72567
 
 	para "Huh? It's empty!"
 	done
-; 0x725a4
 
-CeladonGameCorner_MapEventHeader: ; 0x725a4
+CeladonGameCorner_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $d, $e, 6, GROUP_CELADON_CITY, MAP_CELADON_CITY
-	warp_def $d, $f, 6, GROUP_CELADON_CITY, MAP_CELADON_CITY
+	warp_def $d, $e, 6, CELADON_CITY
+	warp_def $d, $f, 6, CELADON_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 38
-	signpost 6, 1, $0, MapCeladonGameCornerSignpost11Script
-	signpost 7, 1, $0, MapCeladonGameCornerSignpost11Script
-	signpost 8, 1, $0, MapCeladonGameCornerSignpost11Script
-	signpost 9, 1, $0, MapCeladonGameCornerSignpost11Script
-	signpost 10, 1, $0, MapCeladonGameCornerSignpost11Script
-	signpost 11, 1, $4, MapCeladonGameCornerSignpost11Script
-	signpost 6, 6, $0, MapCeladonGameCornerSignpost11Script
-	signpost 7, 6, $0, MapCeladonGameCornerSignpost11Script
-	signpost 8, 6, $0, MapCeladonGameCornerSignpost11Script
-	signpost 9, 6, $0, MapCeladonGameCornerSignpost9Script
-	signpost 10, 6, $0, MapCeladonGameCornerSignpost11Script
-	signpost 11, 6, $3, MapCeladonGameCornerSignpost11Script
-	signpost 6, 7, $0, MapCeladonGameCornerSignpost35Script
-	signpost 7, 7, $0, MapCeladonGameCornerSignpost35Script
-	signpost 8, 7, $0, MapCeladonGameCornerSignpost35Script
-	signpost 9, 7, $0, MapCeladonGameCornerSignpost35Script
-	signpost 10, 7, $0, MapCeladonGameCornerSignpost16Script
-	signpost 11, 7, $4, MapCeladonGameCornerSignpost35Script
-	signpost 6, 12, $0, MapCeladonGameCornerSignpost35Script
-	signpost 7, 12, $0, MapCeladonGameCornerSignpost35Script
-	signpost 8, 12, $0, MapCeladonGameCornerSignpost35Script
-	signpost 9, 12, $0, MapCeladonGameCornerSignpost35Script
-	signpost 10, 12, $0, MapCeladonGameCornerSignpost35Script
-	signpost 11, 12, $3, MapCeladonGameCornerSignpost35Script
-	signpost 6, 13, $0, MapCeladonGameCornerSignpost35Script
-	signpost 7, 13, $0, MapCeladonGameCornerSignpost35Script
-	signpost 8, 13, $0, MapCeladonGameCornerSignpost35Script
-	signpost 9, 13, $0, MapCeladonGameCornerSignpost35Script
-	signpost 10, 13, $0, MapCeladonGameCornerSignpost35Script
-	signpost 11, 13, $4, MapCeladonGameCornerSignpost35Script
-	signpost 6, 18, $0, MapCeladonGameCornerSignpost35Script
-	signpost 7, 18, $0, MapCeladonGameCornerSignpost35Script
-	signpost 8, 18, $0, MapCeladonGameCornerSignpost32Script
-	signpost 9, 18, $0, MapCeladonGameCornerSignpost35Script
-	signpost 10, 18, $0, MapCeladonGameCornerSignpost35Script
-	signpost 11, 18, $3, MapCeladonGameCornerSignpost35Script
-	signpost 0, 15, $0, MapCeladonGameCornerSignpost36Script
-	signpost 0, 9, $0, MapCeladonGameCornerSignpost37Script
+	signpost 6, 1, SIGNPOST_READ, MapCeladonGameCornerSignpost11Script
+	signpost 7, 1, SIGNPOST_READ, MapCeladonGameCornerSignpost11Script
+	signpost 8, 1, SIGNPOST_READ, MapCeladonGameCornerSignpost11Script
+	signpost 9, 1, SIGNPOST_READ, MapCeladonGameCornerSignpost11Script
+	signpost 10, 1, SIGNPOST_READ, MapCeladonGameCornerSignpost11Script
+	signpost 11, 1, SIGNPOST_LEFT, MapCeladonGameCornerSignpost11Script
+	signpost 6, 6, SIGNPOST_READ, MapCeladonGameCornerSignpost11Script
+	signpost 7, 6, SIGNPOST_READ, MapCeladonGameCornerSignpost11Script
+	signpost 8, 6, SIGNPOST_READ, MapCeladonGameCornerSignpost11Script
+	signpost 9, 6, SIGNPOST_READ, MapCeladonGameCornerSignpost9Script
+	signpost 10, 6, SIGNPOST_READ, MapCeladonGameCornerSignpost11Script
+	signpost 11, 6, SIGNPOST_RIGHT, MapCeladonGameCornerSignpost11Script
+	signpost 6, 7, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 7, 7, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 8, 7, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 9, 7, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 10, 7, SIGNPOST_READ, MapCeladonGameCornerSignpost16Script
+	signpost 11, 7, SIGNPOST_LEFT, MapCeladonGameCornerSignpost35Script
+	signpost 6, 12, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 7, 12, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 8, 12, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 9, 12, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 10, 12, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 11, 12, SIGNPOST_RIGHT, MapCeladonGameCornerSignpost35Script
+	signpost 6, 13, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 7, 13, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 8, 13, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 9, 13, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 10, 13, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 11, 13, SIGNPOST_LEFT, MapCeladonGameCornerSignpost35Script
+	signpost 6, 18, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 7, 18, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 8, 18, SIGNPOST_READ, MapCeladonGameCornerSignpost32Script
+	signpost 9, 18, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 10, 18, SIGNPOST_READ, MapCeladonGameCornerSignpost35Script
+	signpost 11, 18, SIGNPOST_RIGHT, MapCeladonGameCornerSignpost35Script
+	signpost 0, 15, SIGNPOST_READ, MapCeladonGameCornerSignpost36Script
+	signpost 0, 9, SIGNPOST_READ, MapCeladonGameCornerSignpost37Script
 
-	; people-events
+.PersonEvents:
 	db 9
-	person_event SPRITE_CLERK, 6, 9, $6, $0, 255, 255, $a0, 0, ClerkScript_0x7211d, $ffff
-	person_event SPRITE_RECEPTIONIST, 6, 7, $6, $0, 255, 255, $a0, 0, ReceptionistScript_0x72120, $ffff
-	person_event SPRITE_POKEFAN_M, 14, 18, $8, $0, 255, 255, $80, 0, PokefanMScript_0x72123, $ffff
-	person_event SPRITE_TEACHER, 11, 21, $9, $0, 255, 255, $90, 0, TeacherScript_0x7212e, $ffff
-	person_event SPRITE_FISHING_GURU, 11, 15, $9, $0, 255, 255, $a0, 0, FishingGuruScript_0x72139, $ffff
-	person_event SPRITE_FISHER, 14, 12, $8, $0, 255, 2, $80, 0, FisherScript_0x72144, $ffff
-	person_event SPRITE_FISHER, 14, 12, $8, $0, 255, 4, $80, 0, FisherScript_0x72144, $ffff
-	person_event SPRITE_GYM_GUY, 7, 15, $6, $0, 255, 255, $80, 0, CeladonGymGuyScript, $ffff
-	person_event SPRITE_GRAMPS, 12, 6, $8, $0, 255, 255, $a0, 0, GrampsScript_0x72190, $ffff
-; 0x726e7
-
+	person_event SPRITE_CLERK, 2, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, ClerkScript_0x7211d, -1
+	person_event SPRITE_RECEPTIONIST, 2, 3, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, ReceptionistScript_0x72120, -1
+	person_event SPRITE_POKEFAN_M, 10, 14, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, PokefanMScript_0x72123, -1
+	person_event SPRITE_TEACHER, 7, 17, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, TeacherScript_0x7212e, -1
+	person_event SPRITE_FISHING_GURU, 7, 11, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, FishingGuruScript_0x72139, -1
+	person_event SPRITE_FISHER, 10, 8, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, 2, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, FisherScript_0x72144, -1
+	person_event SPRITE_FISHER, 10, 8, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, 4, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, FisherScript_0x72144, -1
+	person_event SPRITE_GYM_GUY, 3, 11, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, CeladonGymGuyScript, -1
+	person_event SPRITE_GRAMPS, 8, 2, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, GrampsScript_0x72190, -1

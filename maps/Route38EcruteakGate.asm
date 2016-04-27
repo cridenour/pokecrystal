@@ -1,16 +1,17 @@
-Route38EcruteakGate_MapScriptHeader: ; 0x9cbd5
-	; trigger count
+const_value set 2
+	const ROUTE38ECRUTEAKGATE_OFFICER
+
+Route38EcruteakGate_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x9cbd7
 
-OfficerScript_0x9cbd7: ; 0x9cbd7
+OfficerScript_0x9cbd7:
 	jumptextfaceplayer UnknownText_0x9cbda
-; 0x9cbda
 
-UnknownText_0x9cbda: ; 0x9cbda
+UnknownText_0x9cbda:
 	text "Where did you say"
 	line "you're from?"
 
@@ -22,27 +23,24 @@ UnknownText_0x9cbda: ; 0x9cbda
 	para "You've come a long"
 	line "way to get here."
 	done
-; 0x9cc4d
 
-Route38EcruteakGate_MapEventHeader: ; 0x9cc4d
+Route38EcruteakGate_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 4
-	warp_def $4, $0, 1, GROUP_ROUTE_38, MAP_ROUTE_38
-	warp_def $5, $0, 2, GROUP_ROUTE_38, MAP_ROUTE_38
-	warp_def $4, $9, 14, GROUP_ECRUTEAK_CITY, MAP_ECRUTEAK_CITY
-	warp_def $5, $9, 15, GROUP_ECRUTEAK_CITY, MAP_ECRUTEAK_CITY
+	warp_def $4, $0, 1, ROUTE_38
+	warp_def $5, $0, 2, ROUTE_38
+	warp_def $4, $9, 14, ECRUTEAK_CITY
+	warp_def $5, $9, 15, ECRUTEAK_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_OFFICER, 6, 9, $6, $0, 255, 255, $80, 0, OfficerScript_0x9cbd7, $ffff
-; 0x9cc74
-
+	person_event SPRITE_OFFICER, 2, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, OfficerScript_0x9cbd7, -1

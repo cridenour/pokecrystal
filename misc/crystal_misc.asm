@@ -3,11 +3,10 @@ INCLUDE "includes.asm"
 
 SECTION "Misc Crystal", ROMX, BANK[MISC_CRYSTAL]
 
-MobileAdapterGFX:
+MobileAdapterGFX::
 INCBIN "gfx/misc/mobile_adapter.2bpp"
 
 
-; no known jump sources
 Function17a68f:: ; 17a68f (5e:668f)
 	call Function17a6a8
 	call Function17a751
@@ -20,11 +19,11 @@ Function17a68f:: ; 17a68f (5e:668f)
 	pop de
 	xor a
 	ret
+
 .asm_17a6a6
 	scf
 	ret
 
-; known jump sources: 17a68f (5e:668f)
 Function17a6a8: ; 17a6a8 (5e:66a8)
 	push de
 	push bc
@@ -32,7 +31,7 @@ Function17a6a8: ; 17a6a8 (5e:66a8)
 	ld bc, $a
 	xor a
 	call ByteFill
-	ld hl, Buffer1 ; $d1ea (aliases: MagikarpLength)
+	ld hl, Buffer1
 	ld bc, $10
 	ld a, $ff
 	call ByteFill
@@ -50,15 +49,14 @@ Function17a6a8: ; 17a6a8 (5e:66a8)
 	call Function17ac0c
 	callba Function104000
 	call Function17abcf
-	callba Function49409
+	callba LoadOW_BGPal7
 	callba Function49420
-	call Function32f9
+	call SetPalettes
 	call DelayFrame
 	ret
 
-; known jump sources: 17a6ca (5e:66ca)
 Function17a6f5: ; 17a6f5 (5e:66f5)
-	ld hl, Buffer1 ; $d1ea (aliases: MagikarpLength)
+	ld hl, Buffer1
 	ld c, $0
 	ld b, $8
 .asm_17a6fc
@@ -77,7 +75,6 @@ Function17a6f5: ; 17a6f5 (5e:66f5)
 	ld [$d08c], a
 	ret
 
-; known jump sources: 17a6fd (5e:66fd), 17a705 (5e:6705)
 Function17a713: ; 17a713 (5e:6713)
 	and $f
 	cp $a
@@ -86,12 +83,12 @@ Function17a713: ; 17a713 (5e:6713)
 	inc c
 	and a
 	ret
+
 .asm_17a71d
 	ld [hl], $ff
 	scf
 	ret
 
-; known jump sources: 17a6a0 (5e:66a0)
 Function17a721: ; 17a721 (5e:6721)
 	push de
 	ld h, d
@@ -100,7 +97,7 @@ Function17a721: ; 17a721 (5e:6721)
 	ld a, $ff
 	call ByteFill
 	pop de
-	ld hl, Buffer1 ; $d1ea (aliases: MagikarpLength)
+	ld hl, Buffer1
 	ld b, $8
 .asm_17a732
 	ld c, $0
@@ -118,17 +115,18 @@ Function17a721: ; 17a721 (5e:6721)
 	dec b
 	jr nz, .asm_17a732
 	ret
+
 .asm_17a748
 	ld a, $ff
 	ld [de], a
 	ret
+
 .asm_17a74c
 	ld a, $f0
 	or c
 	ld [de], a
 	ret
 
-; known jump sources: 17a692 (5e:6692)
 Function17a751: ; 17a751 (5e:6751)
 	xor a
 	ld [$d087], a
@@ -145,30 +143,27 @@ Function17a751: ; 17a751 (5e:6751)
 	jr z, .asm_17a755
 	ret
 
-; known jump sources: 17a75e (5e:675e)
 Function17a770: ; 17a770 (5e:6770)
-	ld a, [hOAMUpdate] ; $ff00+$d8
+	ld a, [hOAMUpdate]
 	push af
 	ld a, $1
-	ld [hOAMUpdate], a ; $ff00+$d8
+	ld [hOAMUpdate], a
 	call HideSprites
 	call Function17a9cb
 	pop af
-	ld [hOAMUpdate], a ; $ff00+$d8
+	ld [hOAMUpdate], a
 	ret
 
-; known jump sources: 17a755 (5e:6755)
 Function17a781: ; 17a781 (5e:6781)
-	ld a, [$FF00+$aa]
+	ld a, [hInMenu]
 	push af
 	ld a, $1
-	ld [$FF00+$aa], a
-	call Functiona57
+	ld [hInMenu], a
+	call JoyTextDelay
 	pop af
-	ld [$FF00+$aa], a
+	ld [hInMenu], a
 	ret
 
-; known jump sources: 17a761 (5e:6761)
 Function17a78f: ; 17a78f (5e:678f)
 	ld hl, $d088
 	bit 7, [hl]
@@ -176,21 +171,24 @@ Function17a78f: ; 17a78f (5e:678f)
 	jr nz, .asm_17a79f
 	callba Function10402d
 	ret
+
 .asm_17a79f
-	callba Function104061
+	callba ReloadMapPart
 	ret
 ; 17a7a6 (5e:67a6)
 
-INCBIN "baserom.gbc",$17a7a6,$17a7ae - $17a7a6
-
-; known jump sources: 17a758 (5e:6758)
-Function17a7ae: ; 17a7ae (5e:67ae)
+Function17a7a6: ; 17a7a6
 	ld a, [$d087]
-	ld hl, $67b6
-	rst $28
+	inc a
+	ld [$d087], a
 	ret
 
-; no known jump sources
+Function17a7ae: ; 17a7ae (5e:67ae)
+	ld a, [$d087]
+	ld hl, Jumptable_17a7b6
+	rst JumpTable
+	ret
+
 Jumptable_17a7b6: ; 17a7b6 (5e:67b6)
 	dw Function17a7c2
 	dw Function17a7cd
@@ -200,7 +198,6 @@ Jumptable_17a7b6: ; 17a7b6 (5e:67b6)
 	dw Function17a7f4
 
 
-; no known jump sources
 Function17a7c2: ; 17a7c2 (5e:67c2)
 	ld a, $4
 	call Function17aad3
@@ -208,7 +205,6 @@ Function17a7c2: ; 17a7c2 (5e:67c2)
 	ld [$d087], a
 	ret
 
-; no known jump sources
 Function17a7cd: ; 17a7cd (5e:67cd)
 	call Function17a83c
 	call Function17a8ae
@@ -216,7 +212,6 @@ Function17a7cd: ; 17a7cd (5e:67cd)
 	call Function17a848
 	ret
 
-; no known jump sources
 Function17a7d8: ; 17a7d8 (5e:67d8)
 	call Function17a83c
 	call Function17a848
@@ -231,7 +226,6 @@ Function17a7d8: ; 17a7d8 (5e:67d8)
 	ld [$d087], a
 	ret
 
-; no known jump sources
 Function17a7f4: ; 17a7f4 (5e:67f4)
 	ld hl, $d08b
 	dec [hl]
@@ -240,7 +234,6 @@ Function17a7f4: ; 17a7f4 (5e:67f4)
 	set 7, [hl]
 	ret
 
-; no known jump sources
 Function17a7ff: ; 17a7ff (5e:67ff)
 	ld hl, $d08b
 	dec [hl]
@@ -255,14 +248,13 @@ Function17a7ff: ; 17a7ff (5e:67ff)
 	set 7, [hl]
 	ret
 
-; no known jump sources
 Function17a81a: ; 17a81a (5e:681a)
-	call Function3c74
+	call IsSFXPlaying
 	ret nc
-	ld a, [hJoyPressed] ; $ff00+$a7
+	ld a, [hJoyPressed]
 	and $3
 	ret z
-	call Function1c07
+	call ExitMenu
 	call Function17ac1d
 	call Function17ac2a
 	ld hl, $d088
@@ -273,18 +265,16 @@ Function17a81a: ; 17a81a (5e:681a)
 	ld [$d087], a
 	ret
 
-; known jump sources: 17a7cd (5e:67cd), 17a7d8 (5e:67d8)
 Function17a83c: ; 17a83c (5e:683c)
-	ld a, [$FF00+$a9]
+	ld a, [hJoyLast]
 	and $f0
 	ld c, a
-	ld a, [hJoyPressed] ; $ff00+$a7
+	ld a, [hJoyPressed]
 	and $b
 	or c
 	ld c, a
 	ret
 
-; known jump sources: 17a7d4 (5e:67d4), 17a7db (5e:67db)
 Function17a848: ; 17a848 (5e:6848)
 	ld a, c
 	and $60
@@ -312,48 +302,55 @@ Function17a848: ; 17a848 (5e:6848)
 	jr nz, .asm_17a8a7
 	xor a
 	ret
+
 .asm_17a876
 	ld a, $9
 	call Function17aad0
 	scf
 	ret
+
 .asm_17a87d
 	ld a, $a
 	call Function17aad0
 	scf
 	ret
+
 .asm_17a884
 	ld a, $b
 	call Function17aad0
 	scf
 	ret
+
 .asm_17a88b
 	ld a, $c
 	call Function17aad0
 	scf
 	ret
+
 .asm_17a892
 	ld a, $5
 	call Function17aad0
 	scf
 	ret
+
 .asm_17a899
 	ld a, $6
 	call Function17aad0
 	scf
 	ret
+
 .asm_17a8a0
 	ld a, $7
 	call Function17aad0
 	scf
 	ret
+
 .asm_17a8a7
 	ld a, $8
 	call Function17aad0
 	scf
 	ret
 
-; known jump sources: 17a7d0 (5e:67d0)
 Function17a8ae: ; 17a8ae (5e:68ae)
 	bit 1, c
 	jr nz, .asm_17a8bc
@@ -363,6 +360,7 @@ Function17a8ae: ; 17a8ae (5e:68ae)
 	jr nz, .asm_17a8d7
 	xor a
 	ret
+
 .asm_17a8bc
 	ld a, $b
 	ld [$d08a], a
@@ -371,19 +369,20 @@ Function17a8ae: ; 17a8ae (5e:68ae)
 	call Function17aa88
 	scf
 	ret
+
 .asm_17a8cc
 	call Function17aad7
 	call Function17aa98
 	call Function17a8de
 	scf
 	ret
+
 .asm_17a8d7
 	ld a, $c
 	call Function17aad3
 	scf
 	ret
 
-; known jump sources: 17a8d2 (5e:68d2)
 Function17a8de: ; 17a8de (5e:68de)
 	ld a, $2
 	call Function17aae0
@@ -400,16 +399,19 @@ Function17a8de: ; 17a8de (5e:68de)
 	ld [$d087], a
 	call Function17aa88
 	ret
+
 .asm_17a8fd
 	call Function17a943
 	call Function17aa88
 	ret
+
 .asm_17a904
 	call Function17aad7
 	call Function17aa98
 	call Function17a91e
 	call Function17aa88
 	ret
+
 .asm_17a911
 	call Function17aa98
 	ld a, $5
@@ -418,7 +420,6 @@ Function17a8de: ; 17a8de (5e:68de)
 	call Function17aa88
 	ret
 
-; known jump sources: 17a90a (5e:690a)
 Function17a91e: ; 17a91e (5e:691e)
 	ld a, [$d08c]
 	cp $7
@@ -427,8 +428,9 @@ Function17a91e: ; 17a91e (5e:691e)
 	ld [$d087], a
 	xor a
 	ret
+
 .asm_17a92c
-	call Function1d6e
+	call LoadStandardMenuDataHeader
 	call Function17a99e
 	ld hl, $d088
 	set 7, [hl]
@@ -439,7 +441,6 @@ Function17a91e: ; 17a91e (5e:691e)
 	scf
 	ret
 
-; known jump sources: 17a8c4 (5e:68c4), 17a8fd (5e:68fd)
 Function17a943: ; 17a943 (5e:6943)
 	ld a, [$d08c]
 	and a
@@ -448,20 +449,20 @@ Function17a943: ; 17a943 (5e:6943)
 	ld [$d08c], a
 	ld c, a
 	ld b, $0
-	ld hl, Buffer1 ; $d1ea (aliases: MagikarpLength)
+	ld hl, Buffer1
 	add hl, bc
 	ld [hl], $ff
 	ld a, $2
 	ld [$d087], a
 	and a
 	ret
+
 .asm_17a95d
 	ld a, $5
 	ld [$d087], a
 	xor a
 	ret
 
-; known jump sources: 17a8f1 (5e:68f1)
 Function17a964: ; 17a964 (5e:6964)
 	ld a, [$d08c]
 	cp $10
@@ -470,22 +471,22 @@ Function17a964: ; 17a964 (5e:6964)
 	ld b, $0
 	inc a
 	ld [$d08c], a
-	ld hl, Buffer1 ; $d1ea (aliases: MagikarpLength)
+	ld hl, Buffer1
 	add hl, bc
 	ld [hl], e
 	and a
 	ret
+
 .asm_17a979
 	scf
 	ret
 
-; known jump sources: 17a75b (5e:675b)
 Function17a97b: ; 17a97b (5e:697b)
-	ld hl, $c4b5
-	ld bc, $212
+	hlcoord 1, 1
+	lb bc, 2, 18
 	call ClearBox
-	ld hl, $c4cb
-	ld de, Buffer1 ; $d1ea (aliases: MagikarpLength)
+	hlcoord 3, 2
+	ld de, Buffer1
 	ld a, [$d08c]
 	and a
 	ret z
@@ -500,49 +501,51 @@ Function17a97b: ; 17a97b (5e:697b)
 	dec c
 	jr nz, .asm_17a990
 	ret
+
 .asm_17a99d
 	ret
 
-; known jump sources: 17a92f (5e:692f)
 Function17a99e: ; 17a99e (5e:699e)
-	ld hl, $c590
+	hlcoord 0, 12
 	ld b, $4
 	ld c, $12
 	call Function17ac46
-	ld hl, $c5ba
-	ld de, $69b2
+	hlcoord 2, 14
+	ld de, String_17a9b2
 	call PlaceString
 	ret
 ; 17a9b2 (5e:69b2)
 
-INCBIN "baserom.gbc",$17a9b2,$17a9cb - $17a9b2
+String_17a9b2: ; 17a9b2
+	db   "でんわばんごうが ただしく"
+	next "はいって いません!"
+	db   "@"
+; 17a9cb
 
-; known jump sources: 17a77a (5e:677a)
 Function17a9cb: ; 17a9cb (5e:69cb)
 	ld de, Sprites ; $c400
 	ld hl, $d088
 	bit 6, [hl]
-	jr nz, .asm_17a9df
+	jr nz, .bit_6_set
 	call Function17a9e3
 	call Function17aa22
 	call Function17a9f5
 	ret
-.asm_17a9df
+
+.bit_6_set
 	call Function17a9e3
 	ret
 
-; known jump sources: 17a9d5 (5e:69d5), 17a9df (5e:69df)
 Function17a9e3: ; 17a9e3 (5e:69e3)
 	ld a, $3
 	ld [$d08e], a
-	ld hl, $6a77
+	ld hl, Unknown_17aa77
 	ld b, $8
 	ld c, $8
 	ld a, $5
 	call Function17aa4a
 	ret
 
-; known jump sources: 17a9db (5e:69db)
 Function17a9f5: ; 17a9f5 (5e:69f5)
 	ld a, [$d08c]
 	cp $10
@@ -554,47 +557,45 @@ Function17a9f5: ; 17a9f5 (5e:69f5)
 	ld [$d08e], a
 	ld a, [$d08c]
 	cp $10
-	jr c, .asm_17aa0f
+	jr c, .okay
 	dec a
-.asm_17aa0f
+.okay
 	ld c, $8
 	call SimpleMultiply
 	add $18
 	ld b, a
 	ld c, $11
-	ld hl, $6a72
+	ld hl, Unknown_17aa72
 	ld a, $4
 	call Function17aa4a
 	ret
 
-; known jump sources: 17a9d8 (5e:69d8)
 Function17aa22: ; 17aa22 (5e:6a22)
 	ld a, $0
 	ld [$d08e], a
 	push de
 	ld a, $3
 	call Function17aae0
+rept 3
 	add a
-	add a
-	add a
+endr
 	add $0
 	push af
 	ld a, $4
 	call Function17aae0
+rept 3
 	add a
-	add a
-	add a
+endr
 	add $8
 	ld c, a
 	pop af
 	ld b, a
 	pop de
 	ld a, $0
-	ld hl, $6a77
+	ld hl, Unknown_17aa77
 	call Function17aa4a
 	ret
 
-; known jump sources: 17a9f1 (5e:69f1), 17aa1e (5e:6a1e), 17aa46 (5e:6a46)
 Function17aa4a: ; 17aa4a (5e:6a4a)
 	ld [$d08d], a
 	ld a, b
@@ -604,7 +605,7 @@ Function17aa4a: ; 17aa4a (5e:6a4a)
 	add $10
 	ld c, a
 	ld a, [hli]
-.asm_17aa56
+.loop
 	push af
 	ld a, [hli]
 	add c
@@ -626,26 +627,34 @@ Function17aa4a: ; 17aa4a (5e:6a4a)
 	inc de
 	pop af
 	dec a
-	jr nz, .asm_17aa56
+	jr nz, .loop
 	ret
 ; 17aa72 (5e:6a72)
 
-INCBIN "baserom.gbc",$17aa72,$17aa88 - $17aa72
+Unknown_17aa72: ; 17aa72
+	db 1
+	db 0, 0, 0, 0
+; 17aa77
 
-; known jump sources: 17a8c7 (5e:68c7), 17a8f9 (5e:68f9), 17a900 (5e:6900), 17a90d (5e:690d), 17a91a (5e:691a)
+Unknown_17aa77: ; 17aa77
+	db 4
+	db 0, 0, 0, 0
+	db 0, 8, 1, 0
+	db 8, 0, 2, 0
+	db 8, 8, 3, 0
+; 17aa88
+
 Function17aa88: ; 17aa88 (5e:6a88)
 	jr c, asm_17aa91
-	ld de, $20
+	ld de, SFX_SWITCH_POKEMON
 	call PlaySFX
 	ret
 
-; known jump sources: 17aa88 (5e:6a88)
 asm_17aa91: ; 17aa91 (5e:6a91)
-	ld de, $19
+	ld de, SFX_WRONG
 	call PlaySFX
 	ret
 
-; known jump sources: 17a8c1 (5e:68c1), 17a8cf (5e:68cf), 17a907 (5e:6907), 17a911 (5e:6911)
 Function17aa98: ; 17aa98 (5e:6a98)
 	ld a, $5
 	ld [$d08b], a
@@ -655,13 +664,12 @@ Function17aa98: ; 17aa98 (5e:6a98)
 	set 7, [hl]
 	ret
 
-; known jump sources: 17aa9d (5e:6a9d)
 Function17aaa9: ; 17aaa9 (5e:6aa9)
 	ld a, $3
 	call Function17aae3
 	ld c, a
 	ld b, $0
-	ld hl, AttrMap ; $cdd9
+	hlcoord 0, 0, AttrMap
 	add hl, bc
 	push hl
 	ld a, $4
@@ -671,29 +679,27 @@ Function17aaa9: ; 17aaa9 (5e:6aa9)
 	call AddNTimes
 	ret
 
-; known jump sources: 17aaa0 (5e:6aa0)
 Function17aac3: ; 17aac3 (5e:6ac3)
 	ld a, $b
 	push hl
+rept 2
 	ld [hli], a
-	ld [hli], a
+endr
 	pop hl
-	ld de, $14
+	ld de, SCREEN_WIDTH
 	add hl, de
+rept 2
 	ld [hli], a
-	ld [hli], a
+endr
 	ret
 
-; known jump sources: 17a878 (5e:6878), 17a87f (5e:687f), 17a886 (5e:6886), 17a88d (5e:688d), 17a894 (5e:6894), 17a89b (5e:689b), 17a8a2 (5e:68a2), 17a8a9 (5e:68a9)
 Function17aad0: ; 17aad0 (5e:6ad0)
 	call Function17aae0
 
-; known jump sources: 17a7c4 (5e:67c4), 17a8d9 (5e:68d9)
 Function17aad3: ; 17aad3 (5e:6ad3)
 	ld [$d089], a
 	ret
 
-; known jump sources: 17a8cc (5e:68cc), 17a904 (5e:6904), 17aae0 (5e:6ae0)
 Function17aad7: ; 17aad7 (5e:6ad7)
 	push af
 	ld a, [$d089]
@@ -701,16 +707,14 @@ Function17aad7: ; 17aad7 (5e:6ad7)
 	pop af
 	ret
 
-; known jump sources: 17a8e0 (5e:68e0), 17aa2a (5e:6a2a), 17aa35 (5e:6a35), 17aad0 (5e:6ad0)
 Function17aae0: ; 17aae0 (5e:6ae0)
 	call Function17aad7
 
-; known jump sources: 17aaab (5e:6aab), 17aab8 (5e:6ab8)
 Function17aae3: ; 17aae3 (5e:6ae3)
 	push af
 	ld a, [$d08a]
 	ld bc, $d
-	ld hl, $6af7
+	ld hl, Unknown_17aaf7
 	call AddNTimes
 	pop af
 	ld c, a
@@ -720,105 +724,210 @@ Function17aae3: ; 17aae3 (5e:6ae3)
 	ret
 ; 17aaf7 (5e:6af7)
 
-INCBIN "baserom.gbc",$17aaf7,$17aba0 - $17aaf7
+Unknown_17aaf7: ; 17aaf7
+	db $0, $0, $1, $6, $5, $9, $3, $2, $1, $2, $1, $2, $4
+	db $0, $0, $2, $9, $5, $a, $4, $0, $2, $a, $a, $3, $5
+	db $0, $0, $3, $c, $5, $b, $5, $1, $0, $1, $0, $4, $0
+	db $0, $0, $4, $6, $8, $0, $6, $5, $4, $5, $1, $5, $7
+	db $0, $0, $5, $9, $8, $1, $7, $3, $5, $0, $2, $6, $8
+	db $0, $0, $6, $c, $8, $2, $8, $4, $3, $1, $3, $7, $3
+	db $0, $0, $7, $6, $b, $3, $9, $8, $7, $8, $4, $8, $a
+	db $0, $0, $8, $9, $b, $4, $a, $6, $8, $3, $5, $9, $b
+	db $0, $0, $9, $c, $b, $5, $b, $7, $6, $4, $6, $a, $6
+	db $0, $0,$f2, $6, $e, $6, $0, $c, $a, $c, $7, $c, $0
+	db $0, $0, $0, $9, $e, $7, $1, $9, $b, $6, $8, $1, $1
+	db $0, $0,$f1, $c, $e, $8, $2, $a, $c, $7, $c, $2, $c
+	db $0, $0,$f0,$10, $e, $c, $c, $b, $9, $b, $9, $b, $9
+; 17aba0
 
-; known jump sources: 17a6cd (5e:66cd)
 Function17aba0: ; 17aba0 (5e:6ba0)
-	ld a, [rVBK] ; $ff00+$4f
+	ld a, [rVBK]
 	push af
 	ld a, $1
-	ld [rVBK], a ; $ff00+$4f
-	ld hl, $9000
-	ld de, $6fa5
-	ld bc, $5e80
+	ld [rVBK], a
+
+	ld hl, VTiles5 tile $00
+	ld de, GFX_17afa5
+	lb bc, BANK(GFX_17afa5), $80
 	call Get2bpp
+
 	pop af
-	ld [rVBK], a ; $ff00+$4f
-	ld hl, $8000
-	ld de, $7465
-	ld bc, $5e05
+	ld [rVBK], a
+
+	ld hl, VTiles0 tile $00
+	ld de, GFX_17afa5 + $4c0
+	lb bc, BANK(GFX_17afa5), 5
 	call Get2bpp
-	ld hl, $8050
-	ld de, $601a
-	ld bc, $4504
+
+	ld hl, VTiles0 tile $05
+	ld de, GFX_11601a
+	lb bc, BANK(GFX_11601a), 4
 	call Get2bpp
 	ret
 
-; known jump sources: 17a6df (5e:66df)
 Function17abcf: ; 17abcf (5e:6bcf)
-	ld a, [rSVBK] ; $ff00+$70
+	ld a, [rSVBK]
 	push af
-	ld a, $5
-	ld [rSVBK], a ; $ff00+$70
-	ld hl, $6c55
-	ld de, Unkn1Pals ; $d000
+	ld a, BANK(UnknBGPals)
+	ld [rSVBK], a
+
+	ld hl, Palette_17ac55
+	ld de, UnknBGPals ; $d000
 	ld bc, $30
 	call CopyBytes
-	ld hl, $6c95
-	ld de, MartPointer ; $d040 (aliases: Unkn2Pals)
+
+	ld hl, Palette_17ac95
+	ld de, UnknOBPals
 	ld bc, $40
 	call CopyBytes
-	ld hl, $74b5
-	ld de, $d048
+
+	ld hl, GFX_17afa5 + $510
+	ld de, UnknOBPals + 2 * 4
 	ld bc, $10
 	call CopyBytes
-	ld hl, $7471
-	ld de, $d058
+
+	ld hl, MapObjectPals + 8
+	ld de, UnknOBPals + 6 * 4
 	ld bc, $8
-	ld a, $2
+	ld a, BANK(MapObjectPals)
 	call FarCopyBytes
+
 	pop af
-	ld [rSVBK], a ; $ff00+$70
+	ld [rSVBK], a
 	ret
 
-; known jump sources: 17a6d6 (5e:66d6)
 Function17ac0c: ; 17ac0c (5e:6c0c)
 	call Function17ac1d
 	call Function17ac2a
-	ld hl, TileMap ; $c4a0 (aliases: SpritesEnd)
-	ld b, $2
-	ld c, $12
+	hlcoord 0, 0
+	ld b, 2
+	ld c, SCREEN_WIDTH - 2
 	call Function17ac46
 	ret
 
-; known jump sources: 17a7e3 (5e:67e3), 17a804 (5e:6804), 17a826 (5e:6826), 17ac0c (5e:6c0c)
 Function17ac1d: ; 17ac1d (5e:6c1d)
-	ld hl, $6cd5
-	ld de, $c4f0
-	ld bc, $118
+	ld hl, Tilemap_17acd5
+	decoord 0, 4
+	ld bc, (SCREEN_HEIGHT - 4) * SCREEN_WIDTH
 	call CopyBytes
 	ret
 
-; known jump sources: 17a7e6 (5e:67e6), 17a807 (5e:6807), 17a829 (5e:6829), 17ac0f (5e:6c0f)
 Function17ac2a: ; 17ac2a (5e:6c2a)
-	ld hl, $6e3d
-	ld de, $ce29
-	ld bc, $118
+	ld hl, Tilemap_17ae3d
+	decoord 0, 4, AttrMap
+	ld bc, (SCREEN_HEIGHT - 4) * SCREEN_WIDTH
 	call CopyBytes
-	ld hl, $ce29
-	ld bc, $118
-.asm_17ac3c
+	hlcoord 0, 4, AttrMap
+	ld bc, (SCREEN_HEIGHT - 4) * SCREEN_WIDTH
+.loop
 	ld a, [hl]
 	or $8
 	ld [hli], a
 	dec bc
 	ld a, b
 	or c
-	jr nz, .asm_17ac3c
+	jr nz, .loop
 	ret
 
-; known jump sources: 17a9a5 (5e:69a5), 17ac19 (5e:6c19)
 Function17ac46: ; 17ac46 (5e:6c46)
 	ld a, [$d088]
 	bit 4, a
-	jr nz, .asm_17ac51
+	jr nz, .bit_4_set
 	call TextBox
 	ret
-.asm_17ac51
+
+.bit_4_set
 	call Function3eea
 	ret
 ; 17ac55 (5e:6c55)
 
-INCBIN "baserom.gbc",$17ac55,$17b629 - $17ac55
+Palette_17ac55: ; 17ac55
+	RGB  0,  0,  0
+	RGB  9, 10, 25
+	RGB 16, 19, 31
+	RGB 31, 31, 31
 
+	RGB  5, 11,  9
+	RGB  7, 14, 12
+	RGB 17, 24, 22
+	RGB 28, 31, 31
 
+	RGB  0,  0,  0
+	RGB  3,  0, 10
+	RGB  3,  3, 16
+	RGB  6,  8, 25
+
+	RGB  5, 11,  9
+	RGB 28, 31, 31
+	RGB  7, 14, 12
+	RGB 17, 24, 22
+
+	RGB  0,  0,  0
+	RGB  5,  2, 16
+	RGB  8,  8, 26
+	RGB 13,  9, 17
+
+	RGB  0,  0,  0
+	RGB  0,  0,  0
+	RGB  0,  0,  0
+	RGB  0,  0,  0
+
+	RGB  0,  0,  0
+	RGB  0,  0,  0
+	RGB  0,  0,  0
+	RGB  0,  0,  0
+
+	RGB  0,  0,  0
+	RGB  0,  0,  0
+	RGB  0,  0,  0
+	RGB  0,  0,  0
+
+Palette_17ac95: ; 17ac95
+	RGB 31, 31, 31
+	RGB  4,  3,  3
+	RGB 31, 13,  0
+	RGB 31, 31, 31
+
+	RGB 31, 31, 31
+	RGB  0,  0,  0
+	RGB 31, 31, 31
+	RGB 31, 31, 31
+
+	RGB 31,  0,  0
+	RGB 16,  3,  0
+	RGB 28, 19, 11
+	RGB 31, 31, 31
+
+	RGB 31, 16,  0
+	RGB  9,  6,  4
+	RGB 31, 16,  0
+	RGB 31, 24,  0
+
+	RGB 31, 18,  6
+	RGB  0,  3,  0
+	RGB  0,  9,  0
+	RGB  0, 12,  0
+
+	RGB  0, 16,  0
+	RGB  0, 22,  0
+	RGB  0, 25,  0
+	RGB  0, 27,  0
+
+	RGB  0, 31,  0
+	RGB  3, 31,  0
+	RGB  8, 31,  0
+	RGB 14, 31,  0
+
+	RGB 16, 31,  0
+	RGB 22, 31,  0
+	RGB 27, 31,  0
+	RGB 31, 31,  0
+
+Tilemap_17acd5: ; 17acd5
+INCBIN "gfx/unknown/17acd5.tilemap"
+
+Tilemap_17ae3d: ; 17ae3d
+INCBIN "gfx/unknown/17ae3d.tilemap"
+
+GFX_17afa5:: ; 17afa5
+INCBIN "gfx/unknown/17afa5.2bpp"

@@ -1,4 +1,4 @@
-BattleCommand54: ; 37588
+BattleCommand_Curse: ; 37588
 ; curse
 
 	ld de, BattleMonType1
@@ -26,13 +26,13 @@ BattleCommand54: ; 37588
 
 ; Attack
 	ld a, [bc]
-	cp 13 ; max
+	cp MAX_STAT_LEVEL
 	jr c, .raise
 
 ; Defense
 	inc bc
 	ld a, [bc]
-	cp 13 ; max
+	cp MAX_STAT_LEVEL
 	jr nc, .cantraise
 
 .raise
@@ -40,19 +40,19 @@ BattleCommand54: ; 37588
 ; Raise Attack and Defense, and lower Speed.
 
 	ld a, $1
-	ld [$c689], a
+	ld [wKickCounter], a
 	call AnimateCurrentMove
-	ld a, $2
-	call Function36532
-	call SwitchTurn
-	call BattleCommand8d
+	ld a, SPEED
+	call LowerStat
+	call BattleCommand_SwitchTurn
+	call BattleCommand_StatDownMessage
 	call ResetMiss
-	call SwitchTurn
-	call BattleCommand70
-	call BattleCommand8c
+	call BattleCommand_SwitchTurn
+	call BattleCommand_AttackUp
+	call BattleCommand_StatUpMessage
 	call ResetMiss
-	call BattleCommand71
-	jp BattleCommand8c
+	call BattleCommand_DefenseUp
+	jp BattleCommand_StatUpMessage
 
 
 .ghost
@@ -66,15 +66,15 @@ BattleCommand54: ; 37588
 	jr nz, .failed
 
 	ld a, BATTLE_VARS_SUBSTATUS1_OPP
-	call _GetBattleVar
-	bit 1, [hl]
+	call GetBattleVarAddr
+	bit SUBSTATUS_CURSE, [hl]
 	jr nz, .failed
 
-	set 1, [hl]
+	set SUBSTATUS_CURSE, [hl]
 	call AnimateCurrentMove
 	ld hl, GetHalfMaxHP
 	call CallBattleCore
-	ld hl, Function3cc3f
+	ld hl, SubtractHPFromUser
 	call CallBattleCore
 	call UpdateUserInParty
 	ld hl, PutACurseText
@@ -89,10 +89,9 @@ BattleCommand54: ; 37588
 
 ; Can't raise either stat.
 
-	ld b, $8 ; ABILITY
+	ld b, ABILITY + 1
 	call GetStatName
 	call AnimateFailedMove
 	ld hl, WontRiseAnymoreText
 	jp StdBattleTextBox
 ; 37618
-

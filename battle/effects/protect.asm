@@ -1,10 +1,10 @@
-BattleCommand55: ; 37618
+BattleCommand_Protect: ; 37618
 ; protect
 	call ProtectChance
 	ret c
 
 	ld a, BATTLE_VARS_SUBSTATUS1
-	call _GetBattleVar
+	call GetBattleVarAddr
 	set SUBSTATUS_PROTECT, [hl]
 
 	call AnimateCurrentMove
@@ -23,7 +23,7 @@ ProtectChance: ; 3762c
 	ld de, EnemyProtectCount
 .asm_37637
 
-	call Function36abf
+	call CheckOpponentWentFirst
 	jr nz, .failed
 
 ; Can't have a substitute.
@@ -78,4 +78,3 @@ ProtectChance: ; 3762c
 	scf
 	ret
 ; 3766f
-

@@ -1,61 +1,56 @@
-SilverCaveRoom1_MapScriptHeader: ; 0x18c552
-	; trigger count
+const_value set 2
+	const SILVERCAVEROOM1_POKE_BALL1
+	const SILVERCAVEROOM1_POKE_BALL2
+	const SILVERCAVEROOM1_POKE_BALL3
+	const SILVERCAVEROOM1_POKE_BALL4
+
+SilverCaveRoom1_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x18c554
 
-ItemFragment_0x18c554: ; 0x18c554
-	db MAX_ELIXER, 1
-; 0x18c556
+SilverCaveRoom1MaxElixer:
+	itemball MAX_ELIXER
 
-ItemFragment_0x18c556: ; 0x18c556
-	db PROTEIN, 1
-; 0x18c558
+SilverCaveRoom1Protein:
+	itemball PROTEIN
 
-ItemFragment_0x18c558: ; 0x18c558
-	db ESCAPE_ROPE, 1
-; 0x18c55a
+SilverCaveRoom1EscapeRope:
+	itemball ESCAPE_ROPE
 
-ItemFragment_0x18c55a: ; 0x18c55a
-	db ULTRA_BALL, 1
-; 0x18c55c
+SilverCaveRoom1UltraBall:
+	itemball ULTRA_BALL
 
-MapSilverCaveRoom1SignpostItem0: ; 0x18c55c
-	dw $009a
-	db DIRE_HIT
-	
-; 0x18c55f
+SilverCaveRoom1HiddenDireHit:
+	dwb EVENT_SILVER_CAVE_ROOM_1_HIDDEN_DIRE_HIT, DIRE_HIT
 
-MapSilverCaveRoom1SignpostItem1: ; 0x18c55f
-	dw $009b
-	db ULTRA_BALL
-	
-; 0x18c562
 
-SilverCaveRoom1_MapEventHeader: ; 0x18c562
+SilverCaveRoom1HiddenUltraBall:
+	dwb EVENT_SILVER_CAVE_ROOM_1_HIDDEN_ULTRA_BALL, ULTRA_BALL
+
+
+SilverCaveRoom1_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $21, $9, 2, GROUP_SILVER_CAVE_OUTSIDE, MAP_SILVER_CAVE_OUTSIDE
-	warp_def $1, $f, 1, GROUP_SILVER_CAVE_ROOM_2, MAP_SILVER_CAVE_ROOM_2
+	warp_def $21, $9, 2, SILVER_CAVE_OUTSIDE
+	warp_def $1, $f, 1, SILVER_CAVE_ROOM_2
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 23, 16, $7, MapSilverCaveRoom1SignpostItem0
-	signpost 12, 17, $7, MapSilverCaveRoom1SignpostItem1
+	signpost 23, 16, SIGNPOST_ITEM, SilverCaveRoom1HiddenDireHit
+	signpost 12, 17, SIGNPOST_ITEM, SilverCaveRoom1HiddenUltraBall
 
-	; people-events
+.PersonEvents:
 	db 4
-	person_event SPRITE_POKE_BALL, 13, 8, $1, $0, 255, 255, $1, 0, ItemFragment_0x18c554, $0699
-	person_event SPRITE_POKE_BALL, 33, 19, $1, $0, 255, 255, $1, 0, ItemFragment_0x18c556, $069a
-	person_event SPRITE_POKE_BALL, 34, 9, $1, $0, 255, 255, $1, 0, ItemFragment_0x18c558, $069b
-	person_event SPRITE_POKE_BALL, 22, 11, $1, $0, 255, 255, $1, 0, ItemFragment_0x18c55a, $07c1
-; 0x18c5b0
-
+	person_event SPRITE_POKE_BALL, 9, 4, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, SilverCaveRoom1MaxElixer, EVENT_SILVER_CAVE_ROOM_1_MAX_ELIXER
+	person_event SPRITE_POKE_BALL, 29, 15, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, SilverCaveRoom1Protein, EVENT_SILVER_CAVE_ROOM_1_PROTEIN
+	person_event SPRITE_POKE_BALL, 30, 5, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, SilverCaveRoom1EscapeRope, EVENT_SILVER_CAVE_ROOM_1_ESCAPE_ROPE
+	person_event SPRITE_POKE_BALL, 18, 7, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, SilverCaveRoom1UltraBall, EVENT_SILVER_CAVE_ROOM_1_ULTRA_BALL

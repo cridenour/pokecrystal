@@ -1,8 +1,12 @@
-
+PALPACKET_LENGTH EQU $10
 INCLUDE "predef/sgb.asm"
 
+SHINY_ATK_BIT EQU 5
+SHINY_DEF_VAL EQU 10
+SHINY_SPD_VAL EQU 10
+SHINY_SPC_VAL EQU 10
 
-CheckShininess: ; 8a68
+CheckShininess:
 ; Check if a mon is shiny by DVs at bc.
 ; Return carry if shiny.
 
@@ -11,38 +15,36 @@ CheckShininess: ; 8a68
 
 ; Attack
 	ld a, [hl]
-	and %0010 << 4
+	and 1 << SHINY_ATK_BIT
 	jr z, .NotShiny
 
 ; Defense
 	ld a, [hli]
-	and %1111
-	cp  %1010
+	and $f
+	cp  SHINY_DEF_VAL
 	jr nz, .NotShiny
 
 ; Speed
 	ld a, [hl]
-	and %1111 << 4
-	cp  %1010 << 4
+	and $f0
+	cp  SHINY_SPD_VAL << 4
 	jr nz, .NotShiny
 
 ; Special
 	ld a, [hl]
-	and %1111
-	cp  %1010
+	and $f
+	cp  SHINY_SPC_VAL
 	jr nz, .NotShiny
 
-.Shiny
+.Shiny:
 	scf
 	ret
 
-.NotShiny
+.NotShiny:
 	and a
 	ret
-; 8a88
 
-
-CheckContestMon: ; 8a88
+CheckContestMon:
 ; Check a mon's DVs at hl in the bug catching contest.
 ; Return carry if its DVs are good enough to place in the contest.
 
@@ -68,52 +70,47 @@ CheckContestMon: ; 8a88
 	cp 10
 	jr c, .Bad
 
-.Good
+.Good:
 	scf
 	ret
 
-.Bad
+.Bad:
 	and a
 	ret
-; 8aa4
 
-
-Function8aa4: ; 8aa4
+Function8aa4:
 	push de
 	push bc
 	ld hl, PalPacket_9ce6
-	ld de, $cda9
-	ld bc, $0010
+	ld de, wSGBPals
+	ld bc, PALPACKET_LENGTH
 	call CopyBytes
 	pop bc
 	pop de
 	ld a, c
-	ld [$cdac], a
+	ld [wSGBPals + 3], a
 	ld a, b
-	ld [$cdad], a
+	ld [wSGBPals + 4], a
 	ld a, e
-	ld [$cdae], a
+	ld [wSGBPals + 5], a
 	ld a, d
-	ld [$cdaf], a
-	ld hl, $cda9
+	ld [wSGBPals + 6], a
+	ld hl, wSGBPals
 	call Function9809
 	ld hl, BlkPacket_9a86
 	call Function9809
 	ret
-; 8ad1
 
-
-Function8ad1: ; 8ad1
+InitPartyMenuPalettes:
 	ld hl, PalPacket_9c56 + 1
-	call Function9610
-	call Function971a
-	call Function9699
+	call CopyFourPalettes
+	call InitPartyMenuOBPals
+	call WipeAttrMap
 	ret
-; 8ade
 
-Function8ade: ; 8ade
-	ld hl, $cd9b
-	ld a, [$cda9]
+SGB_ApplyPartyMenuHPPals: ; 8ade SGB layout $fc
+	ld hl, wHPPals
+	ld a, [wSGBPals]
 	ld e, a
 	ld d, $0
 	add hl, de
@@ -122,59 +119,56 @@ Function8ade: ; 8ade
 	ld a, [de]
 	and a
 	ld e, $5
-	jr z, .asm_8af7
+	jr z, .okay
 	dec a
 	ld e, $a
-	jr z, .asm_8af7
+	jr z, .okay
 	ld e, $f
-
-.asm_8af7
+.okay
 	push de
-	ld hl, $cdb3
-	ld bc, $0006
-	ld a, [$cda9]
+	ld hl, wSGBPals + 10
+	ld bc, $6
+	ld a, [wSGBPals]
 	call AddNTimes
 	pop de
 	ld [hl], e
 	ret
-; 8b07
 
-Function8b07: ; 8b07
+Function8b07:
+; Unreferenced
 	call CheckCGB
 	ret z
-	ld hl, Palette8b2f
-	ld de, $d000
-	ld bc, $0008
+	ld hl, .BGPal
+	ld de, UnknBGPals
+	ld bc, 1 palettes
 	ld a, $5
 	call FarCopyWRAM
 
-	ld hl, Palette8b37
-	ld de, MartPointer
-	ld bc, $0008
+	ld hl, .OBPal
+	ld de, UnknOBPals
+	ld bc, 1 palettes
 	ld a, $5
 	call FarCopyWRAM
 
-	call Function96a4
+	call ApplyPals
 	ld a, $1
 	ld [hCGBPalUpdate], a
 	ret
-; 8b2f
 
-Palette8b2f: ; 8b2f
+.BGPal:
 	RGB 31, 31, 31
 	RGB 18, 23, 31
 	RGB 15, 20, 31
 	RGB 00, 00, 00
-; 8b37
 
-Palette8b37: ; 8b37
+.OBPal:
 	RGB 31, 31, 31
 	RGB 31, 31, 12
 	RGB 08, 16, 28
 	RGB 00, 00, 00
-; 8b3f
 
-Function8b3f: ; 8b3f
+Function8b3f:
+; Unreferenced
 	call CheckCGB
 	ret nz
 	ld a, [hSGB]
@@ -182,41 +176,38 @@ Function8b3f: ; 8b3f
 	ret z
 	ld hl, BlkPacket_9a86
 	jp Function9809
-; 8b4d
 
-Function8b4d: ; 8b4d
+Function8b4d:
 	call CheckCGB
-	jr nz, .asm_8b5c
+	jr nz, .cgb
 	ld a, [hSGB]
 	and a
 	ret z
-	ld hl, $5c26
+	ld hl, PalPacket_9c26
 	jp Function9809
 
-.asm_8b5c
-	ld de, Unkn2Pals
+.cgb
+	ld de, UnknOBPals
 	ld a, $3b
-	call Function9625
-	jp Function9630
-; 8b67
+	call GetPredefPal
+	jp LoadHLPaletteIntoDE
 
-Function8b67: ; 8b67
+Function8b67:
 	call CheckCGB
-	jr nz, .asm_8b76
+	jr nz, .cgb
 	ld a, [hSGB]
 	and a
 	ret z
-	ld hl, $5c36
+	ld hl, PalPacket_9c36
 	jp Function9809
 
-.asm_8b76
-	ld de, Unkn2Pals
+.cgb
+	ld de, UnknOBPals
 	ld a, $3c
-	call Function9625
-	jp Function9630
-; 8b81
+	call GetPredefPal
+	jp LoadHLPaletteIntoDE
 
-Function8b81: ; 8b81
+Function8b81:
 	call CheckCGB
 	jr nz, .asm_8bb2
 	ld a, [hSGB]
@@ -225,51 +216,51 @@ Function8b81: ; 8b81
 	ld a, c
 	push af
 	ld hl, PalPacket_9ce6
-	ld de, $cda9
-	ld bc, $0010
+	ld de, wSGBPals
+	ld bc, PALPACKET_LENGTH
 	call CopyBytes
 	pop af
-	call Function9775
+	call GetMonPalettePointer_
 	ld a, [hli]
-	ld [$cdac], a
+	ld [wSGBPals + 3], a
 	ld a, [hli]
-	ld [$cdad], a
+	ld [wSGBPals + 4], a
 	ld a, [hli]
-	ld [$cdae], a
+	ld [wSGBPals + 5], a
 	ld a, [hl]
-	ld [$cdaf], a
-	ld hl, $cda9
+	ld [wSGBPals + 6], a
+	ld hl, wSGBPals
 	jp Function9809
 
 .asm_8bb2
-	ld de, Unkn2Pals
+	ld de, UnknOBPals
 	ld a, c
-	call Function9775
-	call Function9643
+	call GetMonPalettePointer_
+	call LoadPalette_White_Col1_Col2_Black
 	ret
-; 8bbd
 
-Function8bbd: ; 8bbd
+Function8bbd:
 	ld a, [TrainerClass]
-	call Function976b
+	call GetTrainerPalettePointer
 	ld a, e
-	jr .asm_8bd7
+	jr asm_8bd7
 
+Function8bc6:
 	ld a, [CurPartySpecies]
-	call Function97ee
+	call GetMonPalettePointer
 	ld a, e
 	bit 7, a
 	jr z, .asm_8bd7
 	and $7f
+rept 4
 	inc hl
-	inc hl
-	inc hl
-	inc hl
-
+endr
 .asm_8bd7
+
+asm_8bd7
 	push hl
-	ld hl, Unkn1Pals
-	ld de, $0008
+	ld hl, UnknBGPals
+	ld de, $8
 .asm_8bde
 	and a
 	jr z, .asm_8be5
@@ -281,11 +272,10 @@ Function8bbd: ; 8bbd
 	ld e, l
 	ld d, h
 	pop hl
-	call Function9643
+	call LoadPalette_White_Col1_Col2_Black
 	ret
-; 8bec
 
-Function8bec: ; 8bec
+Function8bec:
 	ld a, [hCGB]
 	and a
 	jr nz, .asm_8bf7
@@ -296,8 +286,8 @@ Function8bec: ; 8bec
 	ld a, [EnemyLightScreenCount]
 	ld c, a
 	ld a, [EnemyReflectCount]
-	ld hl, AttrMap
-	ld de, $0014
+	hlcoord 0, 0, AttrMap
+	ld de, $14
 .asm_8c04
 	and a
 	jr z, .asm_8c0b
@@ -308,92 +298,89 @@ Function8bec: ; 8bec
 .asm_8c0b
 	ld b, $0
 	add hl, bc
-	ld bc, $0604
-	ld a, [$c705]
+	lb bc, 6, 4
+	ld a, [EnemySafeguardCount]
 	and $3
-	call Function9663
-	call Function323d
+	call FillBoxCGB
+	call LoadEDTile
 	ret
-; 8c1d
 
-Function8c1d: ; 8c1d
+ApplyMonOrTrainerPals:
 	call CheckCGB
 	ret z
 	ld a, e
 	and a
-	jr z, .asm_8c2d
+	jr z, .get_trainer
 	ld a, [CurPartySpecies]
-	call Function9775
-	jr .asm_8c33
+	call GetMonPalettePointer_
+	jr .load_palettes
 
-.asm_8c2d
+.get_trainer
 	ld a, [TrainerClass]
-	call Function976b
+	call GetTrainerPalettePointer
 
-.asm_8c33
-	ld de, Unkn1Pals
-	call Function9643
-	call Function9699
-	call Function96b3
-	call Function96a4
+.load_palettes
+	ld de, UnknBGPals
+	call LoadPalette_White_Col1_Col2_Black
+	call WipeAttrMap
+	call ApplyAttrMap
+	call ApplyPals
 	ret
-; 8c43
 
-Function8c43: ; 8c43
-	ld a, [$d10a]
+ApplyHPBarPals:
+	ld a, [wWhichHPBar]
 	and a
-	jr z, .asm_8c52
+	jr z, .Enemy
 	cp $1
-	jr z, .asm_8c57
+	jr z, .Player
 	cp $2
-	jr z, .asm_8c70
+	jr z, .PartyMenu
 	ret
 
-.asm_8c52
-	ld de, $d092
-	jr .asm_8c5a
+.Enemy:
+	ld de, BGPals + 2 palettes + 2
+	jr .okay
 
-.asm_8c57
-	ld de, $d09a
+.Player:
+	ld de, BGPals + 3 palettes + 2
 
-.asm_8c5a
+.okay
 	ld l, c
 	ld h, $0
 	add hl, hl
 	add hl, hl
 	ld bc, Palettes_a8be
 	add hl, bc
-	ld bc, $0004
+	ld bc, 4
 	ld a, $5
 	call FarCopyWRAM
 	ld a, $1
 	ld [hCGBPalUpdate], a
 	ret
 
-.asm_8c70
+.PartyMenu:
 	ld e, c
 	inc e
-	ld hl, $cdf8
-	ld bc, $0028
+	hlcoord 11, 1, AttrMap
+	ld bc, 2 * SCREEN_WIDTH
 	ld a, [CurPartyMon]
-.asm_8c7b
+.loop
 	and a
-	jr z, .asm_8c82
+	jr z, .done
 	add hl, bc
 	dec a
-	jr .asm_8c7b
+	jr .loop
 
-.asm_8c82
-	ld bc, $0208
+.done
+	lb bc, 2, 8
 	ld a, e
-	call Function9663
+	call FillBoxCGB
 	ret
-; 8c8a
 
-Function8c8a: ; 8c8a
+LoadStatsScreenPals:
 	call CheckCGB
 	ret z
-	ld hl, Unknown_8f6a
+	ld hl, StatsScreenPals
 	ld b, 0
 	dec c
 	add hl, bc
@@ -403,62 +390,60 @@ Function8c8a: ; 8c8a
 	ld a, $5
 	ld [rSVBK], a
 	ld a, [hli]
-	ld [Unkn1Pals], a
-	ld [$d010], a
+	ld [UnknBGPals], a
+	ld [UnknBGPals + 8 * 2], a
 	ld a, [hl]
-	ld [$d001], a
-	ld [$d011], a
+	ld [UnknBGPals + 1], a
+	ld [UnknBGPals + 8 * 2 + 1], a
 	pop af
 	ld [rSVBK], a
-	call Function96a4
+	call ApplyPals
 	ld a, $1
 	ret
-; 8cb4
 
-Function8cb4: ; 8cb4
+Function8cb4:
 	ld l, e
 	ld h, 0
+rept 3
 	add hl, hl
-	add hl, hl
-	add hl, hl
+endr
 	ld de, Palettes_8d05
 	add hl, de
 	call CheckCGB
 	jr nz, .asm_8cf0
 	push hl
 	ld hl, PalPacket_9ce6
-	ld de, $cda9
-	ld bc, $0010
+	ld de, wSGBPals
+	ld bc, PALPACKET_LENGTH
 	call CopyBytes
 	pop hl
 	inc hl
 	inc hl
 	ld a, [hli]
-	ld [$cdac], a
+	ld [wSGBPals + 3], a
 	ld a, [hli]
-	ld [$cdad], a
+	ld [wSGBPals + 4], a
 	ld a, [hli]
-	ld [$cdae], a
+	ld [wSGBPals + 5], a
 	ld a, [hli]
-	ld [$cdaf], a
-	ld hl, $cda9
+	ld [wSGBPals + 6], a
+	ld hl, wSGBPals
 	call Function9809
 	ld hl, BlkPacket_9a86
 	call Function9809
 	ret
 
 .asm_8cf0
-	ld de, $d000
-	ld bc, $0008
+	ld de, UnknBGPals
+	ld bc, 1 palettes
 	ld a, $5
 	call FarCopyWRAM
-	call Function96a4
-	call Function9699
-	call Function96b3
+	call ApplyPals
+	call WipeAttrMap
+	call ApplyAttrMap
 	ret
-; 8d05
 
-Palettes_8d05: ; 8d05
+Palettes_8d05:
 	RGB 20, 31, 11
 	RGB 31, 19, 00
 	RGB 31, 10, 09
@@ -508,123 +493,118 @@ Palettes_8d05: ; 8d05
 	RGB 31, 31, 00
 	RGB 00, 21, 00
 	RGB 00, 00, 00
-; 8d55
 
 INCLUDE "predef/cgb.asm"
 
-
-Function95f0: ; 95f0
+Function95f0:
 	ld hl, Palette_9608
-	ld de, Unkn1Pals
-	ld bc, $0008
+	ld de, UnknBGPals
+	ld bc, 8
 	ld a, $5
 	call FarCopyWRAM
-	call Function96a4
-	call Function9699
-	call Function96b3
+	call ApplyPals
+	call WipeAttrMap
+	call ApplyAttrMap
 	ret
-; 9608
 
-Palette_9608: ; 9608
+Palette_9608:
 	RGB 31, 31, 31
 	RGB 09, 31, 31
 	RGB 10, 12, 31
 	RGB 00, 03, 19
-; 9610
 
-
-Function9610: ; 9610
-	ld de, $d000
+CopyFourPalettes:
+	ld de, UnknBGPals
 	ld c, $4
 
-Function9615: ; 9615
+CopyPalettes:
+.loop
 	push bc
 	ld a, [hli]
 	push hl
-	call Function9625
-	call Function9630
+	call GetPredefPal
+	call LoadHLPaletteIntoDE
 	pop hl
 	inc hl
 	pop bc
 	dec c
-	jr nz, Function9615
+	jr nz, .loop
 	ret
-; 9625
 
-Function9625: ; 9625
+GetPredefPal:
 	ld l, a
 	ld h, $0
+rept 3 ; multiply by 8
 	add hl, hl
-	add hl, hl
-	add hl, hl
+endr
 	ld bc, Palettes_9df6
 	add hl, bc
 	ret
-; 9630
 
-Function9630: ; 9630
+LoadHLPaletteIntoDE:
 	ld a, [rSVBK]
 	push af
 	ld a, $5
 	ld [rSVBK], a
 	ld c, $8
-.asm_9639
+.loop
 	ld a, [hli]
 	ld [de], a
 	inc de
 	dec c
-	jr nz, .asm_9639
+	jr nz, .loop
 	pop af
 	ld [rSVBK], a
 	ret
-; 9643
 
-Function9643: ; 9643
+LoadPalette_White_Col1_Col2_Black:
 	ld a, [rSVBK]
 	push af
 	ld a, $5
 	ld [rSVBK], a
-	ld a, $ff
+
+	ld a, $7fff % $100
 	ld [de], a
 	inc de
-	ld a, $7f
+	ld a, $7fff / $100
 	ld [de], a
 	inc de
-	ld c, $4
-.asm_9654
+
+	ld c, 2 * 2
+.loop
 	ld a, [hli]
 	ld [de], a
 	inc de
 	dec c
-	jr nz, .asm_9654
+	jr nz, .loop
+
 	xor a
 	ld [de], a
 	inc de
 	ld [de], a
 	inc de
+
 	pop af
 	ld [rSVBK], a
 	ret
-; 9663
 
-Function9663: ; 9663
-.asm_9663
+FillBoxCGB:
+.row
 	push bc
 	push hl
-.asm_9665
+.col
 	ld [hli], a
 	dec c
-	jr nz, .asm_9665
+	jr nz, .col
 	pop hl
-	ld bc, $0014
+	ld bc, SCREEN_WIDTH
 	add hl, bc
 	pop bc
 	dec b
-	jr nz, .asm_9663
+	jr nz, .row
 	ret
-; 9673
 
-Function9673: ; 9673
+Function9673:
 	push af
 	push bc
 	push de
@@ -633,21 +613,19 @@ Function9673: ; 9673
 	push af
 	ld a, $5
 	ld [rSVBK], a
-	ld hl, $d000
-	ld c, $8
-.asm_9683
+	ld hl, UnknBGPals
+	ld c, 8
+.loop
 	ld a, $ff
+rept 4
 	ld [hli], a
-	ld [hli], a
-	ld [hli], a
-	ld [hli], a
+endr
 	xor a
+rept 4
 	ld [hli], a
-	ld [hli], a
-	ld [hli], a
-	ld [hli], a
+endr
 	dec c
-	jr nz, .asm_9683
+	jr nz, .loop
 	pop af
 	ld [rSVBK], a
 	pop hl
@@ -655,30 +633,26 @@ Function9673: ; 9673
 	pop bc
 	pop af
 	ret
-; 9699
 
-
-Function9699: ; 9699
-	ld hl, AttrMap
-	ld bc, $0168
+WipeAttrMap:
+	hlcoord 0, 0, AttrMap
+	ld bc, SCREEN_WIDTH * SCREEN_HEIGHT
 	xor a
 	call ByteFill
 	ret
-; 96a4
 
-Function96a4: ; 96a4
-	ld hl, $d000
-	ld de, $d080
-	ld bc, $0080
+ApplyPals:
+	ld hl, UnknBGPals
+	ld de, BGPals
+	ld bc, 16 palettes
 	ld a, $5
 	call FarCopyWRAM
 	ret
-; 96b3
 
-Function96b3: ; 96b3
+ApplyAttrMap:
 	ld a, [rLCDC]
 	bit 7, a
-	jr z, .asm_96d0
+	jr z, .UpdateVBank1
 	ld a, [hBGMapMode]
 	push af
 	ld a, $2
@@ -691,37 +665,35 @@ Function96b3: ; 96b3
 	ld [hBGMapMode], a
 	ret
 
-.asm_96d0
-	ld hl, AttrMap
-	ld de, VBGMap0
-	ld b, $12
+.UpdateVBank1:
+	hlcoord 0, 0, AttrMap
+	debgcoord 0, 0
+	ld b, SCREEN_HEIGHT
 	ld a, $1
 	ld [rVBK], a
-.asm_96dc
-	ld c, $14
-.asm_96de
+.row
+	ld c, SCREEN_WIDTH
+.col
 	ld a, [hli]
 	ld [de], a
 	inc de
 	dec c
-	jr nz, .asm_96de
-	ld a, $c
+	jr nz, .col
+	ld a, BG_MAP_WIDTH - SCREEN_WIDTH
 	add e
-	jr nc, .asm_96ea
+	jr nc, .okay
 	inc d
-
-.asm_96ea
+.okay
 	ld e, a
 	dec b
-	jr nz, .asm_96dc
+	jr nz, .row
 	ld a, $0
 	ld [rVBK], a
 	ret
-; 96f3
 
-Function96f3: ; 96f3
-	ld hl, $cd9b
-	ld a, [$cda9]
+CGB_ApplyPartyMenuHPPals: ; 96f3 CGB layout $fc
+	ld hl, wHPPals
+	ld a, [wSGBPals]
 	ld e, a
 	ld d, $0
 	add hl, de
@@ -730,254 +702,236 @@ Function96f3: ; 96f3
 	ld a, [de]
 	inc a
 	ld e, a
-	ld hl, $ce0c
-	ld bc, $0028
-	ld a, [$cda9]
-.asm_970b
+	hlcoord 11, 2, AttrMap
+	ld bc, 2 * SCREEN_WIDTH
+	ld a, [wSGBPals]
+.loop
 	and a
-	jr z, .asm_9712
+	jr z, .done
 	add hl, bc
 	dec a
-	jr .asm_970b
-
-.asm_9712
-	ld bc, $0208
+	jr .loop
+.done
+	lb bc, 2, 8
 	ld a, e
-	call Function9663
+	call FillBoxCGB
 	ret
-; 971a
 
-
-Function971a: ; 971a
+InitPartyMenuOBPals:
 	ld hl, Palettes_b681
-	ld de, Unkn2Pals
-	ld bc, $0010
+	ld de, UnknOBPals
+	ld bc, 2 palettes
 	ld a, $5
 	call FarCopyWRAM
 	ret
-; 9729
 
-Function9729: ; 9729
+GetBattlemonBackpicPalettePointer:
 	push de
-	callba Function3da85
+	callba GetPartyMonDVs
 	ld c, l
 	ld b, h
 	ld a, [TempBattleMonSpecies]
-	call Function974b
+	call GetPlayerOrMonPalettePointer
 	pop de
 	ret
-; 973a
 
-Function973a: ; 973a
+GetEnemyFrontpicPalettePointer:
 	push de
-	callba Function3da97
+	callba GetEnemyMonDVs
 	ld c, l
 	ld b, h
 	ld a, [TempEnemyMonSpecies]
-	call Function9764
+	call GetFrontpicPalettePointer
 	pop de
 	ret
-; 974b
 
-Function974b: ; 974b
+GetPlayerOrMonPalettePointer:
 	and a
-	jp nz, Function97f9
-	ld a, [$d45b]
-	bit 2, a
-	jr nz, .asm_9760
+	jp nz, GetMonNormalOrShinyPalettePointer
+	ld a, [wPlayerSpriteSetupFlags]
+	bit 2, a ; transformed to male
+	jr nz, .male
 	ld a, [PlayerGender]
 	and a
-	jr z, .asm_9760
+	jr z, .male
 	ld hl, KrisPalette
 	ret
 
-.asm_9760
+.male
 	ld hl, PlayerPalette
 	ret
-; 9764
 
-Function9764: ; 9764
+GetFrontpicPalettePointer:
 	and a
-	jp nz, Function97f9
+	jp nz, GetMonNormalOrShinyPalettePointer
 	ld a, [TrainerClass]
 
-Function976b: ; 976b
+GetTrainerPalettePointer:
 	ld l, a
 	ld h, 0
-	add hl, hl
-	add hl, hl
+	add hl,hl
+	add hl,hl
 	ld bc, TrainerPalettes
 	add hl, bc
 	ret
-; 9775
 
-Function9775: ; 9775
-	call Function97ee
+GetMonPalettePointer_:
+	call GetMonPalettePointer
 	ret
-; 9779
 
-Function9779: ; 9779
-	ret
-; 977a
-
-Function977a: ; 977a
+Function9779: mobile
 	call CheckCGB
 	ret z
 	ld hl, Palettes_979c
 	ld a, $90
 	ld [rOBPI], a
-	ld c, $30
-.asm_9787
+	ld c, 6 palettes
+.loop
 	ld a, [hli]
 	ld [rOBPD], a
 	dec c
-	jr nz, .asm_9787
+	jr nz, .loop
 	ld hl, Palettes_979c
-	ld de, $d050
-	ld bc, $0010
+	ld de, UnknOBPals + 8 * 2
+	ld bc, 2 palettes
 	ld a, $5
 	call FarCopyWRAM
 	ret
-; 979c
 
-Palettes_979c: ; 979c
+Palettes_979c:
 	RGB 31, 31, 31
 	RGB 25, 25, 25
 	RGB 13, 13, 13
 	RGB 00, 00, 00
+
 	RGB 31, 31, 31
 	RGB 31, 31, 07
 	RGB 31, 16, 01
 	RGB 00, 00, 00
+
 	RGB 31, 31, 31
 	RGB 31, 19, 24
 	RGB 30, 10, 06
 	RGB 00, 00, 00
+
 	RGB 31, 31, 31
 	RGB 12, 25, 01
 	RGB 05, 14, 00
 	RGB 00, 00, 00
+
 	RGB 31, 31, 31
 	RGB 08, 12, 31
 	RGB 01, 04, 31
 	RGB 00, 00, 00
+
 	RGB 31, 31, 31
 	RGB 24, 18, 07
 	RGB 20, 15, 03
 	RGB 00, 00, 00
-; 97cc
 
-Function97cc: ; 97cc
+Function97cc:
 	call CheckCGB
 	ret z
 	ld a, $90
 	ld [rOBPI], a
 	ld a, $1c
-	call Function9625
+	call GetPredefPal
 	call Function97e5
 	ld a, $21
-	call Function9625
+	call GetPredefPal
 	call Function97e5
 	ret
-; 97e5
 
-Function97e5: ; 97e5
-	ld c, $8
-.asm_97e7
+Function97e5:
+	ld c, 1 palettes
+.loop
 	ld a, [hli]
 	ld [rOBPD], a
 	dec c
-	jr nz, .asm_97e7
+	jr nz, .loop
 	ret
-; 97ee
 
-Function97ee: ; 97ee
+GetMonPalettePointer:
 	ld l, a
 	ld h, $0
+rept 3
 	add hl, hl
-	add hl, hl
-	add hl, hl
-	ld bc, $68ce
+endr
+	ld bc, PokemonPalettes
 	add hl, bc
 	ret
-; 97f9
 
-Function97f9: ; 97f9
+GetMonNormalOrShinyPalettePointer:
 	push bc
-	call Function97ee
+	call GetMonPalettePointer
 	pop bc
 	push hl
 	call CheckShininess
 	pop hl
 	ret nc
+rept 4
 	inc hl
-	inc hl
-	inc hl
-	inc hl
+endr
 	ret
-; 9809
 
-Function9809: ; 9809
-	ld a, [$cfbe]
+Function9809:
+	ld a, [wcfbe]
 	push af
 	set 7, a
-	ld [$cfbe], a
-	call Function981a
+	ld [wcfbe], a
+	call PushSGBPals
 	pop af
-	ld [$cfbe], a
+	ld [wcfbe], a
 	ret
-; 981a
 
-Function981a: ; 981a
+PushSGBPals:
 	ld a, [hl]
 	and $7
 	ret z
 	ld b, a
-.asm_981f
+.loop
 	push bc
 	xor a
 	ld [rJOYP], a
 	ld a, $30
 	ld [rJOYP], a
 	ld b, $10
-.asm_9829
+.loop2
 	ld e, $8
 	ld a, [hli]
 	ld d, a
-.asm_982d
+.loop3
 	bit 0, d
 	ld a, $10
-	jr nz, .asm_9835
+	jr nz, .okay
 	ld a, $20
-
-.asm_9835
+.okay
 	ld [rJOYP], a
 	ld a, $30
 	ld [rJOYP], a
 	rr d
 	dec e
-	jr nz, .asm_982d
+	jr nz, .loop3
 	dec b
-	jr nz, .asm_9829
+	jr nz, .loop2
 	ld a, $20
 	ld [rJOYP], a
 	ld a, $30
 	ld [rJOYP], a
-	call Function9a7a
+	call SGBDelayCycles
 	pop bc
 	dec b
-	jr nz, .asm_981f
+	jr nz, .loop
 	ret
-; 9853
 
-Function9853: ; 9853
+Function9853:
 	call CheckCGB
 	ret nz
 	di
-	ld a, [$cfbe]
+	ld a, [wcfbe]
 	push af
 	set 7, a
-	ld [$cfbe], a
+	ld [wcfbe], a
 	xor a
 	ld [rJOYP], a
 	ld [hSGB], a
@@ -987,97 +941,92 @@ Function9853: ; 9853
 	ld [hSGB], a
 	call Function98eb
 	call Function99b4
-	call Function9a7a
+	call SGBDelayCycles
 	call Function993f
 	call Function992c
-	call Function9a7a
+	call SGBDelayCycles
 	call Function993f
 	ld hl, PalPacket_9d66
-	call Function981a
+	call PushSGBPals
 
 .asm_988a
 	pop af
-	ld [$cfbe], a
+	ld [wcfbe], a
 	ei
 	ret
-; 9890
 
-
-Function9890:: ; 9890
+Function9890::
 	call CheckCGB
 	ret z
 	ld a, $1
 	ld [rVBK], a
 	ld hl, VTiles0
-	ld bc, $2000
+	ld bc, $200 tiles
 	xor a
 	call ByteFill
 	ld a, $0
 	ld [rVBK], a
 	ld a, $80
 	ld [rBGPI], a
-	ld c, $20
-.asm_98ac
-	ld a, $ff
+	ld c, 4 * 8
+.bgpals_loop
+	ld a, $7fff % $100
 	ld [rBGPD], a
-	ld a, $7f
+	ld a, $7fff / $100
 	ld [rBGPD], a
 	dec c
-	jr nz, .asm_98ac
+	jr nz, .bgpals_loop
 	ld a, $80
 	ld [rOBPI], a
-	ld c, $20
-.asm_98bd
-	ld a, $ff
+	ld c, 4 * 8
+.obpals_loop
+	ld a, $7fff % $100
 	ld [rOBPD], a
-	ld a, $7f
+	ld a, $7fff / $100
 	ld [rOBPD], a
 	dec c
-	jr nz, .asm_98bd
+	jr nz, .obpals_loop
 	ld a, [rSVBK]
 	push af
 	ld a, $5
 	ld [rSVBK], a
-	ld hl, $d000
-	call Function98df
-	ld hl, $d080
-	call Function98df
+	ld hl, UnknBGPals
+	call .LoadWhitePals
+	ld hl, BGPals
+	call .LoadWhitePals
 	pop af
 	ld [rSVBK], a
 	ret
-; 98df
 
-Function98df: ; 98df
-	ld c, $40
-.asm_98e1
-	ld a, $ff
+.LoadWhitePals:
+	ld c, 4 * 16
+.loop
+	ld a, $7fff % $100
 	ld [hli], a
-	ld a, $7f
+	ld a, $7fff / $100
 	ld [hli], a
 	dec c
-	jr nz, .asm_98e1
+	jr nz, .loop
 	ret
-; 98eb
 
-Function98eb: ; 98eb
-	ld hl, Unknown_98ff
-	ld c, $9
-.asm_98f0
+Function98eb:
+	ld hl, .PalPacketPointerTable
+	ld c, 9
+.loop
 	push bc
 	ld a, [hli]
 	push hl
 	ld h, [hl]
 	ld l, a
-	call Function981a
+	call PushSGBPals
 	pop hl
 	inc hl
 	pop bc
 	dec c
-	jr nz, .asm_98f0
+	jr nz, .loop
 	ret
-; 98ff
 
-Unknown_98ff: ; 98ff
+.PalPacketPointerTable:
 	dw PalPacket_9d56
 	dw PalPacket_9d76
 	dw PalPacket_9d86
@@ -1087,50 +1036,45 @@ Unknown_98ff: ; 98ff
 	dw PalPacket_9dc6
 	dw PalPacket_9dd6
 	dw PalPacket_9de6
-; 9911
 
-Function9911: ; 9911
+Function9911:
 	di
 	xor a
 	ld [rJOYP], a
 	ld hl, PalPacket_9d56
-	call Function981a
+	call PushSGBPals
 	call Function992c
-	call Function9a7a
+	call SGBDelayCycles
 	call Function993f
 	ld hl, PalPacket_9d66
-	call Function981a
+	call PushSGBPals
 	ei
 	ret
-; 992c
 
-Function992c: ; 992c
-	call Function9938
+Function992c:
+	call .LoadSGBBorderPointers
 	push de
 	call Function9a24
 	pop hl
 	call Function99d8
 	ret
-; 9938
 
-Function9938: ; 9938
+.LoadSGBBorderPointers:
 	ld hl, SGBBorder
 	ld de, SGBBorderMap
 	ret
-; 993f
 
-Function993f: ; 993f
+Function993f:
 	ld hl, VTiles0
 	ld bc, $2000
 	xor a
 	call ByteFill
 	ret
-; 994a
 
-Function994a: ; 994a
+Function994a:
 	ld hl, PalPacket_9d26
-	call Function981a
-	call Function9a7a
+	call PushSGBPals
+	call SGBDelayCycles
 	ld a, [rJOYP]
 	and $3
 	cp $3
@@ -1139,29 +1083,26 @@ Function994a: ; 994a
 	ld [rJOYP], a
 	ld a, [rJOYP]
 	ld a, [rJOYP]
-	call Function9a7a
-	call Function9a7a
+	call SGBDelayCycles
+	call SGBDelayCycles
 	ld a, $30
 	ld [rJOYP], a
-	call Function9a7a
-	call Function9a7a
+	call SGBDelayCycles
+	call SGBDelayCycles
 	ld a, $10
 	ld [rJOYP], a
+rept 6
 	ld a, [rJOYP]
-	ld a, [rJOYP]
-	ld a, [rJOYP]
-	ld a, [rJOYP]
-	ld a, [rJOYP]
-	ld a, [rJOYP]
-	call Function9a7a
-	call Function9a7a
+endr
+	call SGBDelayCycles
+	call SGBDelayCycles
 	ld a, $30
 	ld [rJOYP], a
+rept 3
 	ld a, [rJOYP]
-	ld a, [rJOYP]
-	ld a, [rJOYP]
-	call Function9a7a
-	call Function9a7a
+endr
+	call SGBDelayCycles
+	call SGBDelayCycles
 	ld a, [rJOYP]
 	and $3
 	cp $3
@@ -1174,15 +1115,13 @@ Function994a: ; 994a
 	call Function99ab
 	scf
 	ret
-; 99ab
 
-Function99ab: ; 99ab
+Function99ab:
 	ld hl, PalPacket_9d16
-	call Function981a
-	jp Function9a7a
-; 99b4
+	call PushSGBPals
+	jp SGBDelayCycles
 
-Function99b4: ; 99b4
+Function99b4:
 	call DisableLCD
 	ld a, $e4
 	ld [rBGP], a
@@ -1194,58 +1133,56 @@ Function99b4: ; 99b4
 	ld a, $e3
 	ld [rLCDC], a
 	ld hl, PalPacket_9d06
-	call Function981a
+	call PushSGBPals
 	xor a
 	ld [rBGP], a
 	ret
-; 99d8
 
-Function99d8: ; 99d8
+Function99d8:
 	call DisableLCD
 	ld a, $e4
 	ld [rBGP], a
 	ld de, VTiles1
-	ld bc, $0140
+	ld bc, 20 tiles
 	call CopyData
-	ld b, $12
+	ld b, 18
 .asm_99ea
 	push bc
-	ld bc, $000c
+	ld bc, $c
 	call CopyData
-	ld bc, $0028
+	ld bc, $28
 	call ClearBytes
-	ld bc, $000c
+	ld bc, $c
 	call CopyData
 	pop bc
 	dec b
 	jr nz, .asm_99ea
-	ld bc, $0140
+	ld bc, $140
 	call CopyData
 	ld bc, Start
 	call ClearBytes
-	ld bc, $0080
+	ld bc, 16 palettes
 	call CopyData
 	call DrawDefaultTiles
 	ld a, $e3
 	ld [rLCDC], a
 	ld hl, PalPacket_9d46
-	call Function981a
+	call PushSGBPals
 	xor a
 	ld [rBGP], a
 	ret
-; 9a24
 
-Function9a24: ; 9a24
+Function9a24:
 	call DisableLCD
-	ld a, $e4
+	ld a, %11100100
 	ld [rBGP], a
 	ld de, VTiles1
 	ld b, $80
 .asm_9a30
 	push bc
-	ld bc, $0010
+	ld bc, 1 tiles
 	call CopyData
-	ld bc, $0010
+	ld bc, 1 tiles
 	call ClearBytes
 	pop bc
 	dec b
@@ -1254,11 +1191,10 @@ Function9a24: ; 9a24
 	ld a, $e3
 	ld [rLCDC], a
 	ld hl, PalPacket_9d36
-	call Function981a
+	call PushSGBPals
 	xor a
 	ld [rBGP], a
 	ret
-; 9a52
 
 CopyData: ; 0x9a52
 ; copy bc bytes of data from hl to de
@@ -1286,8 +1222,8 @@ ClearBytes: ; 0x9a5b
 
 DrawDefaultTiles: ; 0x9a64
 ; Draw 240 tiles (2/3 of the screen) from tiles in VRAM
-	ld hl, VBGMap0 ; BG Map 0
-	ld de, 32 - 20
+	hlbgcoord 0, 0 ; BG Map 0
+	ld de, BG_MAP_WIDTH - SCREEN_WIDTH
 	ld a, $80 ; starting tile
 	ld c, 12 + 1
 .line
@@ -1304,62 +1240,59 @@ DrawDefaultTiles: ; 0x9a64
 	ret
 ; 0x9a7a
 
-Function9a7a: ; 9a7a
-	ld de, $1b58
-.asm_9a7d
+SGBDelayCycles:
+	ld de, 7000
+.wait
 	nop
 	nop
 	nop
 	dec de
 	ld a, d
 	or e
-	jr nz, .asm_9a7d
+	jr nz, .wait
 	ret
-; 9a86
 
-BlkPacket_9a86: ; 9a86
+BlkPacket_9a86:
 	db $21, $01, $03, $00, $00, $00, $13, $11, $00, $00, $00, $00, $00, $00, $00, $00
 
-BlkPacket_9a96: ; 9a96
+BlkPacket_9a96:
 	db $21, $01, $07, $05, $00, $0a, $13, $0d, $00, $00, $00, $00, $00, $00, $00, $00
 
-BlkPacket_9aa6: ; 9a86
+BlkPacket_9aa6:
 	db $22, $05, $07, $0a, $00, $0c, $13, $11, $03, $05, $01, $00, $0a, $03, $03, $00
 	db $0a, $08, $13, $0a, $03, $0a, $00, $04, $08, $0b, $03, $0f, $0b, $00, $13, $07
 
-BlkPacket_9ac6: ; 9a86
+BlkPacket_9ac6:
 	db $21, $01, $07, $05, $00, $01, $07, $07, $00, $00, $00, $00, $00, $00, $00, $00
 
-BlkPacket_9ad6: ; 9a86
+BlkPacket_9ad6:
 	db $21, $01, $07, $05, $0b, $01, $13, $02, $00, $00, $00, $00, $00, $00, $00, $00
 
-BlkPacket_9ae6: ; 9a86
+BlkPacket_9ae6:
 	db $21, $01, $07, $05, $01, $01, $08, $08, $00, $00, $00, $00, $00, $00, $00, $00
 
-BlkPacket_9af6: ; 9a86
+BlkPacket_9af6:
 	db $21, $01, $07, $05, $07, $05, $0d, $0b, $00, $00, $00, $00, $00, $00, $00, $00
 
-BlkPacket_9b06: ; 9a86
+BlkPacket_9b06:
 	db $22, $05, $03, $05, $00, $00, $13, $0b, $03, $0a, $00, $04, $13, $09, $02, $0f
 	db $00, $06, $13, $07, $03, $00, $04, $04, $0f, $09, $03, $00, $00, $0c, $13, $11
 
-BlkPacket_9b26: ; 9a86
+BlkPacket_9b26:
 	db $23, $07, $07, $10, $00, $00, $02, $0c, $02, $00, $0c, $00, $12, $01, $02, $00
 	db $0c, $02, $12, $03, $02, $00, $0c, $04, $12, $05, $02, $00, $0c, $06, $12, $07
 	db $02, $00, $0c, $08, $12, $09, $02, $00, $0c, $0a, $12, $0b, $00, $00, $00, $00
 
-BlkPacket_9b56: ; 9a86
+BlkPacket_9b56:
 	db $22, $03, $07, $20, $00, $00, $13, $04, $03, $0f, $00, $06, $13, $11, $03, $05
 	db $0f, $01, $12, $04, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 
-BlkPacket_9b76: ; 9a86
+BlkPacket_9b76:
 	db $21, $01, $07, $10, $00, $00, $13, $05, $00, $00, $00, $00, $00, $00, $00, $00
 
-BlkPacket_9b86: ; 9a86
+BlkPacket_9b86:
 	db $21, $02, $07, $0a, $00, $04, $13, $0d, $03, $05, $00, $06, $13, $0b, $00, $00
-; 9b96
 
-; 9b96
 PalPacket_9b96:	db $51, $48, $00, $49, $00, $4a, $00, $4b, $00, $00, $00, $00, $00, $00, $00, $00
 PalPacket_9ba6:	db $51, $2b, $00, $24, $00, $20, $00, $00, $00, $00, $00, $00, $00, $00, $00, $00
 PalPacket_9bb6:	db $51, $41, $00, $42, $00, $43, $00, $44, $00, $00, $00, $00, $00, $00, $00, $00
@@ -1398,9 +1331,8 @@ PalPacket_9db6:	db $79, $31, $08, $00, $0b, $0c, $a5, $ca, $c9, $7e, $d0, $06, $
 PalPacket_9dc6:	db $79, $26, $08, $00, $0b, $39, $cd, $48, $0c, $d0, $34, $a5, $c9, $c9, $80, $d0
 PalPacket_9dd6:	db $79, $1b, $08, $00, $0b, $ea, $ea, $ea, $ea, $ea, $a9, $01, $cd, $4f, $0c, $d0
 PalPacket_9de6:	db $79, $10, $08, $00, $0b, $4c, $20, $08, $ea, $ea, $ea, $ea, $ea, $60, $ea, $ea
-; 9df6
 
-Palettes_9df6: ; 9df6
+Palettes_9df6:
 	RGB 31, 31, 31
 	RGB 22, 25, 19
 	RGB 16, 21, 30
@@ -1795,9 +1727,8 @@ Palettes_9df6: ; 9df6
 	RGB 08, 11, 11
 	RGB 21, 21, 21
 	RGB 31, 31, 31
-; a06e
 
-SGBBorderMap: ; a06e
+SGBBorderMap:
 	db $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $14,$14, $15,$14, $16,$14, $17,$14, $17,$54, $16,$54, $15,$54, $14,$54, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14
 	db $01,$14, $02,$14, $03,$14, $03,$54, $02,$54, $01,$54, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $24,$14, $25,$14, $26,$14, $07,$14, $07,$54, $26,$54, $25,$54, $24,$54, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$54, $01,$14, $02,$14, $03,$14, $03,$54, $02,$54, $01,$54
 	db $11,$14, $12,$14, $13,$14, $13,$54, $12,$54, $11,$54, $10,$54, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $24,$14, $34,$14, $35,$14, $35,$54, $34,$54, $33,$54, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $10,$14, $11,$14, $12,$14, $13,$14, $13,$54, $12,$54, $11,$54
@@ -1826,9 +1757,8 @@ SGBBorderMap: ; a06e
 	db $25,$14, $26,$14, $07,$14, $07,$54, $26,$54, $25,$54, $24,$54, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $01,$14, $02,$14, $03,$14, $03,$54, $02,$54, $01,$54, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $24,$14, $25,$14, $26,$14, $07,$14, $07,$54, $26,$54, $25,$54
 	db $33,$14, $34,$14, $35,$14, $35,$54, $34,$54, $24,$54, $07,$54, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $10,$14, $11,$14, $12,$14, $13,$14, $13,$54, $12,$54, $11,$54, $10,$54, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $24,$14, $34,$14, $35,$14, $35,$54, $34,$54, $33,$54
 	db $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $20,$14, $21,$14, $22,$14, $23,$14, $23,$54, $22,$54, $21,$54, $20,$54, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14, $07,$14
-; a49e
 
-SGBBorderPalettes: ; a49e
+SGBBorderPalettes:
 	RGB 24, 06, 06
 	RGB 24, 24, 26
 	RGB 14, 15, 20
@@ -1908,13 +1838,11 @@ SGBBorderPalettes: ; a49e
 	RGB 31, 31, 25
 	RGB 31, 31, 25
 	RGB 31, 31, 25
-; a51e
 
-SGBBorder: ; a51e
+SGBBorder:
 INCBIN "gfx/misc/sgb_border.2bpp"
-; a8be
 
-Palettes_a8be: ; a8be
+Palettes_a8be:
 	RGB 30, 26, 15
 	RGB 00, 23, 00
 
@@ -1924,32 +1852,30 @@ Palettes_a8be: ; a8be
 	RGB 30, 26, 15
 	RGB 31, 00, 00
 
-Palettes_a8ca: ; a8ca
+Palettes_a8ca:
 	RGB 30, 26, 15
 	RGB 04, 17, 31
-; a8ce
 
-; a8ce
 INCLUDE "gfx/pics/palette_pointers.asm"
-; b0ce
 
-; b0ce
 INCLUDE "gfx/trainers/palette_pointers.asm"
-; b1de
 
-Functionb1de: ; b1de
-	callba Function494ac
-	jr c, .asm_b230
-	ld a, [$d19a]
+LoadMapPals:
+	callba LoadSpecialMapPalette
+	jr c, .got_pals
+
+	; Which palette group is based on whether we're outside or inside
+	ld a, [wPermission]
 	and 7
 	ld e, a
 	ld d, 0
-	ld hl, Unknown_b279
+	ld hl, .TilesetColorsPointers
 	add hl, de
 	add hl, de
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
+	; Futher refine by time of day
 	ld a, [TimeOfDayPal]
 	and 3
 	add a
@@ -1960,14 +1886,15 @@ Functionb1de: ; b1de
 	add hl, de
 	ld e, l
 	ld d, h
+	; Switch to palettes WRAM bank
 	ld a, [rSVBK]
 	push af
 	ld a, $5
 	ld [rSVBK], a
-	ld hl, Unkn1Pals
-	ld b, $8
-.asm_b210
-	ld a, [de]
+	ld hl, UnknBGPals
+	ld b, 8
+.outer_loop
+	ld a, [de] ; lookup index for TilesetBGPalette
 	push de
 	push hl
 	ld l, a
@@ -1975,479 +1902,121 @@ Functionb1de: ; b1de
 	add hl, hl
 	add hl, hl
 	add hl, hl
-	ld de, MornPal
+	ld de, TilesetBGPalette
 	add hl, de
 	ld e, l
 	ld d, h
 	pop hl
-	ld c, 8
-.asm_b222
+	ld c, 1 palettes
+.inner_loop
 	ld a, [de]
 	inc de
 	ld [hli], a
 	dec c
-	jr nz, .asm_b222
+	jr nz, .inner_loop
 	pop de
 	inc de
 	dec b
-	jr nz, .asm_b210
+	jr nz, .outer_loop
 	pop af
 	ld [rSVBK], a
 
-.asm_b230
+.got_pals
 	ld a, [TimeOfDayPal]
 	and 3
-	ld bc, $40
-	ld hl, Palettes_b469
+	ld bc, 8 palettes
+	ld hl, MapObjectPals
 	call AddNTimes
-	ld de, Unkn2Pals
-	ld bc, $0040
-	ld a, $5
+	ld de, UnknOBPals
+	ld bc, 8 palettes
+	ld a, $5 ; BANK(UnknOBPals)
 	call FarCopyWRAM
-	ld a, [$d19a]
-	cp 1
-	jr z, .asm_b253
-	cp 2
-	ret nz
 
-.asm_b253
+	ld a, [wPermission]
+	cp TOWN
+	jr z, .outside
+	cp ROUTE
+	ret nz
+.outside
 	ld a, [MapGroup]
 	ld l, a
 	ld h, 0
-	add hl, hl
-	add hl, hl
-	add hl, hl
-	ld de, Palettes_b569
+rept 3
+	add hl,hl
+endr
+	ld de, RoofPals
 	add hl, de
 	ld a, [TimeOfDayPal]
 	and 3
-	cp 2
-	jr c, .asm_b26d
+	cp NITE
+	jr c, .morn_day
+rept 4
 	inc hl
-	inc hl
-	inc hl
-	inc hl
-
-.asm_b26d
-	ld de, $d032
-	ld bc, $0004
+endr
+.morn_day
+	ld de, UnknBGPals + 6 palettes + 2
+	ld bc, 4
 	ld a, $5
 	call FarCopyWRAM
 	ret
-; b279
 
-Unknown_b279: ; b279
-	dw Unknown_b289
-	dw Unknown_b289
-	dw Unknown_b289
-	dw Unknown_b2a9
-	dw Unknown_b2c9
-	dw Unknown_b2e9
-	dw Unknown_b2a9
-	dw Unknown_b2c9
-; b289
+.TilesetColorsPointers:
+	dw .OutdoorColors ; unused
+	dw .OutdoorColors ; TOWN
+	dw .OutdoorColors ; ROUTE
+	dw .IndoorColors ; INDOOR
+	dw .DungeonColors ; CAVE
+	dw .Perm5Colors ; PERM_5
+	dw .IndoorColors ; GATE
+	dw .DungeonColors ; DUNGEON
 
-Unknown_b289: ; b289
-	db $00, $01, $02, $28, $04, $05, $06, $07, $08, $09, $0a, $28, $0c, $0d, $0e, $0f
-	db $10, $11, $12, $29, $14, $15, $16, $17, $18, $19, $1a, $1b, $1c, $1d, $1e, $1f
+; Valid indices: $00 - $29
+.OutdoorColors:
+	db $00, $01, $02, $28, $04, $05, $06, $07 ; morn
+	db $08, $09, $0a, $28, $0c, $0d, $0e, $0f ; day
+	db $10, $11, $12, $29, $14, $15, $16, $17 ; nite
+	db $18, $19, $1a, $1b, $1c, $1d, $1e, $1f ; dark
 
-Unknown_b2a9: ; b289
-	db $20, $21, $22, $23, $24, $25, $26, $07, $20, $21, $22, $23, $24, $25, $26, $07
-	db $10, $11, $12, $13, $14, $15, $16, $07, $18, $19, $1a, $1b, $1c, $1d, $1e, $07
+.IndoorColors:
+	db $20, $21, $22, $23, $24, $25, $26, $07 ; morn
+	db $20, $21, $22, $23, $24, $25, $26, $07 ; day
+	db $10, $11, $12, $13, $14, $15, $16, $07 ; nite
+	db $18, $19, $1a, $1b, $1c, $1d, $1e, $07 ; dark
 
-Unknown_b2c9: ; b289
-	db $00, $01, $02, $03, $04, $05, $06, $07, $08, $09, $0a, $0b, $0c, $0d, $0e, $0f
-	db $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $1a, $1b, $1c, $1d, $1e, $1f
+.DungeonColors:
+	db $00, $01, $02, $03, $04, $05, $06, $07 ; morn
+	db $08, $09, $0a, $0b, $0c, $0d, $0e, $0f ; day
+	db $10, $11, $12, $13, $14, $15, $16, $17 ; nite
+	db $18, $19, $1a, $1b, $1c, $1d, $1e, $1f ; dark
 
-Unknown_b2e9: ; b289
-	db $00, $01, $02, $03, $04, $05, $06, $07, $08, $09, $0a, $0b, $0c, $0d, $0e, $0f
-	db $10, $11, $12, $13, $14, $15, $16, $17, $18, $19, $1a, $1b, $1c, $1d, $1e, $1f
-; b309
+.Perm5Colors:
+	db $00, $01, $02, $03, $04, $05, $06, $07 ; morn
+	db $08, $09, $0a, $0b, $0c, $0d, $0e, $0f ; day
+	db $10, $11, $12, $13, $14, $15, $16, $17 ; nite
+	db $18, $19, $1a, $1b, $1c, $1d, $1e, $1f ; dark
 
-Palette_b309: ; b309
+Palette_b309: ; b309 mobile
 	RGB 31, 31, 31
 	RGB 31, 19, 24
 	RGB 30, 10, 06
 	RGB 00, 00, 00
-; b311
 
-Palette_b311: ; b311
+Palette_b311: ; b311 not mobile
 	RGB 31, 31, 31
 	RGB 17, 19, 31
 	RGB 14, 16, 31
 	RGB 00, 00, 00
-; b319
 
-MornPal: ; 0xb319
-INCLUDE "tilesets/morn.pal"
-; 0xb359
+TilesetBGPalette:
+INCLUDE "tilesets/bg.pal"
 
-DayPal: ; 0xb359
-INCLUDE "tilesets/day.pal"
-; 0xb399
+MapObjectPals::
+INCLUDE "tilesets/ob.pal"
 
-NitePal: ; 0xb399
-INCLUDE "tilesets/nite.pal"
-; 0xb3d9
+RoofPals:
+INCLUDE "tilesets/roof.pal"
 
-DarkPal: ; 0xb3d9
-INCLUDE "tilesets/dark.pal"
-; 0xb419
-
-; There are actually a lot more of these.
-
-; b419
-
-	RGB 30, 28, 26
-	RGB 19, 19, 19
-	RGB 13, 13, 13
-	RGB 07, 07, 07
-
-	RGB 30, 28, 26
-	RGB 31, 19, 24
-	RGB 30, 10, 06
-	RGB 07, 07, 07
-
-	RGB 18, 24, 09
-	RGB 15, 20, 01
-	RGB 09, 13, 00
-	RGB 07, 07, 07
-
-	RGB 30, 28, 26
-	RGB 15, 16, 31
-	RGB 09, 09, 31
-	RGB 07, 07, 07
-
-	RGB 30, 28, 26
-	RGB 31, 31, 07
-	RGB 31, 16, 01
-	RGB 07, 07, 07
-
-	RGB 26, 24, 17
-	RGB 21, 17, 07
-	RGB 16, 13, 03
-	RGB 07, 07, 07
-
-	RGB 30, 28, 26
-	RGB 17, 19, 31
-	RGB 14, 16, 31
-	RGB 07, 07, 07
-
-	RGB 31, 31, 16
-	RGB 31, 31, 16
-	RGB 14, 09, 00
-	RGB 00, 00, 00
-
-	RGB 23, 23, 31
-	RGB 18, 19, 31
-	RGB 13, 12, 31
-	RGB 07, 07, 07
-
-	RGB 15, 13, 27
-	RGB 10, 09, 20
-	RGB 04, 03, 18
-	RGB 00, 00, 00
-; b469
-
-Palettes_b469: ; b469
-	RGB 28, 31, 16
-	RGB 31, 19, 10
-	RGB 31, 07, 01
-	RGB 00, 00, 00
-
-	RGB 28, 31, 16
-	RGB 31, 19, 10
-	RGB 10, 09, 31
-	RGB 00, 00, 00
-
-	RGB 28, 31, 16
-	RGB 31, 19, 10
-	RGB 07, 23, 03
-	RGB 00, 00, 00
-
-	RGB 28, 31, 16
-	RGB 31, 19, 10
-	RGB 15, 10, 03
-	RGB 00, 00, 00
-
-	RGB 28, 31, 16
-	RGB 31, 19, 10
-	RGB 30, 10, 06
-	RGB 00, 00, 00
-
-	RGB 31, 31, 31
-	RGB 31, 31, 31
-	RGB 13, 13, 13
-	RGB 00, 00, 00
-
-	RGB 22, 31, 10
-	RGB 12, 25, 01
-	RGB 05, 14, 00
-	RGB 07, 07, 07
-
-	RGB 28, 31, 16
-	RGB 24, 18, 07
-	RGB 20, 15, 03
-	RGB 07, 07, 07
-
-	RGB 27, 31, 27
-	RGB 31, 19, 10
-	RGB 31, 07, 01
-	RGB 00, 00, 00
-
-	RGB 27, 31, 27
-	RGB 31, 19, 10
-	RGB 10, 09, 31
-	RGB 00, 00, 00
-
-	RGB 27, 31, 27
-	RGB 31, 19, 10
-	RGB 07, 23, 03
-	RGB 00, 00, 00
-
-	RGB 27, 31, 27
-	RGB 31, 19, 10
-	RGB 15, 10, 03
-	RGB 00, 00, 00
-
-	RGB 27, 31, 27
-	RGB 31, 19, 10
-	RGB 30, 10, 06
-	RGB 00, 00, 00
-
-	RGB 31, 31, 31
-	RGB 31, 31, 31
-	RGB 13, 13, 13
-	RGB 00, 00, 00
-
-	RGB 22, 31, 10
-	RGB 12, 25, 01
-	RGB 05, 14, 00
-	RGB 07, 07, 07
-
-	RGB 27, 31, 27
-	RGB 24, 18, 07
-	RGB 20, 15, 03
-	RGB 07, 07, 07
-
-	RGB 15, 14, 24
-	RGB 31, 19, 10
-	RGB 31, 07, 01
-	RGB 00, 00, 00
-
-	RGB 15, 14, 24
-	RGB 31, 19, 10
-	RGB 10, 09, 31
-	RGB 00, 00, 00
-
-	RGB 15, 14, 24
-	RGB 31, 19, 10
-	RGB 07, 23, 03
-	RGB 00, 00, 00
-
-	RGB 15, 14, 24
-	RGB 31, 19, 10
-	RGB 15, 10, 03
-	RGB 00, 00, 00
-
-	RGB 15, 14, 24
-	RGB 31, 19, 10
-	RGB 30, 10, 06
-	RGB 00, 00, 00
-
-	RGB 31, 31, 31
-	RGB 31, 31, 31
-	RGB 13, 13, 13
-	RGB 00, 00, 00
-
-	RGB 15, 14, 24
-	RGB 08, 13, 19
-	RGB 00, 11, 13
-	RGB 00, 00, 00
-
-	RGB 15, 14, 24
-	RGB 12, 09, 15
-	RGB 08, 04, 05
-	RGB 00, 00, 00
-
-	RGB 01, 01, 02
-	RGB 31, 19, 10
-	RGB 31, 07, 01
-	RGB 00, 00, 00
-
-	RGB 01, 01, 02
-	RGB 31, 19, 10
-	RGB 10, 09, 31
-	RGB 00, 00, 00
-
-	RGB 01, 01, 02
-	RGB 31, 19, 10
-	RGB 07, 23, 03
-	RGB 00, 00, 00
-
-	RGB 01, 01, 02
-	RGB 31, 19, 10
-	RGB 15, 10, 03
-	RGB 00, 00, 00
-
-	RGB 01, 01, 02
-	RGB 31, 19, 10
-	RGB 30, 10, 06
-	RGB 00, 00, 00
-
-	RGB 31, 31, 31
-	RGB 31, 31, 31
-	RGB 13, 13, 13
-	RGB 00, 00, 00
-
-	RGB 01, 01, 02
-	RGB 00, 00, 00
-	RGB 00, 00, 00
-	RGB 00, 00, 00
-
-	RGB 01, 01, 02
-	RGB 00, 00, 00
-	RGB 00, 00, 00
-	RGB 00, 00, 00
-; b569
-
-Palettes_b569: ; b569
-	RGB 21, 21, 21
-	RGB 11, 11, 11
-	RGB 21, 21, 21
-	RGB 11, 11, 11
-
-	RGB 14, 17, 31
-	RGB 07, 11, 15
-	RGB 09, 09, 17
-	RGB 05, 07, 13
-
-	RGB 12, 19, 00
-	RGB 06, 10, 00
-	RGB 06, 09, 07
-	RGB 04, 05, 06
-
-	RGB 21, 21, 21
-	RGB 11, 11, 11
-	RGB 21, 21, 21
-	RGB 17, 08, 07
-
-	RGB 31, 19, 00
-	RGB 27, 10, 05
-	RGB 15, 07, 02
-	RGB 11, 04, 02
-
-	RGB 11, 10, 16
-	RGB 05, 06, 07
-	RGB 03, 04, 08
-	RGB 00, 00, 00
-
-	RGB 31, 10, 00
-	RGB 18, 06, 00
-	RGB 18, 05, 09
-	RGB 17, 08, 07
-
-	RGB 17, 27, 31
-	RGB 05, 15, 31
-	RGB 07, 08, 22
-	RGB 07, 07, 16
-
-	RGB 22, 20, 10
-	RGB 17, 14, 03
-	RGB 11, 11, 05
-	RGB 10, 09, 07
-
-	RGB 31, 08, 04
-	RGB 09, 09, 08
-	RGB 18, 05, 09
-	RGB 09, 09, 08
-
-	RGB 24, 14, 31
-	RGB 13, 07, 21
-	RGB 12, 03, 18
-	RGB 09, 03, 15
-
-	RGB 25, 25, 00
-	RGB 20, 17, 08
-	RGB 12, 12, 00
-	RGB 10, 09, 05
-
-	RGB 27, 23, 01
-	RGB 23, 11, 00
-	RGB 15, 11, 01
-	RGB 11, 10, 01
-
-	RGB 27, 28, 31
-	RGB 17, 19, 22
-	RGB 14, 14, 18
-	RGB 10, 09, 13
-
-	RGB 19, 19, 16
-	RGB 10, 12, 15
-	RGB 09, 09, 11
-	RGB 04, 05, 07
-
-	RGB 14, 17, 31
-	RGB 07, 11, 15
-	RGB 09, 13, 19
-	RGB 07, 07, 16
-
-	RGB 21, 21, 21
-	RGB 13, 13, 13
-	RGB 11, 11, 19
-	RGB 07, 07, 12
-
-	RGB 31, 18, 29
-	RGB 17, 13, 20
-	RGB 14, 06, 12
-	RGB 11, 03, 10
-
-	RGB 23, 15, 31
-	RGB 16, 05, 31
-	RGB 12, 07, 17
-	RGB 08, 06, 10
-
-	RGB 21, 21, 25
-	RGB 16, 16, 16
-	RGB 13, 13, 13
-	RGB 07, 07, 07
-
-	RGB 21, 21, 21
-	RGB 11, 11, 11
-	RGB 21, 21, 21
-	RGB 11, 11, 11
-
-	RGB 19, 31, 15
-	RGB 31, 22, 02
-	RGB 12, 13, 09
-	RGB 09, 12, 03
-
-	RGB 15, 10, 31
-	RGB 07, 05, 15
-	RGB 06, 05, 17
-	RGB 02, 02, 08
-
-	RGB 21, 31, 07
-	RGB 13, 25, 04
-	RGB 09, 14, 08
-	RGB 06, 10, 04
-
-	RGB 20, 31, 14
-	RGB 11, 23, 05
-	RGB 09, 13, 08
-	RGB 06, 09, 04
-
-	RGB 31, 26, 00
-	RGB 31, 15, 00
-	RGB 13, 13, 01
-	RGB 08, 08, 01
-
-	RGB 31, 14, 28
-	RGB 31, 05, 21
-	RGB 14, 07, 17
-	RGB 13, 00, 08
-
-Palettes_b641: ; b641
+Palettes_b641:
 	RGB 27, 31, 27
 	RGB 21, 21, 21
 	RGB 13, 13, 13
@@ -2472,7 +2041,6 @@ Palettes_b641: ; b641
 	RGB 31, 31, 07
 	RGB 31, 16, 01
 	RGB 00, 00, 00
-; b669
 
 	RGB 27, 31, 27
 	RGB 22, 16, 08
@@ -2488,9 +2056,8 @@ Palettes_b641: ; b641
 	RGB 11, 11, 19
 	RGB 07, 07, 12
 	RGB 00, 00, 00
-; b681
 
-Palettes_b681: ; b681
+Palettes_b681:
 	RGB 27, 31, 27
 	RGB 31, 19, 10
 	RGB 31, 07, 04
@@ -2561,7 +2128,7 @@ Palettes_b681: ; b681
 	RGB 20, 15, 03
 	RGB 07, 07, 07
 
-Palettes_b6f1: ; b6f1
+Palettes_b6f1:
 	RGB 31, 31, 31
 	RGB 18, 23, 31
 	RGB 15, 20, 31
@@ -2587,7 +2154,7 @@ Palettes_b6f1: ; b6f1
 	RGB 18, 23, 31
 	RGB 00, 00, 00
 
-Palettes_b719: ; b719
+Palettes_b719:
 	RGB 31, 31, 31
 	RGB 07, 06, 03
 	RGB 07, 06, 03
@@ -2597,9 +2164,8 @@ Palettes_b719: ; b719
 	RGB 31, 31, 00
 	RGB 26, 22, 00
 	RGB 00, 00, 00
-; b729
 
-Palettes_b729: ; b729
+MalePokegearPals:
 	RGB 28, 31, 20
 	RGB 21, 21, 21
 	RGB 13, 13, 13
@@ -2629,9 +2195,8 @@ Palettes_b729: ; b729
 	RGB 00, 31, 00
 	RGB 15, 07, 00
 	RGB 31, 00, 00
-; b759
 
-Palettes_b759: ; b759
+FemalePokegearPals:
 	RGB 28, 31, 20
 	RGB 21, 21, 21
 	RGB 13, 13, 13
@@ -2661,9 +2226,8 @@ Palettes_b759: ; b759
 	RGB 00, 31, 00
 	RGB 15, 07, 00
 	RGB 31, 00, 00
-; b789
 
-Palettes_b789: ; b789
+Palettes_b789:
 	RGB 31, 31, 31
 	RGB 30, 22, 24
 	RGB 18, 18, 18
@@ -2683,9 +2247,8 @@ Palettes_b789: ; b789
 	RGB 29, 26, 05
 	RGB 18, 18, 18
 	RGB 00, 00, 00
-; b7a9
 
-Palettes_b7a9: ; b7a9
+Palettes_b7a9:
 	RGB 31, 31, 31
 	RGB 24, 25, 28
 	RGB 24, 24, 09
@@ -2765,5 +2328,4 @@ Palettes_b7a9: ; b7a9
 	RGB 31, 31, 31
 	RGB 00, 00, 00
 	RGB 00, 00, 00
-; b829
 

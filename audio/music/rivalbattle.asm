@@ -1,7 +1,7 @@
 Music_RivalBattle: ; e974f
-	dbw $80, Music_RivalBattle_Ch1
-	dbw $01, Music_RivalBattle_Ch2
-	dbw $02, Music_RivalBattle_Ch3
+	musicheader 3, 1, Music_RivalBattle_Ch1
+	musicheader 1, 2, Music_RivalBattle_Ch2
+	musicheader 1, 3, Music_RivalBattle_Ch3
 ; e9758
 
 Music_RivalBattle_Ch1: ; e9758
@@ -867,5 +867,3 @@ Music_RivalBattle_branch_e9b65: ; e9b65
 	loopchannel 2, Music_RivalBattle_branch_e9b65
 	endchannel
 ; e9b6f
-
-

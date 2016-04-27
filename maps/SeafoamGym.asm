@@ -1,71 +1,70 @@
-SeafoamGym_MapScriptHeader: ; 0x1ab4f4
-	; trigger count
+const_value set 2
+	const SEAFOAMGYM_BLAINE
+	const SEAFOAMGYM_GYM_GUY
+
+SeafoamGym_MapScriptHeader:
+.MapTriggers:
 	db 1
 
 	; triggers
-	dw UnknownScript_0x1ab4fa, $0000
+	dw UnknownScript_0x1ab4fa, 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1ab4fa
 
-UnknownScript_0x1ab4fa: ; 0x1ab4fa
+UnknownScript_0x1ab4fa:
 	end
-; 0x1ab4fb
 
-BlaineScript_0x1ab4fb: ; 0x1ab4fb
+BlaineScript_0x1ab4fb:
 	faceplayer
-	loadfont
-	checkflag $0029
-	iftrue UnknownScript_0x1ab52b
-	2writetext UnknownText_0x1ab548
+	opentext
+	checkflag ENGINE_VOLCANOBADGE
+	iftrue .FightDone
+	writetext UnknownText_0x1ab548
+	waitbutton
 	closetext
-	loadmovesprites
-	winlosstext UnknownText_0x1ab646, $0000
+	winlosstext UnknownText_0x1ab646, 0
 	loadtrainer BLAINE, 1
 	startbattle
-	iftrue UnknownScript_0x1ab516
-	appear $3
-UnknownScript_0x1ab516: ; 0x1ab516
-	returnafterbattle
-	setevent $04cb
-	loadfont
-	2writetext UnknownText_0x1ab683
+	iftrue .ReturnAfterBattle
+	appear SEAFOAMGYM_GYM_GUY
+.ReturnAfterBattle:
+	reloadmapafterbattle
+	setevent EVENT_BEAT_BLAINE
+	opentext
+	writetext UnknownText_0x1ab683
 	playsound SFX_GET_BADGE
+	waitsfx
+	setflag ENGINE_VOLCANOBADGE
+	writetext UnknownText_0x1ab69d
 	waitbutton
-	setflag $0029
-	2writetext UnknownText_0x1ab69d
 	closetext
-	loadmovesprites
 	end
-; 0x1ab52b
 
-UnknownScript_0x1ab52b: ; 0x1ab52b
-	2writetext UnknownText_0x1ab71c
+.FightDone:
+	writetext UnknownText_0x1ab71c
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1ab531
 
-SeafoamGymGuyScript: ; 0x1ab531
+SeafoamGymGuyScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_TALKED_TO_SEAFOAM_GYM_GUY_ONCE
 	iftrue .TalkedToSeafoamGymGuyScript
-	2writetext SeafoamGymGuyWinText
+	writetext SeafoamGymGuyWinText
+	waitbutton
 	closetext
-	loadmovesprites
 	setevent EVENT_TALKED_TO_SEAFOAM_GYM_GUY_ONCE
 	end
 
-.TalkedToSeafoamGymGuyScript
-	2writetext SeafoamGymGuyWinText2
+.TalkedToSeafoamGymGuyScript:
+	writetext SeafoamGymGuyWinText2
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1ab548
 
-UnknownText_0x1ab548: ; 0x1ab548
+UnknownText_0x1ab548:
 	text "BLAINE: Waaah!"
 
 	para "My GYM in CINNABAR"
@@ -92,24 +91,21 @@ UnknownText_0x1ab548: ; 0x1ab548
 	para "Ha! You'd better"
 	line "have BURN HEAL!"
 	done
-; 0x1ab646
 
-UnknownText_0x1ab646: ; 0x1ab646
+UnknownText_0x1ab646:
 	text "BLAINE: Awesome."
 	line "I've burned out…"
 
 	para "You've earned"
 	line "VOLCANOBADGE!"
 	done
-; 0x1ab683
 
-UnknownText_0x1ab683: ; 0x1ab683
-	text $52, " received"
+UnknownText_0x1ab683:
+	text "<PLAYER> received"
 	line "VOLCANOBADGE."
 	done
-; 0x1ab69d
 
-UnknownText_0x1ab69d: ; 0x1ab69d
+UnknownText_0x1ab69d:
 	text "BLAINE: I did lose"
 	line "this time, but I'm"
 
@@ -122,18 +118,16 @@ UnknownText_0x1ab69d: ; 0x1ab69d
 	para "we'll have to have"
 	line "a rematch."
 	done
-; 0x1ab71c
 
-UnknownText_0x1ab71c: ; 0x1ab71c
+UnknownText_0x1ab71c:
 	text "BLAINE: My fire"
 	line "#MON will be"
 
 	para "even stronger."
 	line "Just you watch!"
 	done
-; 0x1ab759
 
-SeafoamGymGuyWinText: ; 0x1ab759
+SeafoamGymGuyWinText:
 	text "Yo!"
 
 	para "… Huh? It's over"
@@ -153,9 +147,8 @@ SeafoamGymGuyWinText: ; 0x1ab759
 	para "without my advice."
 	line "I knew you'd win!"
 	done
-; 0x1ab806
 
-SeafoamGymGuyWinText2: ; 0x1ab806
+SeafoamGymGuyWinText2:
 	text "A #MON GYM can"
 	line "be anywhere as"
 
@@ -165,27 +158,22 @@ SeafoamGymGuyWinText2: ; 0x1ab806
 	para "There's no need"
 	line "for a building."
 	done
-; 0x1ab865
 
-SeafoamGym_MapEventHeader: ; 0x1ab865
+SeafoamGym_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 1
-	warp_def $5, $5, 1, GROUP_ROUTE_20, MAP_ROUTE_20
+	warp_def $5, $5, 1, ROUTE_20
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_BLAINE, 6, 9, $6, $0, 255, 255, $b0, 0, BlaineScript_0x1ab4fb, $ffff
-	person_event SPRITE_GYM_GUY, 9, 10, $7, $0, 255, 255, $90, 0, SeafoamGymGuyScript, $0777
-; 0x1ab88a
-
-
-
+	person_event SPRITE_BLAINE, 2, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_SCRIPT, 0, BlaineScript_0x1ab4fb, -1
+	person_event SPRITE_GYM_GUY, 5, 6, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, SeafoamGymGuyScript, EVENT_SEAFOAM_GYM_GYM_GUY

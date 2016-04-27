@@ -35,30 +35,30 @@ ForceUpdateCGBPals:: ; c37
 	ld c, rBGPD % $100
 	ld b, 4 ; NUM_PALS / 2
 .bgp
-	rept $10
+rept 2 palettes
 	ld a, [hli]
 	ld [$ff00+c], a
-	endr
+endr
 
 	dec b
 	jr nz, .bgp
-	
+
 ; hl is now 5:d0c0 OBPals
-	
+
 ; copy 8 pals to obpd
 	ld a, %10000000 ; auto increment, index 0
 	ld [rOBPI], a
-	ld c, rOBPD - rJOYP
+	ld c, rOBPD % $100
 	ld b, 4 ; NUM_PALS / 2
 .obp
-	rept $10
+rept 2 palettes
 	ld a, [hli]
 	ld [$ff00+c], a
-	endr
+endr
 
 	dec b
 	jr nz, .obp
-	
+
 	pop af
 	ld [rSVBK], a
 
@@ -79,6 +79,7 @@ DmgToCgbBGPals:: ; c9f
 	ld [rBGP], a
 	push af
 
+; Don't need to be here if DMG
 	ld a, [hCGB]
 	and a
 	jr z, .end
@@ -89,12 +90,12 @@ DmgToCgbBGPals:: ; c9f
 	ld a, [rSVBK]
 	push af
 
-	ld a, 5
+	ld a, 5 ; gfx
 	ld [rSVBK], a
 
 ; copy & reorder bg pal buffer
 	ld hl, BGPals ; to
-	ld de, Unkn1Pals ; from
+	ld de, UnknBGPals ; from
 ; order
 	ld a, [rBGP]
 	ld b, a
@@ -126,7 +127,7 @@ DmgToCgbObjPals:: ; ccb
 	ld [rOBP0], a
 	ld a, d
 	ld [rOBP1], a
-	
+
 	ld a, [hCGB]
 	and a
 	ret z
@@ -142,7 +143,7 @@ DmgToCgbObjPals:: ; ccb
 
 ; copy & reorder obj pal buffer
 	ld hl, OBPals ; to
-	ld de, Unkn2Pals ; from
+	ld de, UnknOBPals ; from
 ; order
 	ld a, [rOBP0]
 	ld b, a
@@ -162,66 +163,79 @@ DmgToCgbObjPals:: ; ccb
 ; cf8
 
 
-Functioncf8:: ; cf8
+DmgToCgbObjPal0:: ; cf8
 	ld [rOBP0], a
 	push af
+
+; Don't need to be here if not CGB
 	ld a, [hCGB]
 	and a
-	jr z, .asm_d22
+	jr z, .dmg
+
 	push hl
 	push de
 	push bc
+
 	ld a, [rSVBK]
 	push af
-	ld a, $5
+	ld a, 5 ; gfx
 	ld [rSVBK], a
-	ld hl, $d0c0
-	ld de, MartPointer
+
+	ld hl, OBPals
+	ld de, UnknOBPals
 	ld a, [rOBP0]
 	ld b, a
-	ld c, $1
+	ld c, 1
 	call CopyPals
-	ld a, $1
+	ld a, 1
 	ld [hCGBPalUpdate], a
+
 	pop af
 	ld [rSVBK], a
+
 	pop bc
 	pop de
 	pop hl
 
-.asm_d22
+.dmg
 	pop af
 	ret
 ; d24
 
-Functiond24:: ; d24
+DmgToCgbObjPal1:: ; d24
 	ld [rOBP1], a
 	push af
+
 	ld a, [hCGB]
 	and a
-	jr z, .asm_d4e
+	jr z, .dmg
+
 	push hl
 	push de
 	push bc
+
 	ld a, [rSVBK]
 	push af
-	ld a, $5
+	ld a, 5 ; gfx
 	ld [rSVBK], a
-	ld hl, $d0c8
-	ld de, $d048
+
+	ld hl, OBPals + 1 palettes
+	ld de, UnknOBPals + 1 palettes
 	ld a, [rOBP1]
 	ld b, a
-	ld c, $1
+	ld c, 1
 	call CopyPals
-	ld a, $1
+	ld a, 1
 	ld [hCGBPalUpdate], a
+
 	pop af
 	ld [rSVBK], a
+
 	pop bc
 	pop de
 	pop hl
 
-.asm_d4e
+.dmg
 	pop af
 	ret
 ; d50
@@ -236,7 +250,7 @@ CopyPals:: ; d50
 .loop
 	push de
 	push hl
-	
+
 ; get pal color
 	ld a, b
 	and %11 ; color
@@ -248,7 +262,7 @@ CopyPals:: ; d50
 	ld e, [hl]
 	inc hl
 	ld d, [hl]
-	
+
 ; dest
 	pop hl
 ; write color
@@ -264,15 +278,15 @@ CopyPals:: ; d50
 ; done pal?
 	dec c
 	jr nz, .loop
-	
+
 ; de += 8 (next pal)
-	ld a, 8 ; NUM_PAL_COLORS * 2 ; bytes per pal
+	ld a, 1 palettes ; NUM_PAL_COLORS * 2 ; bytes per pal
 	add e
 	jr nc, .ok
 	inc d
 .ok
 	ld e, a
-	
+
 ; how many more pals?
 	pop bc
 	dec c
@@ -281,28 +295,31 @@ CopyPals:: ; d50
 ; d79
 
 
-Functiond79:: ; d79
+ClearVBank1:: ; d79
 	ld a, [hCGB]
 	and a
 	ret z
+
 	ld a, 1
 	ld [rVBK], a
+
 	ld hl, VTiles0
-	ld bc, $2000
+	ld bc, VRAM_End - VTiles0
 	xor a
 	call ByteFill
+
 	ld a, 0
 	ld [rVBK], a
 	ret
 ; d90
 
 
-Functiond90:: ; d90
+ret_d90:: ; d90
 	ret
 ; d91
 
 
-Functiond91:: ; d91
+Special_ReloadSpritesNoPalettes:: ; d91
 	ld a, [hCGB]
 	and a
 	ret z
@@ -323,25 +340,26 @@ Functiond91:: ; d91
 ; db1
 
 
-Functiondb1:: ; db1
+FarCallSwapTextboxPalettes:: ; db1
 	ld a, [hROMBank]
 	push af
-	ld a, BANK(Function4c000)
+	ld a, BANK(SwapTextboxPalettes)
 	rst Bankswitch
-	call Function4c000
+	call SwapTextboxPalettes
 	pop af
 	rst Bankswitch
 	ret
 ; dbd
 
-Functiondbd:: ; dbd
+FarCallScrollBGMapPalettes:: ; dbd
 	ld a, [hROMBank]
 	push af
-	ld a, BANK(Function4c03f)
+	ld a, BANK(ScrollBGMapPalettes)
 	rst Bankswitch
-	call Function4c03f
+
+	call ScrollBGMapPalettes
+
 	pop af
 	rst Bankswitch
 	ret
 ; dc9
-

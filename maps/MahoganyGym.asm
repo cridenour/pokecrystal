@@ -1,32 +1,40 @@
-MahoganyGym_MapScriptHeader: ; 0x199a9c
-	; trigger count
+const_value set 2
+	const MAHOGANYGYM_PRYCE
+	const MAHOGANYGYM_BUENA1
+	const MAHOGANYGYM_ROCKER1
+	const MAHOGANYGYM_BUENA2
+	const MAHOGANYGYM_ROCKER2
+	const MAHOGANYGYM_ROCKER3
+	const MAHOGANYGYM_GYM_GUY
+
+MahoganyGym_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x199a9e
 
-PryceScript_0x199a9e: ; 0x199a9e
+PryceScript_0x199a9e:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_BEAT_PRYCE
-	iftrue UnknownScript_0x199ac8
-	2writetext UnknownText_0x199b8d
+	iftrue .FightDone
+	writetext UnknownText_0x199b8d
+	waitbutton
 	closetext
-	loadmovesprites
-	winlosstext UnknownText_0x199cb3, $0000
+	winlosstext UnknownText_0x199cb3, 0
 	loadtrainer PRYCE, 1
 	startbattle
-	returnafterbattle
+	reloadmapafterbattle
 	setevent EVENT_BEAT_PRYCE
-	loadfont
-	2writetext UnknownText_0x199d3b
+	opentext
+	writetext UnknownText_0x199d3b
 	playsound SFX_GET_BADGE
-	waitbutton
-	setflag $0021
-	checkcode $7
-	2call UnknownScript_0x199af6
-UnknownScript_0x199ac8: ; 0x199ac8
+	waitsfx
+	setflag ENGINE_GLACIERBADGE
+	checkcode VAR_BADGES
+	scall MahoganyGymTriggerRockets
+.FightDone:
 	checkevent EVENT_GOT_TM16_ICY_WIND
 	iftrue UnknownScript_0x199af0
 	setevent EVENT_BEAT_SKIER_ROXANNE
@@ -34,213 +42,114 @@ UnknownScript_0x199ac8: ; 0x199ac8
 	setevent EVENT_BEAT_BOARDER_RONALD
 	setevent EVENT_BEAT_BOARDER_BRAD
 	setevent EVENT_BEAT_BOARDER_DOUGLAS
-	2writetext UnknownText_0x199d55
-	keeptextopen
-	verbosegiveitem TM_16, 1
+	writetext UnknownText_0x199d55
+	buttonsound
+	verbosegiveitem TM_ICY_WIND
 	iffalse UnknownScript_0x199af4
 	setevent EVENT_GOT_TM16_ICY_WIND
-	2writetext UnknownText_0x199def
+	writetext UnknownText_0x199def
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x199af0
 
-UnknownScript_0x199af0: ; 0x199af0
-	2writetext UnknownText_0x199e59
+UnknownScript_0x199af0:
+	writetext UnknownText_0x199e59
+	waitbutton
+UnknownScript_0x199af4:
 	closetext
-UnknownScript_0x199af4: ; 0x199af4
-	loadmovesprites
 	end
-; 0x199af6
 
-UnknownScript_0x199af6: ; 0x199af6
-	if_equal $7, UnknownScript_0x199b02
-	if_equal $6, UnknownScript_0x199aff
+MahoganyGymTriggerRockets:
+	if_equal 7, .RadioTowerRockets
+	if_equal 6, .GoldenrodRockets
 	end
-; 0x199aff
 
-UnknownScript_0x199aff: ; 0x199aff
-	jumpstd $0012
-; 0x199b02
+.GoldenrodRockets:
+	jumpstd goldenrodrockets
 
-UnknownScript_0x199b02: ; 0x199b02
-	jumpstd $0013
-; 0x199b05
+.RadioTowerRockets:
+	jumpstd radiotowerrockets
 
-TrainerSkierRoxanne: ; 0x199b05
-	; bit/flag number
-	dw $592
+TrainerSkierRoxanne:
+	trainer EVENT_BEAT_SKIER_ROXANNE, SKIER, ROXANNE, SkierRoxanneSeenText, SkierRoxanneBeatenText, 0, SkierRoxanneScript
 
-	; trainer group && trainer id
-	db SKIER, ROXANNE
-
-	; text when seen
-	dw SkierRoxanneSeenText
-
-	; text when trainer beaten
-	dw SkierRoxanneBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SkierRoxanneScript
-; 0x199b11
-
-SkierRoxanneScript: ; 0x199b11
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x19a116
+SkierRoxanneScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x19a116
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x199b19
 
-TrainerSkierClarissa: ; 0x199b19
-	; bit/flag number
-	dw $593
+TrainerSkierClarissa:
+	trainer EVENT_BEAT_SKIER_CLARISSA, SKIER, CLARISSA, SkierClarissaSeenText, SkierClarissaBeatenText, 0, SkierClarissaScript
 
-	; trainer group && trainer id
-	db SKIER, CLARISSA
-
-	; text when seen
-	dw SkierClarissaSeenText
-
-	; text when trainer beaten
-	dw SkierClarissaBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SkierClarissaScript
-; 0x199b25
-
-SkierClarissaScript: ; 0x199b25
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x19a18f
+SkierClarissaScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x19a18f
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x199b2d
 
-TrainerBoarderRonald: ; 0x199b2d
-	; bit/flag number
-	dw $40e
+TrainerBoarderRonald:
+	trainer EVENT_BEAT_BOARDER_RONALD, BOARDER, RONALD, BoarderRonaldSeenText, BoarderRonaldBeatenText, 0, BoarderRonaldScript
 
-	; trainer group && trainer id
-	db BOARDER, RONALD
-
-	; text when seen
-	dw BoarderRonaldSeenText
-
-	; text when trainer beaten
-	dw BoarderRonaldBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw BoarderRonaldScript
-; 0x199b39
-
-BoarderRonaldScript: ; 0x199b39
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x199f2d
+BoarderRonaldScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x199f2d
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x199b41
 
-TrainerBoarderBrad: ; 0x199b41
-	; bit/flag number
-	dw $40f
+TrainerBoarderBrad:
+	trainer EVENT_BEAT_BOARDER_BRAD, BOARDER, BRAD, BoarderBradSeenText, BoarderBradBeatenText, 0, BoarderBradScript
 
-	; trainer group && trainer id
-	db BOARDER, BRAD
-
-	; text when seen
-	dw BoarderBradSeenText
-
-	; text when trainer beaten
-	dw BoarderBradBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw BoarderBradScript
-; 0x199b4d
-
-BoarderBradScript: ; 0x199b4d
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x199fdd
+BoarderBradScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x199fdd
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x199b55
 
-TrainerBoarderDouglas: ; 0x199b55
-	; bit/flag number
-	dw $410
+TrainerBoarderDouglas:
+	trainer EVENT_BEAT_BOARDER_DOUGLAS, BOARDER, DOUGLAS, BoarderDouglasSeenText, BoarderDouglasBeatenText, 0, BoarderDouglasScript
 
-	; trainer group && trainer id
-	db BOARDER, DOUGLAS
-
-	; text when seen
-	dw BoarderDouglasSeenText
-
-	; text when trainer beaten
-	dw BoarderDouglasBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw BoarderDouglasScript
-; 0x199b61
-
-BoarderDouglasScript: ; 0x199b61
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x19a047
+BoarderDouglasScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x19a047
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x199b69
 
-MahoganyGymGuyScript: ; 0x199b69
+MahoganyGymGuyScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_BEAT_PRYCE
 	iftrue .MahoganyGymGuyWinScript
-	2writetext MahoganyGymGuyText
+	writetext MahoganyGymGuyText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
 
-.MahoganyGymGuyWinScript
-	2writetext MahoganyGymGuyWinText
+.MahoganyGymGuyWinScript:
+	writetext MahoganyGymGuyWinText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x199b7d
 
-MapMahoganyGymSignpost1Script: ; 0x199b7d
-	checkflag $0021
-	iftrue UnknownScript_0x199b86
-	jumpstd $002d
-; 0x199b86
-
-UnknownScript_0x199b86: ; 0x199b86
+MahoganyGymStatue:
+	checkflag ENGINE_GLACIERBADGE
+	iftrue .Beaten
+	jumpstd gymstatue1
+.Beaten:
 	trainertotext PRYCE, 1, $1
-	jumpstd $002e
-; 0x199b8d
+	jumpstd gymstatue2
 
-UnknownText_0x199b8d: ; 0x199b8d
+UnknownText_0x199b8d:
 	text "#MON have many"
 	line "experiences in"
 
@@ -270,9 +179,8 @@ UnknownText_0x199b8d: ; 0x199b8d
 	para "shall demonstrate"
 	line "my power!"
 	done
-; 0x199cb3
 
-UnknownText_0x199cb3: ; 0x199cb3
+UnknownText_0x199cb3:
 	text "Ah, I am impressed"
 	line "by your prowess."
 
@@ -285,15 +193,13 @@ UnknownText_0x199cb3: ; 0x199cb3
 	para "You are worthy of"
 	line "this BADGE!"
 	done
-; 0x199d3b
 
-UnknownText_0x199d3b: ; 0x199d3b
-	text $52, " received"
+UnknownText_0x199d3b:
+	text "<PLAYER> received"
 	line "GLACIERBADGE."
 	done
-; 0x199d55
 
-UnknownText_0x199d55: ; 0x199d55
+UnknownText_0x199d55:
 	text "That BADGE will"
 	line "raise the SPECIAL"
 	cont "stats of #MON."
@@ -306,9 +212,8 @@ UnknownText_0x199d55: ; 0x199d55
 	para "And this… This is"
 	line "a gift from me!"
 	done
-; 0x199def
 
-UnknownText_0x199def: ; 0x199def
+UnknownText_0x199def:
 	text "That TM contains"
 	line "ICY WIND."
 
@@ -319,9 +224,8 @@ UnknownText_0x199def: ; 0x199def
 	line "the harshness of"
 	cont "winter."
 	done
-; 0x199e59
 
-UnknownText_0x199e59: ; 0x199e59
+UnknownText_0x199e59:
 	text "When the ice and"
 	line "snow melt, spring"
 	cont "arrives."
@@ -335,31 +239,27 @@ UnknownText_0x199e59: ; 0x199e59
 	para "Cherish your time"
 	line "together!"
 	done
-; 0x199ee1
 
-BoarderRonaldSeenText: ; 0x199ee1
+BoarderRonaldSeenText:
 	text "I'll freeze your"
 	line "#MON, so you"
 	cont "can't do a thing!"
 	done
-; 0x199f10
 
-BoarderRonaldBeatenText: ; 0x199f10
+BoarderRonaldBeatenText:
 	text "Darn. I couldn't"
 	line "do a thing."
 	done
-; 0x199f2d
 
-UnknownText_0x199f2d: ; 0x199f2d
+UnknownText_0x199f2d:
 	text "I think there's a"
 	line "move a #MON"
 
 	para "can use while it's"
 	line "frozen."
 	done
-; 0x199f65
 
-BoarderBradSeenText: ; 0x199f65
+BoarderBradSeenText:
 	text "This GYM has a"
 	line "slippery floor."
 
@@ -370,34 +270,29 @@ BoarderBradSeenText: ; 0x199f65
 	line "not playing games"
 	cont "here!"
 	done
-; 0x199fbd
 
-BoarderBradBeatenText: ; 0x199fbd
+BoarderBradBeatenText:
 	text "Do you see how"
 	line "serious we are?"
 	done
-; 0x199fdd
 
-UnknownText_0x199fdd: ; 0x199fdd
+UnknownText_0x199fdd:
 	text "This GYM is great."
 	line "I love boarding"
 	cont "with my #MON!"
 	done
-; 0x19a00f
 
-BoarderDouglasSeenText: ; 0x19a00f
+BoarderDouglasSeenText:
 	text "I know PRYCE's"
 	line "secret."
 	done
-; 0x19a026
 
-BoarderDouglasBeatenText: ; 0x19a026
+BoarderDouglasBeatenText:
 	text "OK. I'll tell you"
 	line "PRYCE's secret."
 	done
-; 0x19a047
 
-UnknownText_0x19a047: ; 0x19a047
+UnknownText_0x19a047:
 	text "The secret behind"
 	line "PRYCE's power…"
 
@@ -407,52 +302,45 @@ UnknownText_0x19a047: ; 0x19a047
 	para "to strengthen his"
 	line "mind and body."
 	done
-; 0x19a0ae
 
-SkierRoxanneSeenText: ; 0x19a0ae
+SkierRoxanneSeenText:
 	text "To get to PRYCE,"
 	line "our GYM LEADER,"
 
 	para "you need to think"
 	line "before you skate."
 	done
-; 0x19a0f4
 
-SkierRoxanneBeatenText: ; 0x19a0f4
+SkierRoxanneBeatenText:
 	text "I wouldn't lose to"
 	line "you in skiing!"
 	done
-; 0x19a116
 
-UnknownText_0x19a116: ; 0x19a116
+UnknownText_0x19a116:
 	text "If you don't skate"
 	line "with precision,"
 
 	para "you won't get far"
 	line "in this GYM."
 	done
-; 0x19a157
 
-SkierClarissaSeenText: ; 0x19a157
+SkierClarissaSeenText:
 	text "Check out my"
 	line "parallel turn!"
 	done
-; 0x19a174
 
-SkierClarissaBeatenText: ; 0x19a174
+SkierClarissaBeatenText:
 	text "No! You made me"
 	line "wipe out!"
 	done
-; 0x19a18f
 
-UnknownText_0x19a18f: ; 0x19a18f
+UnknownText_0x19a18f:
 	text "I shouldn't have"
 	line "been bragging"
 	cont "about my skiing…"
 	done
-; 0x19a1bf
 
-MahoganyGymGuyText: ; 0x19a1bf
+MahoganyGymGuyText:
 	text "PRYCE is a veteran"
 	line "who has trained"
 
@@ -471,9 +359,8 @@ MahoganyGymGuyText: ; 0x19a1bf
 	para "with your burning"
 	line "ambition!"
 	done
-; 0x19a275
 
-MahoganyGymGuyWinText: ; 0x19a275
+MahoganyGymGuyWinText:
 	text "PRYCE is some-"
 	line "thing, but you're"
 	cont "something else!"
@@ -484,33 +371,30 @@ MahoganyGymGuyWinText: ; 0x19a275
 	para "bridged the gen-"
 	line "eration gap!"
 	done
-; 0x19a2df
 
-MahoganyGym_MapEventHeader: ; 0x19a2df
+MahoganyGym_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $11, $4, 3, GROUP_MAHOGANY_TOWN, MAP_MAHOGANY_TOWN
-	warp_def $11, $5, 3, GROUP_MAHOGANY_TOWN, MAP_MAHOGANY_TOWN
+	warp_def $11, $4, 3, MAHOGANY_TOWN
+	warp_def $11, $5, 3, MAHOGANY_TOWN
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 15, 3, $0, MapMahoganyGymSignpost1Script
-	signpost 15, 6, $0, MapMahoganyGymSignpost1Script
+	signpost 15, 3, SIGNPOST_READ, MahoganyGymStatue
+	signpost 15, 6, SIGNPOST_READ, MahoganyGymStatue
 
-	; people-events
+.PersonEvents:
 	db 7
-	person_event SPRITE_PRYCE, 7, 9, $6, $0, 255, 255, $b0, 0, PryceScript_0x199a9e, $ffff
-	person_event SPRITE_BUENA, 10, 8, $6, $0, 255, 255, $82, 1, TrainerSkierRoxanne, $ffff
-	person_event SPRITE_ROCKER, 21, 4, $7, $0, 255, 255, $92, 1, TrainerBoarderRonald, $ffff
-	person_event SPRITE_BUENA, 21, 13, $7, $0, 255, 255, $82, 1, TrainerSkierClarissa, $ffff
-	person_event SPRITE_ROCKER, 13, 9, $6, $0, 255, 255, $92, 1, TrainerBoarderBrad, $ffff
-	person_event SPRITE_ROCKER, 8, 6, $a, $0, 255, 255, $92, 1, TrainerBoarderDouglas, $ffff
-	person_event SPRITE_GYM_GUY, 19, 11, $6, $0, 255, 255, $80, 0, MahoganyGymGuyScript, $ffff
-; 0x19a354
-
+	person_event SPRITE_PRYCE, 3, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_SCRIPT, 0, PryceScript_0x199a9e, -1
+	person_event SPRITE_BUENA, 6, 4, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 1, TrainerSkierRoxanne, -1
+	person_event SPRITE_ROCKER, 17, 0, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 1, TrainerBoarderRonald, -1
+	person_event SPRITE_BUENA, 17, 9, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 1, TrainerSkierClarissa, -1
+	person_event SPRITE_ROCKER, 9, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 1, TrainerBoarderBrad, -1
+	person_event SPRITE_ROCKER, 4, 2, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 1, TrainerBoarderDouglas, -1
+	person_event SPRITE_GYM_GUY, 15, 7, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, MahoganyGymGuyScript, -1

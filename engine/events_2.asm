@@ -1,44 +1,46 @@
-INCLUDE "includes.asm"
-
-
 ; More overworld event handling.
 
-SECTION "Events 2", ROMX, BANK[EVENTS]
 
-Function97c28:: ; 97c28
+WarpToSpawnPoint:: ; 97c28
 	ld hl, StatusFlags2
-	res 1, [hl]
-	res 2, [hl]
+	res 1, [hl] ; safari zone?
+	res 2, [hl] ; bug contest
 	ret
 ; 97c30
 
-Function97c30:: ; 97c30
-	ld a, [$d45c]
+RunMemScript:: ; 97c30
+; If there is no script here, we don't need to be here.
+	ld a, [wMapReentryScriptQueueFlag]
 	and a
 	ret z
-	ld hl, $d45e
+; Execute the script at (wMapReentryScriptBank):(wMapReentryScriptAddress).
+	ld hl, wMapReentryScriptAddress
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ld a, [$d45d]
+	ld a, [wMapReentryScriptBank]
 	call CallScript
 	scf
+; Clear the buffer for the next script.
 	push af
 	xor a
-	ld hl, $d45c
+	ld hl, wMapReentryScriptQueueFlag
 	ld bc, 8
 	call ByteFill
 	pop af
 	ret
 ; 97c4f
 
-Function97c4f:: ; 97c4f
-	ld hl, $d45c
+LoadScriptBDE:: ; 97c4f
+; If there's already a script here, don't overwrite.
+	ld hl, wMapReentryScriptQueueFlag
 	ld a, [hl]
 	and a
 	ret nz
+; Set the flag
 	ld [hl], 1
 	inc hl
+; Load the script pointer b:de into (wMapReentryScriptBank):(wMapReentryScriptAddress)
 	ld [hl], b
 	inc hl
 	ld [hl], e
@@ -48,50 +50,50 @@ Function97c4f:: ; 97c4f
 	ret
 ; 97c5f
 
-Function97c5f:: ; 97c5f
+CheckFacingTileEvent:: ; 97c5f
 	call GetFacingTileCoord
 	ld [EngineBuffer1], a
 	ld c, a
-	callba Function1365b
-	jr c, .asm_97cb9
+	callba CheckFacingTileForStd
+	jr c, .done
 
 	call CheckCutTreeTile
 	jr nz, .whirlpool
 	callba TryCutOW
-	jr .asm_97cb9
+	jr .done
 
 .whirlpool
 	ld a, [EngineBuffer1]
 	call CheckWhirlpoolTile
 	jr nz, .waterfall
 	callba TryWhirlpoolOW
-	jr .asm_97cb9
+	jr .done
 
 .waterfall
 	ld a, [EngineBuffer1]
 	call CheckWaterfallTile
 	jr nz, .headbutt
 	callba TryWaterfallOW
-	jr .asm_97cb9
+	jr .done
 
 .headbutt
 	ld a, [EngineBuffer1]
 	call CheckHeadbuttTreeTile
 	jr nz, .surf
 	callba TryHeadbuttOW
-	jr c, .asm_97cb9
-	jr .asm_97cb7
+	jr c, .done
+	jr .noevent
 
 .surf
 	callba TrySurfOW
-	jr nc, .asm_97cb7
-	jr .asm_97cb9
+	jr nc, .noevent
+	jr .done
 
-.asm_97cb7
+.noevent
 	xor a
 	ret
 
-.asm_97cb9
+.done
 	call PlayClickSFX
 	ld a, $ff
 	scf
@@ -99,108 +101,108 @@ Function97c5f:: ; 97c5f
 ; 97cc0
 
 
-Function97cc0:: ; 97cc0
-; Rock Smash encounter
+RandomEncounter:: ; 97cc0
+; Random encounter
 
-	call Function968c7
-	jr c, .asm_97ce2
-	call Function97cfd
-	jr nc, .asm_97ce2
+	call CheckWildEncounterCooldown
+	jr c, .nope
+	call CanUseSweetScent
+	jr nc, .nope
 	ld hl, StatusFlags2
-	bit 2, [hl]
-	jr nz, .asm_97cdb
-	callba Function2a0e7
-	jr nz, .asm_97ce2
-	jr .asm_97ce6
+	bit 2, [hl] ; bug contest
+	jr nz, .bug_contest
+	callba TryWildEncounter
+	jr nz, .nope
+	jr .ok
 
-.asm_97cdb
-	call Function97d23
-	jr nc, .asm_97ce2
-	jr .asm_97ced
+.bug_contest
+	call _TryWildEncounter_BugContest
+	jr nc, .nope
+	jr .ok_bug_contest
 
-.asm_97ce2
+.nope
 	ld a, 1
 	and a
 	ret
 
-.asm_97ce6
-	ld a, BANK(RockSmashBattleScript)
-	ld hl, RockSmashBattleScript
-	jr .asm_97cf4
+.ok
+	ld a, BANK(WildBattleScript)
+	ld hl, WildBattleScript
+	jr .done
 
-.asm_97ced
-	ld a, BANK(UnknownScript_0x135eb)
-	ld hl, UnknownScript_0x135eb
-	jr .asm_97cf4
+.ok_bug_contest
+	ld a, BANK(BugCatchingContestBattleScript)
+	ld hl, BugCatchingContestBattleScript
+	jr .done
 
-.asm_97cf4
+.done
 	call CallScript
 	scf
 	ret
 ; 97cf9
 
-RockSmashBattleScript: ; 97cf9
-	battlecheck
+WildBattleScript: ; 97cf9
+	randomwildmon
 	startbattle
-	returnafterbattle
+	reloadmapafterbattle
 	end
 ; 97cfd
 
-Function97cfd:: ; 97cfd
+CanUseSweetScent:: ; 97cfd
 	ld hl, StatusFlags
 	bit 5, [hl]
-	jr nz, .asm_97d21
-	ld a, [$d19a]
-	cp $4
-	jr z, .asm_97d17
-	cp $7
-	jr z, .asm_97d17
-	callba Function149dd
-	jr nc, .asm_97d21
+	jr nz, .no
+	ld a, [wPermission]
+	cp CAVE
+	jr z, .ice_check
+	cp DUNGEON
+	jr z, .ice_check
+	callba CheckGrassCollision
+	jr nc, .no
 
-.asm_97d17
-	ld a, [StandingTile]
+.ice_check
+	ld a, [PlayerStandingTile]
 	call CheckIceTile
-	jr z, .asm_97d21
+	jr z, .no
 	scf
 	ret
 
-.asm_97d21
+.no
 	and a
 	ret
 ; 97d23
 
-Function97d23: ; 97d23
-	call Function97d64
+_TryWildEncounter_BugContest: ; 97d23
+	call TryWildEncounter_BugContest
 	ret nc
-	call Function97d31
-	callba Function2a1df
+	call ChooseWildEncounter_BugContest
+	callba CheckRepelEffect
 	ret
 ; 97d31
 
-Function97d31:: ; 97d31
+ChooseWildEncounter_BugContest:: ; 97d31
 ; Pick a random mon out of ContestMons.
 
-.asm_97d31
+.loop
 	call Random
 	cp 100 << 1
-	jr nc, .asm_97d31
+	jr nc, .loop
 	srl a
 
 	ld hl, ContestMons
 	ld de, 4
-.CheckMon
+.CheckMon:
 	sub [hl]
 	jr c, .GotMon
 	add hl, de
 	jr .CheckMon
 
-.GotMon
+.GotMon:
 	inc hl
 
 ; Species
 	ld a, [hli]
-	ld [$d22e], a
+	ld [TempWildMonSpecies], a
 
 ; Min level
 	ld a, [hli]
@@ -216,7 +218,7 @@ Function97d31:: ; 97d31
 	ld a, d
 	jr .GotLevel
 
-.RandomLevel
+.RandomLevel:
 ; Get a random level between the min and max.
 	ld c, a
 	inc c
@@ -225,23 +227,23 @@ Function97d31:: ; 97d31
 	call SimpleDivide
 	add d
 
-.GotLevel
+.GotLevel:
 	ld [CurPartyLevel], a
 
 	xor a
 	ret
 ; 97d64
 
-Function97d64: ; 97d64
-	ld a, [StandingTile]
-	call Function188e
-	ld b, $66
-	jr z, .asm_97d70
-	ld b, $33
+TryWildEncounter_BugContest: ; 97d64
+	ld a, [PlayerStandingTile]
+	call CheckSuperTallGrassTile
+	ld b, 40 percent
+	jr z, .ok
+	ld b, 20 percent
 
-.asm_97d70
-	callba Function2a124
-	callba Function2a138
+.ok
+	callba ApplyMusicEffectOnEncounterRate
+	callba ApplyCleanseTagEffectOnEncounterRate
 	call Random
 	ld a, [hRandomAdd]
 	cp b
@@ -266,186 +268,200 @@ ContestMons: ; 97d87
 	db -1, VENOMOTH,   30, 40
 ; 97db3
 
-Function97db3:: ; 97db3
+DoBikeStep:: ; 97db3
 	nop
 	nop
-	; fallthrough
-; 97db5
-
-Function97db5: ; 97db5
+	; If the bike shop owner doesn't have our number, or
+	; if we've already gotten the call, we don't have to
+	; be here.
 	ld hl, StatusFlags2
-	bit 4, [hl]
-	jr z, .asm_97df7
+	bit 4, [hl] ; bike shop call
+	jr z, .NoCall
+
+	; If we're not on the bike, we don't have to be here.
 	ld a, [PlayerState]
-	cp $1
-	jr nz, .asm_97df7
-	call Function2d05
+	cp PLAYER_BIKE
+	jr nz, .NoCall
+
+	; If we're not in an area of phone service, we don't
+	; have to be here.
+	call GetMapHeaderPhoneServiceNybble
 	and a
-	jr nz, .asm_97df7
-	ld hl, $dca2
+	jr nz, .NoCall
+
+	; Check the bike step count and check whether we've
+	; taken 65536 of them yet.
+	ld hl, wBikeStep
 	ld a, [hli]
 	ld d, a
 	ld e, [hl]
-	cp $ff
-	jr nz, .asm_97dd8
+	cp 255
+	jr nz, .increment
 	ld a, e
-	cp $ff
-	jr z, .asm_97ddc
+	cp 255
+	jr z, .dont_increment
 
-.asm_97dd8
+.increment
 	inc de
 	ld [hl], e
 	dec hl
 	ld [hl], d
 
-.asm_97ddc
+.dont_increment
+	; If we've taken at least 1024 steps, have the bike
+	;  shop owner try to call us.
 	ld a, d
-	cp $4
-	jr c, .asm_97df7
-	ld a, [$dc31]
+	cp 1024 >> 8
+	jr c, .NoCall
+
+	; If a call has already been queued, don't overwrite
+	; that call.
+	ld a, [wSpecialPhoneCallID]
 	and a
-	jr nz, .asm_97df7
-	ld a, $6
-	ld [$dc31], a
+	jr nz, .NoCall
+
+	; Queue the call.
+	ld a, SPECIALCALL_BIKESHOP
+	ld [wSpecialPhoneCallID], a
 	xor a
-	ld [$dc32], a
+	ld [wSpecialPhoneCallID + 1], a
 	ld hl, StatusFlags2
-	res 4, [hl]
+	res 4, [hl] ; bike shop call
 	scf
 	ret
 
-.asm_97df7
+.NoCall:
 	xor a
 	ret
 ; 97df9
 
-Function97df9:: ; 97df9
-	ld hl, $d6de
-	ld de, $0006
-	ld c, $4
+ClearCmdQueue:: ; 97df9
+	ld hl, wCmdQueue
+	ld de, 6
+	ld c, 4
 	xor a
-.asm_97e02
+.loop
 	ld [hl], a
 	add hl, de
 	dec c
-	jr nz, .asm_97e02
+	jr nz, .loop
 	ret
 ; 97e08
 
-Function97e08:: ; 97e08
-	ld hl, $d6de
+HandleCmdQueue:: ; 97e08
+	ld hl, wCmdQueue
 	xor a
-.asm_97e0c
-	ld [hConnectionStripLength], a
+.loop
+	ld [hMapObjectIndexBuffer], a
 	ld a, [hl]
 	and a
-	jr z, .asm_97e19
+	jr z, .skip
 	push hl
 	ld b, h
 	ld c, l
-	call Function97e79
+	call HandleQueuedCommand
 	pop hl
 
-.asm_97e19
-	ld de, $0006
+.skip
+	ld de, CMDQUEUE_ENTRY_SIZE
 	add hl, de
-	ld a, [hConnectionStripLength]
+	ld a, [hMapObjectIndexBuffer]
 	inc a
-	cp $4
-	jr nz, .asm_97e0c
+	cp CMDQUEUE_CAPACITY
+	jr nz, .loop
 	ret
 ; 97e25
 
-Function97e25: ; 97e25
-	ld hl, $d6de
-	ld bc, 6
+GetNthCmdQueueEntry: ; 97e25 unreferenced
+	ld hl, wCmdQueue
+	ld bc, CMDQUEUE_ENTRY_SIZE
 	call AddNTimes
 	ld b, h
 	ld c, l
 	ret
 ; 97e31
 
-Function97e31:: ; 97e31
+WriteCmdQueue:: ; 97e31
 	push bc
 	push de
-	call Function97e45
+	call .GetNextEmptyEntry
 	ld d, h
 	ld e, l
 	pop hl
 	pop bc
 	ret c
 	ld a, b
-	ld bc, $0005
+	ld bc, CMDQUEUE_ENTRY_SIZE - 1
 	call FarCopyBytes
 	xor a
 	ld [hl], a
 	ret
 ; 97e45
 
-Function97e45: ; 97e45
-	ld hl, $d6de
-	ld de, $0006
-	ld c, $4
-.asm_97e4d
+.GetNextEmptyEntry: ; 97e45
+	ld hl, wCmdQueue
+	ld de, CMDQUEUE_ENTRY_SIZE
+	ld c, CMDQUEUE_CAPACITY
+.loop
 	ld a, [hl]
 	and a
-	jr z, .asm_97e57
+	jr z, .done
 	add hl, de
 	dec c
-	jr nz, .asm_97e4d
+	jr nz, .loop
 	scf
 	ret
 
-.asm_97e57
-	ld a, $4
+.done
+	ld a, CMDQUEUE_CAPACITY
 	sub c
 	and a
 	ret
 ; 97e5c
 
-Function97e5c:: ; 97e5c
-	ld hl, $d6de
-	ld de, $0006
-	ld c, $4
-.asm_97e64
+DelCmdQueue:: ; 97e5c
+	ld hl, wCmdQueue
+	ld de, CMDQUEUE_ENTRY_SIZE
+	ld c, CMDQUEUE_CAPACITY
+.loop
 	ld a, [hl]
 	cp b
-	jr z, .asm_97e6e
+	jr z, .done
 	add hl, de
 	dec c
-	jr nz, .asm_97e64
+	jr nz, .loop
 	and a
 	ret
 
-.asm_97e6e
+.done
 	xor a
 	ld [hl], a
 	scf
 	ret
 ; 97e72
 
-Function97e72: ; 97e72
-	ld hl, $0000
+_DelCmdQueue: ; 97e72
+	ld hl, CMDQUEUE_TYPE
 	add hl, bc
 	ld [hl], 0
 	ret
 ; 97e79
 
-Function97e79: ; 97e79
-	ld hl, $0000
+HandleQueuedCommand: ; 97e79
+	ld hl, CMDQUEUE_TYPE
 	add hl, bc
 	ld a, [hl]
 	cp 5
-	jr c, .asm_97e83
+	jr c, .okay
 	xor a
 
-.asm_97e83
+.okay
 	ld e, a
 	ld d, 0
-	ld hl, Table97e94
+	ld hl, .Jumptable_ba
+rept 3
 	add hl, de
-	add hl, de
-	add hl, de
+endr
 	ld a, [hli]
 	push af
 	ld a, [hli]
@@ -456,16 +472,16 @@ Function97e79: ; 97e79
 	ret
 ; 97e94
 
-Table97e94: ; 97e94
-	dbw BANK(Function97eb7), Function97eb7
-	dbw BANK(Function97eb8), Function97eb8
-	dbw BANK(Function97f42), Function97f42
-	dbw BANK(Function97ef9), Function97ef9
-	dbw BANK(Function97ebc), Function97ebc
+.Jumptable_ba: ; 97e94
+	dba CmdQueue_Null
+	dba CmdQueue_Null2
+	dba CmdQueue_StoneTable
+	dba CmdQueue_Type3
+	dba CmdQueue_Type4
 ; 97ea3
 
-Function97ea3: ; 97ea3
-	ld hl, $0005
+CmdQueueAnonymousJumptable: ; 97ea3
+	ld hl, CMDQUEUE_05
 	add hl, bc
 	ld a, [hl]
 	pop hl
@@ -473,45 +489,44 @@ Function97ea3: ; 97ea3
 	ret
 ; 97eab
 
-Function97eab: ; 97eab
-	ld hl, $0005
+CmdQueueAnonJT_Increment: ; 97eab
+	ld hl, CMDQUEUE_05
 	add hl, bc
 	inc [hl]
 	ret
 ; 97eb1
 
-Function97eb1: ; 97eb1
-	ld hl, $0005
+CmdQueueAnonJT_Decrement: ; 97eb1
+	ld hl, CMDQUEUE_05
 	add hl, bc
 	dec [hl]
 	ret
 ; 97eb7
 
-Function97eb7: ; 97eb7
+CmdQueue_Null: ; 97eb7
 	ret
 ; 97eb8
 
-Function97eb8: ; 97eb8
-	call Function2f3e
+CmdQueue_Null2: ; 97eb8
+	call ret_2f3e
 	ret
 ; 97ebc
 
-Function97ebc: ; 97ebc
-	call Function97ea3
-	dw Function97ec3
-	dw Function97ecd
+CmdQueue_Type4: ; 97ebc
+	call CmdQueueAnonymousJumptable
+	; anonymous dw
+	dw .zero
+	dw .one
 ; 97ec3
 
-Function97ec3: ; 97ec3
+.zero ; 97ec3
 	ld a, [hSCY]
-	ld hl, $0004
+	ld hl, 4
 	add hl, bc
 	ld [hl], a
-	call Function97eab
-; 97ecd
-
-Function97ecd: ; 97ecd
-	ld hl, $0001
+	call CmdQueueAnonJT_Increment
+.one ; 97ecd
+	ld hl, 1
 	add hl, bc
 	ld a, [hl]
 	dec a
@@ -519,7 +534,7 @@ Function97ecd: ; 97ecd
 	jr z, .asm_97eee
 	and $1
 	jr z, .asm_97ee4
-	ld hl, $0002
+	ld hl, 2
 	add hl, bc
 	ld a, [hSCY]
 	sub [hl]
@@ -527,7 +542,7 @@ Function97ecd: ; 97ecd
 	ret
 
 .asm_97ee4
-	ld hl, $0002
+	ld hl, 2
 	add hl, bc
 	ld a, [hSCY]
 	add [hl]
@@ -535,114 +550,112 @@ Function97ecd: ; 97ecd
 	ret
 
 .asm_97eee
-	ld hl, $0004
+	ld hl, 4
 	add hl, bc
 	ld a, [hl]
 	ld [hSCY], a
-	call Function97e72
+	call _DelCmdQueue
 	ret
 ; 97ef9
 
-Function97ef9: ; 97ef9
-	call Function97ea3
-	dw Function97f02
-	dw Function97f0a
-	dw Function97f1b
+CmdQueue_Type3: ; 97ef9
+	call CmdQueueAnonymousJumptable
+	; anonymous dw
+	dw .zero
+	dw .one
+	dw .two
 ; 97f02
 
-Function97f02: ; 97f02
-	call Function97f38
-	jr z, Function97f2c
-	call Function97eab
-; 97f0a
+.zero ; 97f02
+	call .IsPlayerFacingDown
+	jr z, .PlayerNotFacingDown
+	call CmdQueueAnonJT_Increment
+.one ; 97f0a
+	call .IsPlayerFacingDown
+	jr z, .PlayerNotFacingDown
+	call CmdQueueAnonJT_Increment
 
-Function97f0a: ; 97f0a
-	call Function97f38
-	jr z, Function97f2c
-	call Function97eab
-
-	ld hl, $0002
+	ld hl, 2
 	add hl, bc
 	ld a, [hl]
-	ld [$d173], a
+	ld [wd173], a
 	ret
 ; 97f1b
 
-Function97f1b: ; 97f1b
-	call Function97f38
-	jr z, Function97f2c
-	call Function97eb1
+.two ; 97f1b
+	call .IsPlayerFacingDown
+	jr z, .PlayerNotFacingDown
+	call CmdQueueAnonJT_Decrement
 
-	ld hl, $0003
+	ld hl, 3
 	add hl, bc
 	ld a, [hl]
-	ld [$d173], a
+	ld [wd173], a
 	ret
 ; 97f2c
 
-Function97f2c: ; 97f2c
+.PlayerNotFacingDown: ; 97f2c
 	ld a, $7f
-	ld [$d173], a
-	ld hl, $0005
+	ld [wd173], a
+	ld hl, 5
 	add hl, bc
 	ld [hl], 0
 	ret
 ; 97f38
 
-Function97f38: ; 97f38
+.IsPlayerFacingDown: ; 97f38
 	push bc
-	ld bc, $d4d6
+	ld bc, PlayerStruct
 	call GetSpriteDirection
 	and a
 	pop bc
 	ret
 ; 97f42
 
-Function97f42: ; 97f42
-	ld de, $d4d6
-	ld a, $d
-.asm_97f47
+CmdQueue_StoneTable: ; 97f42
+	ld de, PlayerStruct
+	ld a, NUM_OBJECT_STRUCTS
+.loop
 	push af
 
-	ld hl, $0000
+	ld hl, OBJECT_SPRITE
 	add hl, de
 	ld a, [hl]
 	and a
-	jr z, .asm_97f71
+	jr z, .next
 
-	ld hl, $0003
+	ld hl, OBJECT_MOVEMENTTYPE
 	add hl, de
 	ld a, [hl]
-	cp $19
-	jr nz, .asm_97f71
+	cp STEP_TYPE_SKYFALL_TOP
+	jr nz, .next
 
-	ld hl, $000e
+	ld hl, OBJECT_NEXT_TILE
 	add hl, de
 	ld a, [hl]
 	call CheckPitTile
-	jr nz, .asm_97f71
+	jr nz, .next
 
-	ld hl, $0007
+	ld hl, OBJECT_DIRECTION_WALKING
 	add hl, de
 	ld a, [hl]
-	cp $ff
-	jr nz, .asm_97f71
-	call Function3567
-	jr c, .asm_97f7c
+	cp STANDING
+	jr nz, .next
+	call HandleStoneQueue
+	jr c, .fall_down_hole
 
-.asm_97f71
-	ld hl, $0028
+.next
+	ld hl, OBJECT_STRUCT_LENGTH
 	add hl, de
 	ld d, h
 	ld e, l
 
 	pop af
 	dec a
-	jr nz, .asm_97f47
+	jr nz, .loop
 	ret
 
-.asm_97f7c
+.fall_down_hole
 	pop af
 	ret
 ; 97f7e
-

@@ -1,48 +1,47 @@
-OlivineGoodRodHouse_MapScriptHeader: ; 0x9c719
-	; trigger count
+const_value set 2
+	const OLIVINEGOODRODHOUSE_FISHING_GURU
+
+OlivineGoodRodHouse_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x9c71b
 
-FishingGuruScript_0x9c71b: ; 0x9c71b
+GoodRodGuru:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_GOOD_ROD
-	iftrue UnknownScript_0x9c740
-	2writetext UnknownText_0x9c749
+	iftrue .AlreadyGotItem
+	writetext OfferGoodRodText
 	yesorno
-	iffalse UnknownScript_0x9c73a
-	2writetext UnknownText_0x9c7db
-	keeptextopen
-	verbosegiveitem GOOD_ROD, 1
-	2writetext UnknownText_0x9c807
+	iffalse .DontWantIt
+	writetext GiveGoodRodText
+	buttonsound
+	verbosegiveitem GOOD_ROD
+	writetext GaveGoodRodText
+	waitbutton
 	closetext
-	loadmovesprites
 	setevent EVENT_GOT_GOOD_ROD
 	end
-; 0x9c73a
 
-UnknownScript_0x9c73a: ; 0x9c73a
-	2writetext UnknownText_0x9c84c
+.DontWantIt:
+	writetext DontWantGoodRodText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9c740
 
-UnknownScript_0x9c740: ; 0x9c740
-	2writetext UnknownText_0x9c87f
+.AlreadyGotItem:
+	writetext HaveGoodRodText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9c746
 
-UnknownScript_0x9c746: ; 0x9c746
-	jumpstd $0002
-; 0x9c749
+GoodRodHouseBookshelf:
+; unused
+	jumpstd picturebookshelf
 
-UnknownText_0x9c749: ; 0x9c749
+OfferGoodRodText:
 	text "OLIVINE is on the"
 	line "sea!"
 
@@ -57,54 +56,47 @@ UnknownText_0x9c749: ; 0x9c749
 	line "face the sea and"
 	cont "fish?"
 	done
-; 0x9c7db
 
-UnknownText_0x9c7db: ; 0x9c7db
+GiveGoodRodText:
 	text "Ah, hahah!"
 	line "We have ourselves"
 	cont "a new angler!"
 	done
-; 0x9c807
 
-UnknownText_0x9c807: ; 0x9c807
+GaveGoodRodText:
 	text "Fish aren't found"
 	line "in the sea alone."
 
 	para "They go wherever"
 	line "there is water."
 	done
-; 0x9c84c
 
-UnknownText_0x9c84c: ; 0x9c84c
+DontWantGoodRodText:
 	text "Whaaat? You don't"
 	line "like to fish!?"
 	cont "Incomprehensible!"
 	done
-; 0x9c87f
 
-UnknownText_0x9c87f: ; 0x9c87f
+HaveGoodRodText:
 	text "How are things?"
 	line "Land the big one?"
 	done
-; 0x9c8a2
 
-OlivineGoodRodHouse_MapEventHeader: ; 0x9c8a2
+OlivineGoodRodHouse_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 6, GROUP_OLIVINE_CITY, MAP_OLIVINE_CITY
-	warp_def $7, $3, 6, GROUP_OLIVINE_CITY, MAP_OLIVINE_CITY
+	warp_def $7, $2, 6, OLIVINE_CITY
+	warp_def $7, $3, 6, OLIVINE_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_FISHING_GURU, 7, 6, $6, $0, 255, 255, $a0, 0, FishingGuruScript_0x9c71b, $ffff
-; 0x9c8bf
-
+	person_event SPRITE_FISHING_GURU, 3, 2, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, GoodRodGuru, -1

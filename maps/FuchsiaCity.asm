@@ -1,78 +1,68 @@
-FuchsiaCity_MapScriptHeader: ; 0x194b19
-	; trigger count
+const_value set 2
+	const FUCHSIACITY_YOUNGSTER
+	const FUCHSIACITY_POKEFAN_M
+	const FUCHSIACITY_TEACHER
+	const FUCHSIACITY_FRUIT_TREE
+
+FuchsiaCity_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
+	dbw MAPCALLBACK_NEWMAP, .FlyPoint
 
-	dbw 5, UnknownScript_0x194b1e
-; 0x194b1e
-
-UnknownScript_0x194b1e: ; 0x194b1e
-	setflag $003e
+.FlyPoint:
+	setflag ENGINE_FLYPOINT_FUCHSIA
 	return
-; 0x194b22
 
-YoungsterScript_0x194b22: ; 0x194b22
+YoungsterScript_0x194b22:
 	jumptextfaceplayer UnknownText_0x194b45
-; 0x194b25
 
-PokefanMScript_0x194b25: ; 0x194b25
+PokefanMScript_0x194b25:
 	jumptextfaceplayer UnknownText_0x194b83
-; 0x194b28
 
-TeacherScript_0x194b28: ; 0x194b28
+TeacherScript_0x194b28:
 	jumptextfaceplayer UnknownText_0x194bd3
-; 0x194b2b
 
-MapFuchsiaCitySignpost0Script: ; 0x194b2b
-	jumptext UnknownText_0x194c22
-; 0x194b2e
+FuchsiaCitySign:
+	jumptext FuchsiaCitySignText
 
-MapFuchsiaCitySignpost1Script: ; 0x194b2e
-	jumptext UnknownText_0x194c4a
-; 0x194b31
+FuchsiaGymSign:
+	jumptext FuchsiaGymSignText
 
-MapFuchsiaCitySignpost2Script: ; 0x194b31
-	jumptext UnknownText_0x194c8b
-; 0x194b34
+SafariZoneOfficeSign:
+	jumptext SafariZoneOfficeSignText
 
-MapFuchsiaCitySignpost3Script: ; 0x194b34
-	jumptext UnknownText_0x194cd5
-; 0x194b37
+WardensHomeSign:
+	jumptext WardensHomeSignText
 
-MapFuchsiaCitySignpost4Script: ; 0x194b37
-	jumptext UnknownText_0x194cf0
-; 0x194b3a
+SafariZoneClosedSign:
+	jumptext SafariZoneClosedSignText
 
-MapFuchsiaCitySignpost5Script: ; 0x194b3a
-	jumptext UnknownText_0x194d37
-; 0x194b3d
+NoLitteringSign:
+	jumptext NoLitteringSignText
 
-MapFuchsiaCitySignpost6Script: ; 0x194b3d
-	jumpstd $0010
-; 0x194b40
+FuchsiaCityPokeCenterSign:
+	jumpstd pokecentersign
 
-MapFuchsiaCitySignpost7Script: ; 0x194b40
-	jumpstd $0011
-; 0x194b43
+FuchsiaCityMartSign:
+	jumpstd martsign
 
-FruitTreeScript_0x194b43: ; 0x194b43
-	fruittree $1e
-; 0x194b45
+FruitTreeScript_0x194b43:
+	fruittree FRUITTREE_FUCHSIA_CITY
 
-UnknownText_0x194b45: ; 0x194b45
+UnknownText_0x194b45:
 	text "One of the ELITE"
 	line "FOUR used to be"
 
 	para "the LEADER of"
 	line "FUCHSIA's GYM."
 	done
-; 0x194b83
 
-UnknownText_0x194b83: ; 0x194b83
+UnknownText_0x194b83:
 	text "KOGA's daughter"
 	line "succeeded him as"
 
@@ -80,9 +70,8 @@ UnknownText_0x194b83: ; 0x194b83
 	line "after he joined"
 	cont "the ELITE FOUR."
 	done
-; 0x194bd3
 
-UnknownText_0x194bd3: ; 0x194bd3
+UnknownText_0x194bd3:
 	text "The SAFARI ZONE is"
 	line "closed… It's sad,"
 
@@ -90,17 +79,15 @@ UnknownText_0x194bd3: ; 0x194bd3
 	line "FUCHSIA's main"
 	cont "attraction."
 	done
-; 0x194c22
 
-UnknownText_0x194c22: ; 0x194c22
+FuchsiaCitySignText:
 	text "FUCHSIA CITY"
 
 	para "Behold! It's"
 	line "Passion Pink!"
 	done
-; 0x194c4a
 
-UnknownText_0x194c4a: ; 0x194c4a
+FuchsiaGymSignText:
 	text "FUCHSIA CITY"
 	line "#MON GYM"
 	cont "LEADER: JANINE"
@@ -108,9 +95,8 @@ UnknownText_0x194c4a: ; 0x194c4a
 	para "The Poisonous"
 	line "Ninja Master"
 	done
-; 0x194c8b
 
-UnknownText_0x194c8b: ; 0x194c8b
+SafariZoneOfficeSignText:
 	text "There's a notice"
 	line "here…"
 
@@ -118,15 +104,13 @@ UnknownText_0x194c8b: ; 0x194c8b
 	line "is closed until"
 	cont "further notice."
 	done
-; 0x194cd5
 
-UnknownText_0x194cd5: ; 0x194cd5
+WardensHomeSignText:
 	text "SAFARI ZONE"
 	line "WARDEN'S HOME"
 	done
-; 0x194cf0
 
-UnknownText_0x194cf0: ; 0x194cf0
+SafariZoneClosedSignText:
 	text "The WARDEN is"
 	line "traveling abroad."
 
@@ -134,53 +118,49 @@ UnknownText_0x194cf0: ; 0x194cf0
 	line "SAFARI ZONE is"
 	cont "closed."
 	done
-; 0x194d37
 
-UnknownText_0x194d37: ; 0x194d37
+NoLitteringSignText:
 	text "No littering."
 
 	para "Please take your"
 	line "waste with you."
 	done
-; 0x194d67
 
-FuchsiaCity_MapEventHeader: ; 0x194d67
+FuchsiaCity_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 11
-	warp_def $d, $5, 2, GROUP_FUCHSIA_MART, MAP_FUCHSIA_MART
-	warp_def $d, $16, 1, GROUP_SAFARI_ZONE_MAIN_OFFICE, MAP_SAFARI_ZONE_MAIN_OFFICE
-	warp_def $1b, $8, 1, GROUP_FUCHSIA_GYM, MAP_FUCHSIA_GYM
-	warp_def $1b, $b, 1, GROUP_FUCHSIA_BILL_SPEECH_HOUSE, MAP_FUCHSIA_BILL_SPEECH_HOUSE
-	warp_def $1b, $13, 1, GROUP_FUCHSIA_POKECENTER_1F, MAP_FUCHSIA_POKECENTER_1F
-	warp_def $1b, $1b, 1, GROUP_SAFARI_ZONE_WARDENS_HOME, MAP_SAFARI_ZONE_WARDENS_HOME
-	warp_def $3, $12, 3, GROUP_SAFARI_ZONE_FUCHSIA_GATE_BETA, MAP_SAFARI_ZONE_FUCHSIA_GATE_BETA
-	warp_def $16, $25, 1, GROUP_ROUTE_15_FUCHSIA_GATE, MAP_ROUTE_15_FUCHSIA_GATE
-	warp_def $17, $25, 2, GROUP_ROUTE_15_FUCHSIA_GATE, MAP_ROUTE_15_FUCHSIA_GATE
-	warp_def $23, $7, 1, GROUP_ROUTE_19___FUCHSIA_GATE, MAP_ROUTE_19___FUCHSIA_GATE
-	warp_def $23, $8, 2, GROUP_ROUTE_19___FUCHSIA_GATE, MAP_ROUTE_19___FUCHSIA_GATE
+	warp_def $d, $5, 2, FUCHSIA_MART
+	warp_def $d, $16, 1, SAFARI_ZONE_MAIN_OFFICE
+	warp_def $1b, $8, 1, FUCHSIA_GYM
+	warp_def $1b, $b, 1, FUCHSIA_BILL_SPEECH_HOUSE
+	warp_def $1b, $13, 1, FUCHSIA_POKECENTER_1F
+	warp_def $1b, $1b, 1, SAFARI_ZONE_WARDENS_HOME
+	warp_def $3, $12, 3, SAFARI_ZONE_FUCHSIA_GATE_BETA
+	warp_def $16, $25, 1, ROUTE_15_FUCHSIA_GATE
+	warp_def $17, $25, 2, ROUTE_15_FUCHSIA_GATE
+	warp_def $23, $7, 1, ROUTE_19___FUCHSIA_GATE
+	warp_def $23, $8, 2, ROUTE_19___FUCHSIA_GATE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 8
-	signpost 15, 21, $0, MapFuchsiaCitySignpost0Script
-	signpost 29, 5, $0, MapFuchsiaCitySignpost1Script
-	signpost 15, 25, $0, MapFuchsiaCitySignpost2Script
-	signpost 29, 27, $0, MapFuchsiaCitySignpost3Script
-	signpost 5, 17, $0, MapFuchsiaCitySignpost4Script
-	signpost 15, 13, $0, MapFuchsiaCitySignpost5Script
-	signpost 27, 20, $0, MapFuchsiaCitySignpost6Script
-	signpost 13, 6, $0, MapFuchsiaCitySignpost7Script
+	signpost 15, 21, SIGNPOST_READ, FuchsiaCitySign
+	signpost 29, 5, SIGNPOST_READ, FuchsiaGymSign
+	signpost 15, 25, SIGNPOST_READ, SafariZoneOfficeSign
+	signpost 29, 27, SIGNPOST_READ, WardensHomeSign
+	signpost 5, 17, SIGNPOST_READ, SafariZoneClosedSign
+	signpost 15, 13, SIGNPOST_READ, NoLitteringSign
+	signpost 27, 20, SIGNPOST_READ, FuchsiaCityPokeCenterSign
+	signpost 13, 6, SIGNPOST_READ, FuchsiaCityMartSign
 
-	; people-events
+.PersonEvents:
 	db 4
-	person_event SPRITE_YOUNGSTER, 22, 27, $2, $11, 255, 255, $a0, 0, YoungsterScript_0x194b22, $ffff
-	person_event SPRITE_POKEFAN_M, 12, 17, $2, $11, 255, 255, $b0, 0, PokefanMScript_0x194b25, $ffff
-	person_event SPRITE_TEACHER, 18, 20, $2, $11, 255, 255, $80, 0, TeacherScript_0x194b28, $ffff
-	person_event SPRITE_FRUIT_TREE, 5, 12, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x194b43, $ffff
-; 0x194e00
-
+	person_event SPRITE_YOUNGSTER, 18, 23, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, YoungsterScript_0x194b22, -1
+	person_event SPRITE_POKEFAN_M, 8, 13, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_SCRIPT, 0, PokefanMScript_0x194b25, -1
+	person_event SPRITE_TEACHER, 14, 16, SPRITEMOVEDATA_WANDER, 1, 1, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, TeacherScript_0x194b28, -1
+	person_event SPRITE_FRUIT_TREE, 1, 8, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FruitTreeScript_0x194b43, -1

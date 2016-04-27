@@ -1,8 +1,8 @@
 Music_TitleScreen: ; eb808
-	dbw $c0, Music_TitleScreen_Ch1
-	dbw $01, Music_TitleScreen_Ch2
-	dbw $02, Music_TitleScreen_Ch3
-	dbw $03, Music_TitleScreen_Ch4
+	musicheader 4, 1, Music_TitleScreen_Ch1
+	musicheader 1, 2, Music_TitleScreen_Ch2
+	musicheader 1, 3, Music_TitleScreen_Ch3
+	musicheader 1, 4, Music_TitleScreen_Ch4
 ; eb814
 
 Music_TitleScreen_Ch1: ; eb814
@@ -490,7 +490,7 @@ Music_TitleScreen_Ch2: ; eb984
 	octave 4
 	note A_, 4
 	stereopanning $ff
-	tone $0000
+	tone 0
 	notetype $c, $b0
 	octave 3
 	note B_, 6
@@ -775,7 +775,7 @@ Music_TitleScreen_Ch3: ; ebb01
 	note __, 1
 	stereopanning $ff
 	notetype $c, $16
-	tone $0000
+	tone 0
 	octave 4
 	note A_, 2
 	octave 5
@@ -1177,5 +1177,3 @@ Music_TitleScreen_branch_ebd93: ; ebd93
 	note C_, 4
 	endchannel
 ; ebd9e
-
-

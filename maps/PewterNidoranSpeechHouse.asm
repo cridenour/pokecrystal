@@ -1,52 +1,49 @@
-PewterNidoranSpeechHouse_MapScriptHeader: ; 0x1a2805
-	; trigger count
+const_value set 2
+	const PEWTERNIDORANSPEECHHOUSE_SUPER_NERD
+	const PEWTERNIDORANSPEECHHOUSE_GROWLITHE
+
+PewterNidoranSpeechHouse_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1a2807
 
-SuperNerdScript_0x1a2807: ; 0x1a2807
+SuperNerdScript_0x1a2807:
 	jumptextfaceplayer UnknownText_0x1a2814
-; 0x1a280a
 
-GrowlitheScript_0x1a280a: ; 0x1a280a
-	loadfont
-	2writetext UnknownText_0x1a2825
+PewterNidoran:
+	opentext
+	writetext PewterNidoranText
 	cry NIDORAN_M
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a2814
 
-UnknownText_0x1a2814: ; 0x1a2814
+UnknownText_0x1a2814:
 	text "NIDORAN, shake!"
 	done
-; 0x1a2825
 
-UnknownText_0x1a2825: ; 0x1a2825
+PewterNidoranText:
 	text "NIDORAN: Gau gau!"
 	done
-; 0x1a2838
 
-PewterNidoranSpeechHouse_MapEventHeader: ; 0x1a2838
+PewterNidoranSpeechHouse_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 1, GROUP_PEWTER_CITY, MAP_PEWTER_CITY
-	warp_def $7, $3, 1, GROUP_PEWTER_CITY, MAP_PEWTER_CITY
+	warp_def $7, $2, 1, PEWTER_CITY
+	warp_def $7, $3, 1, PEWTER_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_SUPER_NERD, 9, 7, $9, $0, 255, 255, $a0, 0, SuperNerdScript_0x1a2807, $ffff
-	person_event SPRITE_GROWLITHE, 9, 8, $16, $0, 255, 255, $90, 0, GrowlitheScript_0x1a280a, $ffff
-; 0x1a2862
-
+	person_event SPRITE_SUPER_NERD, 5, 3, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, SuperNerdScript_0x1a2807, -1
+	person_event SPRITE_GROWLITHE, 5, 4, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, PewterNidoran, -1

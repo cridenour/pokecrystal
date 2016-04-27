@@ -1,48 +1,43 @@
-TinTower5F_MapScriptHeader: ; 0x185aa7
-	; trigger count
+const_value set 2
+	const TINTOWER5F_POKE_BALL
+
+TinTower5F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x185aa9
 
-ItemFragment_0x185aa9: ; 0x185aa9
-	db RARE_CANDY, 1
-; 0x185aab
+TinTower5FRareCandy:
+	itemball RARE_CANDY
 
-MapTinTower5FSignpostItem0: ; 0x185aab
-	dw $007e
-	db FULL_RESTORE
-	
-; 0x185aae
+TinTower5FHiddenFullRestore:
+	dwb EVENT_TIN_TOWER_5F_HIDDEN_FULL_RESTORE, FULL_RESTORE
 
-MapTinTower5FSignpostItem1: ; 0x185aae
-	dw $007f
-	db CARBOS
-	
-; 0x185ab1
 
-TinTower5F_MapEventHeader: ; 0x185ab1
+TinTower5FHiddenCarbos:
+	dwb EVENT_TIN_TOWER_5F_HIDDEN_CARBOS, CARBOS
+
+
+TinTower5F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 4
-	warp_def $f, $b, 2, GROUP_TIN_TOWER_6F, MAP_TIN_TOWER_6F
-	warp_def $4, $2, 1, GROUP_TIN_TOWER_4F, MAP_TIN_TOWER_4F
-	warp_def $e, $2, 3, GROUP_TIN_TOWER_4F, MAP_TIN_TOWER_4F
-	warp_def $f, $11, 4, GROUP_TIN_TOWER_4F, MAP_TIN_TOWER_4F
+	warp_def $f, $b, 2, TIN_TOWER_6F
+	warp_def $4, $2, 1, TIN_TOWER_4F
+	warp_def $e, $2, 3, TIN_TOWER_4F
+	warp_def $f, $11, 4, TIN_TOWER_4F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 14, 16, $7, MapTinTower5FSignpostItem0
-	signpost 15, 3, $7, MapTinTower5FSignpostItem1
+	signpost 14, 16, SIGNPOST_ITEM, TinTower5FHiddenFullRestore
+	signpost 15, 3, SIGNPOST_ITEM, TinTower5FHiddenCarbos
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_POKE_BALL, 13, 13, $1, $0, 255, 255, $1, 0, ItemFragment_0x185aa9, $064f
-; 0x185ae2
-
+	person_event SPRITE_POKE_BALL, 9, 9, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, TinTower5FRareCandy, EVENT_TIN_TOWER_5F_RARE_CANDY

@@ -1,7 +1,7 @@
 Music_SuicuneBattle: ; 178b81
-	dbw $80, Music_SuicuneBattle_Ch1
-	dbw $01, Music_SuicuneBattle_Ch2
-	dbw $02, Music_SuicuneBattle_Ch3
+	musicheader 3, 1, Music_SuicuneBattle_Ch1
+	musicheader 1, 2, Music_SuicuneBattle_Ch2
+	musicheader 1, 3, Music_SuicuneBattle_Ch3
 ; 178b8a
 
 Music_SuicuneBattle_Ch1: ; 178b8a
@@ -2058,5 +2058,3 @@ Music_SuicuneBattle_branch_179182: ; 179182
 	note E_, 2
 	loopchannel 0, Music_SuicuneBattle_branch_179182
 ; 17948b
-
-

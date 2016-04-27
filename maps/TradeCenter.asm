@@ -1,88 +1,81 @@
-TradeCenter_MapScriptHeader: ; 0x1933dc
-	; trigger count
+const_value set 2
+	const TRADECENTER_CHRIS1
+	const TRADECENTER_CHRIS2
+
+TradeCenter_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x1933e9, $0000
-	dw UnknownScript_0x1933ed, $0000
+	maptrigger .Trigger0
+	maptrigger .Trigger1
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
 
-	dbw 2, UnknownScript_0x1933ee
-; 0x1933e9
+	dbw MAPCALLBACK_OBJECTS, TradeCenter_SetWhichChris
 
-UnknownScript_0x1933e9: ; 0x1933e9
-	priorityjump UnknownScript_0x1933fe
+.Trigger0:
+	priorityjump TradeCenter_Initialize
 	end
-; 0x1933ed
 
-UnknownScript_0x1933ed: ; 0x1933ed
+.Trigger1:
 	end
-; 0x1933ee
 
-UnknownScript_0x1933ee: ; 0x1933ee
-	special $0010
-	iffalse UnknownScript_0x1933f9
-	disappear $3
-	appear $2
+TradeCenter_SetWhichChris:
+	special Special_CableClubCheckWhichChris
+	iffalse .Chris2
+	disappear TRADECENTER_CHRIS2
+	appear TRADECENTER_CHRIS1
 	return
-; 0x1933f9
 
-UnknownScript_0x1933f9: ; 0x1933f9
-	disappear $2
-	appear $3
+.Chris2:
+	disappear TRADECENTER_CHRIS1
+	appear TRADECENTER_CHRIS2
 	return
-; 0x1933fe
 
-UnknownScript_0x1933fe: ; 0x1933fe
+TradeCenter_Initialize:
 	dotrigger $1
-	domaptrigger GROUP_POKECENTER_2F, MAP_POKECENTER_2F, $1
+	domaptrigger POKECENTER_2F, $1
 	end
-; 0x193405
 
-MapTradeCenterSignpost1Script: ; 0x193405
-	special $000d
-	newloadmap $f8
+MapTradeCenterSignpost1Script:
+	special Special_TradeCenter
+	newloadmap MAPSETUP_LINKRETURN
 	end
-; 0x19340b
 
-UnknownScript_0x19340b: ; 0x19340b
-	loadfont
-	2writetext UnknownText_0x193412
+ChrisScript_0x19340b:
+	opentext
+	writetext .FriendReadyText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x193412
 
-UnknownText_0x193412: ; 0x193412
+.FriendReadyText:
 	text "Your friend is"
 	line "ready."
 	done
-; 0x193429
 
-TradeCenter_MapEventHeader: ; 0x193429
+TradeCenter_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $4, 2, GROUP_POKECENTER_2F, MAP_POKECENTER_2F
-	warp_def $7, $5, 2, GROUP_POKECENTER_2F, MAP_POKECENTER_2F
+	warp_def $7, $4, 2, POKECENTER_2F
+	warp_def $7, $5, 2, POKECENTER_2F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 4, 4, $3, MapTradeCenterSignpost1Script
-	signpost 4, 5, $4, MapTradeCenterSignpost1Script
+	signpost 4, 4, SIGNPOST_RIGHT, MapTradeCenterSignpost1Script
+	signpost 4, 5, SIGNPOST_LEFT, MapTradeCenterSignpost1Script
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_CHRIS, 8, 7, $9, $0, 255, 255, $0, 0, ChrisScript_0x193499, $0000
-	person_event SPRITE_CHRIS, 8, 10, $8, $0, 255, 255, $0, 0, ChrisScript_0x193499, $0001
-; 0x19345d
-
+	person_event SPRITE_CHRIS, 4, 3, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ChrisScript_0x193499, EVENT_GAVE_KURT_APRICORNS
+	person_event SPRITE_CHRIS, 4, 6, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ChrisScript_0x193499, EVENT_RECEIVED_BALLS_FROM_KURT

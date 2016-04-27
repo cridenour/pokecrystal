@@ -1,7 +1,7 @@
 Music_LookYoungster: ; f66c3
-	dbw $80, Music_LookYoungster_Ch1
-	dbw $01, Music_LookYoungster_Ch2
-	dbw $02, Music_LookYoungster_Ch3
+	musicheader 3, 1, Music_LookYoungster_Ch1
+	musicheader 1, 2, Music_LookYoungster_Ch2
+	musicheader 1, 3, Music_LookYoungster_Ch3
 ; f66cc
 
 Music_LookYoungster_Ch1: ; f66cc
@@ -61,9 +61,7 @@ Music_LookYoungster_branch_f66ea: ; f66ea
 	loopchannel 0, Music_LookYoungster_branch_f66ea
 ; f670e
 
-
-INCBIN "baserom.gbc", $f670e, $f670f - $f670e
-
+	db $ff
 
 Music_LookYoungster_Ch2: ; f670f
 	stereopanning $f0
@@ -162,9 +160,7 @@ Music_LookYoungster_branch_f672f: ; f672f
 	loopchannel 0, Music_LookYoungster_branch_f672f
 ; f6783
 
-
-INCBIN "baserom.gbc", $f6783, $f6784 - $f6783
-
+	db $ff
 
 Music_LookYoungster_Ch3: ; f6784
 	stereopanning $ff
@@ -300,8 +296,4 @@ Music_LookYoungster_branch_f67ae: ; f67ae
 	loopchannel 0, Music_LookYoungster_branch_f67ae
 ; f6810
 
-
-INCBIN "baserom.gbc", $f6810, $f6811 - $f6810
-
-
-
+	db $ff

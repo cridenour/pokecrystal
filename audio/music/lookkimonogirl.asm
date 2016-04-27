@@ -1,12 +1,10 @@
 Music_LookKimonoGirl: ; f79b8
-	dbw $80, Music_LookKimonoGirl_Ch1
-	dbw $01, Music_LookKimonoGirl_Ch2
-	dbw $02, Music_LookKimonoGirl_Ch3
+	musicheader 3, 1, Music_LookKimonoGirl_Ch1
+	musicheader 1, 2, Music_LookKimonoGirl_Ch2
+	musicheader 1, 3, Music_LookKimonoGirl_Ch3
 ; f79c1
 
-
-INCBIN "baserom.gbc", $f79c1, $f79c2 - $f79c1
-
+	db $3
 
 Music_LookKimonoGirl_Ch1: ; f79c2
 	tempo 160
@@ -16,7 +14,7 @@ Music_LookKimonoGirl_Ch1: ; f79c2
 	notetype $6, $87
 	tone $0001
 	callchannel Music_LookKimonoGirl_branch_f7aa8
-	tone $0000
+	tone 0
 Music_LookKimonoGirl_branch_f79d7: ; f79d7
 	notetype $c, $b2
 	callchannel Music_LookKimonoGirl_branch_f7a13
@@ -273,5 +271,3 @@ Music_LookKimonoGirl_branch_f7aec: ; f7aec
 	note E_, 8
 	loopchannel 0, Music_LookKimonoGirl_branch_f7aec
 ; f7b13
-
-

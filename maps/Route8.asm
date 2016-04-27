@@ -1,169 +1,83 @@
-Route8_MapScriptHeader: ; 0x6c000
-	; trigger count
+const_value set 2
+	const ROUTE8_BIKER1
+	const ROUTE8_BIKER2
+	const ROUTE8_BIKER3
+	const ROUTE8_SUPER_NERD1
+	const ROUTE8_SUPER_NERD2
+	const ROUTE8_FRUIT_TREE
+
+Route8_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x6c002
 
-TrainerBikerDwayne: ; 0x6c002
-	; bit/flag number
-	dw $433
+TrainerBikerDwayne:
+	trainer EVENT_BEAT_BIKER_DWAYNE, BIKER, DWAYNE, BikerDwayneSeenText, BikerDwayneBeatenText, 0, BikerDwayneScript
 
-	; trainer group && trainer id
-	db BIKER, DWAYNE
-
-	; text when seen
-	dw BikerDwayneSeenText
-
-	; text when trainer beaten
-	dw BikerDwayneBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw BikerDwayneScript
-; 0x6c00e
-
-BikerDwayneScript: ; 0x6c00e
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x6c0c8
+BikerDwayneScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x6c0c8
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x6c016
 
-TrainerBikerHarris: ; 0x6c016
-	; bit/flag number
-	dw $434
+TrainerBikerHarris:
+	trainer EVENT_BEAT_BIKER_HARRIS, BIKER, HARRIS, BikerHarrisSeenText, BikerHarrisBeatenText, 0, BikerHarrisScript
 
-	; trainer group && trainer id
-	db BIKER, HARRIS
-
-	; text when seen
-	dw BikerHarrisSeenText
-
-	; text when trainer beaten
-	dw BikerHarrisBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw BikerHarrisScript
-; 0x6c022
-
-BikerHarrisScript: ; 0x6c022
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x6c143
+BikerHarrisScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x6c143
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x6c02a
 
-TrainerBikerZeke: ; 0x6c02a
-	; bit/flag number
-	dw $435
+TrainerBikerZeke:
+	trainer EVENT_BEAT_BIKER_ZEKE, BIKER, ZEKE, BikerZekeSeenText, BikerZekeBeatenText, 0, BikerZekeScript
 
-	; trainer group && trainer id
-	db BIKER, ZEKE
-
-	; text when seen
-	dw BikerZekeSeenText
-
-	; text when trainer beaten
-	dw BikerZekeBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw BikerZekeScript
-; 0x6c036
-
-BikerZekeScript: ; 0x6c036
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x6c1a3
+BikerZekeScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x6c1a3
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x6c03e
 
-TrainerSupernerdSam: ; 0x6c03e
-	; bit/flag number
-	dw $586
+TrainerSupernerdSam:
+	trainer EVENT_BEAT_SUPER_NERD_SAM, SUPER_NERD, SAM, SupernerdSamSeenText, SupernerdSamBeatenText, 0, SupernerdSamScript
 
-	; trainer group && trainer id
-	db SUPER_NERD, SAM
-
-	; text when seen
-	dw SupernerdSamSeenText
-
-	; text when trainer beaten
-	dw SupernerdSamBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SupernerdSamScript
-; 0x6c04a
-
-SupernerdSamScript: ; 0x6c04a
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x6c219
+SupernerdSamScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x6c219
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x6c052
 
-TrainerSupernerdTom: ; 0x6c052
-	; bit/flag number
-	dw $587
+TrainerSupernerdTom:
+	trainer EVENT_BEAT_SUPER_NERD_TOM, SUPER_NERD, TOM, SupernerdTomSeenText, SupernerdTomBeatenText, 0, SupernerdTomScript
 
-	; trainer group && trainer id
-	db SUPER_NERD, TOM
-
-	; text when seen
-	dw SupernerdTomSeenText
-
-	; text when trainer beaten
-	dw SupernerdTomBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SupernerdTomScript
-; 0x6c05e
-
-SupernerdTomScript: ; 0x6c05e
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x6c27e
+SupernerdTomScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x6c27e
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x6c066
 
-MapRoute8Signpost1Script: ; 0x6c066
-	jumptext UnknownText_0x6c2aa
-; 0x6c069
+Route8LockedDoor:
+	jumptext Route8LockedDoorText
 
-MapRoute8Signpost0Script: ; 0x6c069
-	jumptext UnknownText_0x6c2b7
-; 0x6c06c
+Route8UndergroundPathSign:
+	jumptext Route8UndergroundPathSignText
 
-FruitTreeScript_0x6c06c: ; 0x6c06c
-	fruittree $1b
-; 0x6c06e
+FruitTreeScript_0x6c06c:
+	fruittree FRUITTREE_ROUTE_8
 
-BikerDwayneSeenText: ; 0x6c06e
+BikerDwayneSeenText:
 	text "We're the KANTO"
 	line "#MON FEDERATION"
 	cont "trainer group."
@@ -171,134 +85,115 @@ BikerDwayneSeenText: ; 0x6c06e
 	para "We'll drive you"
 	line "under our wheels!"
 	done
-; 0x6c0be
 
-BikerDwayneBeatenText: ; 0x6c0be
+BikerDwayneBeatenText:
 	text "S-sorry!"
 	done
-; 0x6c0c8
 
-UnknownText_0x6c0c8: ; 0x6c0c8
+UnknownText_0x6c0c8:
 	text "The KANTO #MON"
 	line "FEDERATION will"
 	cont "never fall!"
 	done
-; 0x6c0f4
 
-BikerHarrisSeenText: ; 0x6c0f4
+BikerHarrisSeenText:
 	text "The cops shut down"
 	line "our UNDERGROUND"
 
 	para "PATH! That really"
 	line "fries me!"
 	done
-; 0x6c134
 
-BikerHarrisBeatenText: ; 0x6c134
+BikerHarrisBeatenText:
 	text "F-forgive me!"
 	done
-; 0x6c143
 
-UnknownText_0x6c143: ; 0x6c143
+UnknownText_0x6c143:
 	text "Wiped out by some"
 	line "punk from JOHTO…"
 	done
-; 0x6c167
 
-BikerZekeSeenText: ; 0x6c167
+BikerZekeSeenText:
 	text "We're the KANTO"
 	line "#MON FEDERA-"
 	cont "TION!"
 	cont "Right on!"
 	done
-; 0x6c194
 
-BikerZekeBeatenText: ; 0x6c194
+BikerZekeBeatenText:
 	text "Yikes! Sorry!"
 	done
-; 0x6c1a3
 
-UnknownText_0x6c1a3: ; 0x6c1a3
+UnknownText_0x6c1a3:
 	text "We'll try not to"
 	line "disturb anyone"
 	cont "from now on…"
 	done
-; 0x6c1d0
 
-SupernerdSamSeenText: ; 0x6c1d0
+SupernerdSamSeenText:
 	text "How does the MAG-"
 	line "NET TRAIN work?"
 	done
-; 0x6c1f3
 
-SupernerdSamBeatenText: ; 0x6c1f3
+SupernerdSamBeatenText:
 	text "I just want to see"
 	line "the MAGNET TRAIN…"
 	done
-; 0x6c219
 
-UnknownText_0x6c219: ; 0x6c219
+UnknownText_0x6c219:
 	text "The power of mag-"
 	line "nets is awesome!"
 	done
-; 0x6c23d
 
-SupernerdTomSeenText: ; 0x6c23d
+SupernerdTomSeenText:
 	text "Hm… You've got"
 	line "many GYM BADGES."
 	done
-; 0x6c25d
 
-SupernerdTomBeatenText: ; 0x6c25d
+SupernerdTomBeatenText:
 	text "Just as I thought…"
 	line "You're tough!"
 	done
-; 0x6c27e
 
-UnknownText_0x6c27e: ; 0x6c27e
+UnknownText_0x6c27e:
 	text "GYM BADGES give"
 	line "you advantages in"
 	cont "battles."
 	done
-; 0x6c2aa
 
-UnknownText_0x6c2aa: ; 0x6c2aa
+Route8LockedDoorText:
 	text "It's locked…"
 	done
-; 0x6c2b7
 
-UnknownText_0x6c2b7: ; 0x6c2b7
+Route8UndergroundPathSignText:
 	text "The flyer's torn."
 
 	para "It's impossible to"
 	line "read…"
 	done
-; 0x6c2e1
 
-Route8_MapEventHeader: ; 0x6c2e1
+Route8_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $4, $4, 3, GROUP_ROUTE_8_SAFFRON_GATE, MAP_ROUTE_8_SAFFRON_GATE
-	warp_def $5, $4, 4, GROUP_ROUTE_8_SAFFRON_GATE, MAP_ROUTE_8_SAFFRON_GATE
+	warp_def $4, $4, 3, ROUTE_8_SAFFRON_GATE
+	warp_def $5, $4, 4, ROUTE_8_SAFFRON_GATE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 7, 11, $0, MapRoute8Signpost0Script
-	signpost 5, 10, $0, MapRoute8Signpost1Script
+	signpost 7, 11, SIGNPOST_READ, Route8UndergroundPathSign
+	signpost 5, 10, SIGNPOST_READ, Route8LockedDoor
 
-	; people-events
+.PersonEvents:
 	db 6
-	person_event SPRITE_BIKER, 12, 14, $8, $0, 255, 255, $82, 5, TrainerBikerDwayne, $ffff
-	person_event SPRITE_BIKER, 13, 14, $8, $0, 255, 255, $a2, 5, TrainerBikerHarris, $ffff
-	person_event SPRITE_BIKER, 14, 14, $8, $0, 255, 255, $92, 5, TrainerBikerZeke, $ffff
-	person_event SPRITE_SUPER_NERD, 6, 27, $6, $0, 255, 255, $b2, 3, TrainerSupernerdSam, $ffff
-	person_event SPRITE_SUPER_NERD, 16, 35, $a, $0, 255, 255, $b2, 4, TrainerSupernerdTom, $ffff
-	person_event SPRITE_FRUIT_TREE, 9, 37, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x6c06c, $ffff
-; 0x6c349
-
+	person_event SPRITE_BIKER, 8, 10, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 5, TrainerBikerDwayne, -1
+	person_event SPRITE_BIKER, 9, 10, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_TRAINER, 5, TrainerBikerHarris, -1
+	person_event SPRITE_BIKER, 10, 10, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 5, TrainerBikerZeke, -1
+	person_event SPRITE_SUPER_NERD, 2, 23, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 3, TrainerSupernerdSam, -1
+	person_event SPRITE_SUPER_NERD, 12, 31, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 4, TrainerSupernerdTom, -1
+	person_event SPRITE_FRUIT_TREE, 5, 33, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FruitTreeScript_0x6c06c, -1

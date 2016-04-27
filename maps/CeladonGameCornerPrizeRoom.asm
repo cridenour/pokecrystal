@@ -1,238 +1,220 @@
-CeladonGameCornerPrizeRoom_MapScriptHeader: ; 0x726e7
-	; trigger count
+const_value set 2
+	const CELADONGAMECORNERPRIZEROOM_GENTLEMAN
+	const CELADONGAMECORNERPRIZEROOM_PHARMACIST
+
+CeladonGameCornerPrizeRoom_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x726e9
 
-GentlemanScript_0x726e9: ; 0x726e9
-	jumptextfaceplayer UnknownText_0x728b8
-; 0x726ec
+CeladonGameCornerPrizeRoomGentlemanScript:
+	jumptextfaceplayer CeladonGameCornerPrizeRoomGentlemanText
 
-PharmacistScript_0x726ec: ; 0x726ec
-	jumptextfaceplayer UnknownText_0x728e9
-; 0x726ef
+CeladonGameCornerPrizeRoomPharmacistScript:
+	jumptextfaceplayer CeladonGameCornerPrizeRoomPharmacistText
 
-MapCeladonGameCornerPrizeRoomSignpost0Script: ; 0x726ef
+GoldenrodGameCornerTMVendor:
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x7293e
-	closetext
+	opentext
+	writetext CeladonPrizeRoom_PrizeVendorIntroText
+	waitbutton
 	checkitem COIN_CASE
-	iffalse UnknownScript_0x7278a
-	2writetext UnknownText_0x72974
-UnknownScript_0x726fd: ; 0x726fd
-	special $004f
-	loadmenudata MenuDataHeader_0x72790
-	interpretmenu2
-	writebackup
-	if_equal $1, UnknownScript_0x72714
-	if_equal $2, UnknownScript_0x72730
-	if_equal $3, UnknownScript_0x7274c
-	2jump UnknownScript_0x72784
-; 0x72714
+	iffalse CeladonPrizeRoom_NoCoinCase
+	writetext CeladonPrizeRoom_AskWhichPrizeText
+CeladonPrizeRoom_tmcounterloop:
+	special Special_DisplayCoinCaseBalance
+	loadmenudata CeladonPrizeRoom_TMMenuDataHeader
+	verticalmenu
+	closewindow
+	if_equal $1, .doubleteam
+	if_equal $2, .psychic
+	if_equal $3, .hyperbeam
+	jump CeladonPrizeRoom_cancel
 
-UnknownScript_0x72714: ; 0x72714
+.doubleteam
 	checkcoins 1500
-	if_equal $2, UnknownScript_0x72778
-	itemtotext TM_32, $0
-	2call UnknownScript_0x72768
-	iffalse UnknownScript_0x72784
-	giveitem TM_32, $1
-	iffalse UnknownScript_0x7277e
+	if_equal $2, CeladonPrizeRoom_notenoughcoins
+	itemtotext TM_DOUBLE_TEAM, $0
+	scall CeladonPrizeRoom_askbuy
+	iffalse CeladonPrizeRoom_cancel
+	giveitem TM_DOUBLE_TEAM
+	iffalse CeladonPrizeRoom_notenoughroom
 	takecoins 1500
-	2jump UnknownScript_0x7276d
-; 0x72730
+	jump CeladonPrizeRoom_purchased
 
-UnknownScript_0x72730: ; 0x72730
+.psychic
 	checkcoins 3500
-	if_equal $2, UnknownScript_0x72778
-	itemtotext TM_29, $0
-	2call UnknownScript_0x72768
-	iffalse UnknownScript_0x72784
-	giveitem TM_29, $1
-	iffalse UnknownScript_0x7277e
+	if_equal $2, CeladonPrizeRoom_notenoughcoins
+	itemtotext TM_PSYCHIC, $0
+	scall CeladonPrizeRoom_askbuy
+	iffalse CeladonPrizeRoom_cancel
+	giveitem TM_PSYCHIC
+	iffalse CeladonPrizeRoom_notenoughroom
 	takecoins 3500
-	2jump UnknownScript_0x7276d
-; 0x7274c
+	jump CeladonPrizeRoom_purchased
 
-UnknownScript_0x7274c: ; 0x7274c
+.hyperbeam
 	checkcoins 7500
-	if_equal $2, UnknownScript_0x72778
-	itemtotext TM_15, $0
-	2call UnknownScript_0x72768
-	iffalse UnknownScript_0x72784
-	giveitem TM_15, $1
-	iffalse UnknownScript_0x7277e
+	if_equal $2, CeladonPrizeRoom_notenoughcoins
+	itemtotext TM_HYPER_BEAM, $0
+	scall CeladonPrizeRoom_askbuy
+	iffalse CeladonPrizeRoom_cancel
+	giveitem TM_HYPER_BEAM
+	iffalse CeladonPrizeRoom_notenoughroom
 	takecoins 7500
-	2jump UnknownScript_0x7276d
-; 0x72768
+	jump CeladonPrizeRoom_purchased
 
-UnknownScript_0x72768: ; 0x72768
-	2writetext UnknownText_0x72991
+CeladonPrizeRoom_askbuy:
+	writetext CeladonPrizeRoom_ConfirmPurchaseText
 	yesorno
 	end
-; 0x7276d
 
-UnknownScript_0x7276d: ; 0x7276d
-	waitbutton
+CeladonPrizeRoom_purchased:
+	waitsfx
 	playsound SFX_TRANSACTION
-	2writetext UnknownText_0x729ad
-	closetext
-	2jump UnknownScript_0x726fd
-; 0x72778
+	writetext CeladonPrizeRoom_HereYouGoText
+	waitbutton
+	jump CeladonPrizeRoom_tmcounterloop
 
-UnknownScript_0x72778: ; 0x72778
-	2writetext UnknownText_0x729bb
+CeladonPrizeRoom_notenoughcoins:
+	writetext CeladonPrizeRoom_NotEnoughCoinsText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7277e
 
-UnknownScript_0x7277e: ; 0x7277e
-	2writetext UnknownText_0x729d8
+CeladonPrizeRoom_notenoughroom:
+	writetext CeladonPrizeRoom_NotEnoughRoomText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x72784
 
-UnknownScript_0x72784: ; 0x72784
-	2writetext UnknownText_0x729f2
+CeladonPrizeRoom_cancel:
+	writetext CeladonPrizeRoom_ComeAgainText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7278a
 
-UnknownScript_0x7278a: ; 0x7278a
-	2writetext UnknownText_0x72a14
+CeladonPrizeRoom_NoCoinCase:
+	writetext CeladonPrizeRoom_NoCoinCaseText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x72790
 
 
-MenuDataHeader_0x72790: ; 0x72790
+CeladonPrizeRoom_TMMenuDataHeader:
 	db $40 ; flags
 	db 02, 00 ; start coords
 	db 11, 15 ; end coords
-	dw MenuData2_0x72798
+	dw .MenuData2
 	db 1 ; default option
-; 0x72798
 
-MenuData2_0x72798: ; 0x72798
+.MenuData2:
 	db $80 ; flags
 	db 4 ; items
 	db "TM32    1500@"
 	db "TM29    3500@"
 	db "TM15    7500@"
 	db "CANCEL@"
-; 0x727c8
 
 
-MapCeladonGameCornerPrizeRoomSignpost1Script: ; 0x727c8
+GoldenrodGameCornerPokemonVendor:
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x7293e
-	closetext
+	opentext
+	writetext CeladonPrizeRoom_PrizeVendorIntroText
+	waitbutton
 	checkitem COIN_CASE
-	iffalse UnknownScript_0x7278a
-UnknownScript_0x727d3: ; 0x727d3
-	2writetext UnknownText_0x72974
-	special $004f
-	loadmenudata MenuDataHeader_0x72877
-	interpretmenu2
-	writebackup
-	if_equal $1, UnknownScript_0x727ed
-	if_equal $2, UnknownScript_0x7281b
-	if_equal $3, UnknownScript_0x72849
-	2jump UnknownScript_0x72784
-; 0x727ed
+	iffalse CeladonPrizeRoom_NoCoinCase
+.loop
+	writetext CeladonPrizeRoom_AskWhichPrizeText
+	special Special_DisplayCoinCaseBalance
+	loadmenudata .MenuDataHeader
+	verticalmenu
+	closewindow
+	if_equal $1, .pikachu
+	if_equal $2, .porygon
+	if_equal $3, .larvitar
+	jump CeladonPrizeRoom_cancel
 
-UnknownScript_0x727ed: ; 0x727ed
+.pikachu
 	checkcoins 2222
-	if_equal $2, UnknownScript_0x72778
-	checkcode $1
-	if_equal $6, UnknownScript_0x7277e
+	if_equal $2, CeladonPrizeRoom_notenoughcoins
+	checkcode VAR_PARTYCOUNT
+	if_equal $6, CeladonPrizeRoom_notenoughroom
 	pokenamemem PIKACHU, $0
-	2call UnknownScript_0x72768
-	iffalse UnknownScript_0x72784
-	waitbutton
+	scall CeladonPrizeRoom_askbuy
+	iffalse CeladonPrizeRoom_cancel
+	waitsfx
 	playsound SFX_TRANSACTION
-	2writetext UnknownText_0x729ad
-	closetext
+	writetext CeladonPrizeRoom_HereYouGoText
+	waitbutton
 	writebyte PIKACHU
-	special $0039
-	givepoke PIKACHU, 25, 0, 0
+	special Special_GameCornerPrizeMonCheckDex
+	givepoke PIKACHU, 25
 	takecoins 2222
-	2jump UnknownScript_0x727d3
-; 0x7281b
+	jump .loop
 
-UnknownScript_0x7281b: ; 0x7281b
+.porygon
 	checkcoins 5555
-	if_equal $2, UnknownScript_0x72778
-	checkcode $1
-	if_equal $6, UnknownScript_0x7277e
+	if_equal $2, CeladonPrizeRoom_notenoughcoins
+	checkcode VAR_PARTYCOUNT
+	if_equal $6, CeladonPrizeRoom_notenoughroom
 	pokenamemem PORYGON, $0
-	2call UnknownScript_0x72768
-	iffalse UnknownScript_0x72784
-	waitbutton
+	scall CeladonPrizeRoom_askbuy
+	iffalse CeladonPrizeRoom_cancel
+	waitsfx
 	playsound SFX_TRANSACTION
-	2writetext UnknownText_0x729ad
-	closetext
+	writetext CeladonPrizeRoom_HereYouGoText
+	waitbutton
 	writebyte PORYGON
-	special $0039
-	givepoke PORYGON, 15, 0, 0
+	special Special_GameCornerPrizeMonCheckDex
+	givepoke PORYGON, 15
 	takecoins 5555
-	2jump UnknownScript_0x727d3
-; 0x72849
+	jump .loop
 
-UnknownScript_0x72849: ; 0x72849
+.larvitar
 	checkcoins 8888
-	if_equal $2, UnknownScript_0x72778
-	checkcode $1
-	if_equal $6, UnknownScript_0x7277e
+	if_equal $2, CeladonPrizeRoom_notenoughcoins
+	checkcode VAR_PARTYCOUNT
+	if_equal $6, CeladonPrizeRoom_notenoughroom
 	pokenamemem LARVITAR, $0
-	2call UnknownScript_0x72768
-	iffalse UnknownScript_0x72784
-	waitbutton
+	scall CeladonPrizeRoom_askbuy
+	iffalse CeladonPrizeRoom_cancel
+	waitsfx
 	playsound SFX_TRANSACTION
-	2writetext UnknownText_0x729ad
-	closetext
+	writetext CeladonPrizeRoom_HereYouGoText
+	waitbutton
 	writebyte LARVITAR
-	special $0039
-	givepoke LARVITAR, 40, 0, 0
+	special Special_GameCornerPrizeMonCheckDex
+	givepoke LARVITAR, 40
 	takecoins 8888
-	2jump UnknownScript_0x727d3
-; 0x72877
+	jump .loop
 
 
-MenuDataHeader_0x72877: ; 0x72877
+.MenuDataHeader:
 	db $40 ; flags
 	db 02, 00 ; start coords
 	db 11, 17 ; end coords
-	dw MenuData2_0x7287f
+	dw .MenuData2
 	db 1 ; default option
-; 0x7287f
 
-MenuData2_0x7287f: ; 0x7287f
+.MenuData2:
 	db $80 ; flags
 	db 4 ; items
 	db "PIKACHU    2222@"
 	db "PORYGON    5555@"
 	db "LARVITAR   8888@"
 	db "CANCEL@"
-; 0x728b8
 
 
-UnknownText_0x728b8: ; 0x728b8
+CeladonGameCornerPrizeRoomGentlemanText:
 	text "I wanted PORYGON,"
 	line "but I was short by"
 	cont "100 coins…"
 	done
-; 0x728e9
 
-UnknownText_0x728e9: ; 0x728e9
+CeladonGameCornerPrizeRoomPharmacistText:
 	text "Whew…"
 
 	para "I've got to stay"
@@ -242,80 +224,69 @@ UnknownText_0x728e9: ; 0x728e9
 	line "cool, or I'll lose"
 	cont "all my money…"
 	done
-; 0x7293e
 
-UnknownText_0x7293e: ; 0x7293e
+CeladonPrizeRoom_PrizeVendorIntroText:
 	text "Welcome!"
 
 	para "We exchange your"
 	line "coins for fabulous"
 	cont "prizes!"
 	done
-; 0x72974
 
-UnknownText_0x72974: ; 0x72974
+CeladonPrizeRoom_AskWhichPrizeText:
 	text "Which prize would"
 	line "you like?"
 	done
-; 0x72991
 
-UnknownText_0x72991: ; 0x72991
+CeladonPrizeRoom_ConfirmPurchaseText:
 	text "OK, so you wanted"
 	line "a @"
-	text_from_ram $d099
+	text_from_ram StringBuffer3
 	text "?"
 	done
-; 0x729ad
 
-UnknownText_0x729ad: ; 0x729ad
+CeladonPrizeRoom_HereYouGoText:
 	text "Here you go!"
 	done
-; 0x729bb
 
-UnknownText_0x729bb: ; 0x729bb
+CeladonPrizeRoom_NotEnoughCoinsText:
 	text "You don't have"
 	line "enough coins."
 	done
-; 0x729d8
 
-UnknownText_0x729d8: ; 0x729d8
+CeladonPrizeRoom_NotEnoughRoomText:
 	text "You have no room"
 	line "for it."
 	done
-; 0x729f2
 
-UnknownText_0x729f2: ; 0x729f2
+CeladonPrizeRoom_ComeAgainText:
 	text "Oh. Please come"
 	line "back with coins!"
 	done
-; 0x72a14
 
-UnknownText_0x72a14: ; 0x72a14
+CeladonPrizeRoom_NoCoinCaseText:
 	text "Oh? You don't have"
 	line "a COIN CASE."
 	done
-; 0x72a34
 
-CeladonGameCornerPrizeRoom_MapEventHeader: ; 0x72a34
+CeladonGameCornerPrizeRoom_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $5, $2, 7, GROUP_CELADON_CITY, MAP_CELADON_CITY
-	warp_def $5, $3, 7, GROUP_CELADON_CITY, MAP_CELADON_CITY
+	warp_def $5, $2, 7, CELADON_CITY
+	warp_def $5, $3, 7, CELADON_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 1, 2, $0, MapCeladonGameCornerPrizeRoomSignpost0Script
-	signpost 1, 4, $0, MapCeladonGameCornerPrizeRoomSignpost1Script
+	signpost 1, 2, SIGNPOST_READ, GoldenrodGameCornerTMVendor
+	signpost 1, 4, SIGNPOST_READ, GoldenrodGameCornerPokemonVendor
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_GENTLEMAN, 6, 4, $6, $0, 255, 255, $80, 0, GentlemanScript_0x726e9, $ffff
-	person_event SPRITE_PHARMACIST, 8, 8, $4, $10, 255, 255, $a0, 0, PharmacistScript_0x726ec, $ffff
-; 0x72a68
-
+	person_event SPRITE_GENTLEMAN, 2, 0, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, CeladonGameCornerPrizeRoomGentlemanScript, -1
+	person_event SPRITE_PHARMACIST, 4, 4, SPRITEMOVEDATA_WALK_UP_DOWN, 1, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, CeladonGameCornerPrizeRoomPharmacistScript, -1

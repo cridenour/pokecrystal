@@ -1,65 +1,62 @@
-CherrygroveMart_MapScriptHeader: ; 0x196808
-	; trigger count
+const_value set 2
+	const CHERRYGROVEMART_CLERK
+	const CHERRYGROVEMART_COOLTRAINER_M
+	const CHERRYGROVEMART_YOUNGSTER
+
+CherrygroveMart_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x19680a
 
-ClerkScript_0x19680a: ; 0x19680a
-	loadfont
+ClerkScript_0x19680a:
+	opentext
 	checkevent EVENT_GAVE_MYSTERY_EGG_TO_ELM
 	iftrue UnknownScript_0x196817
-	pokemart $0, $0000
-	loadmovesprites
+	pokemart MARTTYPE_STANDARD, MART_CHERRYGROVE
+	closetext
 	end
-; 0x196817
 
-UnknownScript_0x196817: ; 0x196817
-	pokemart $0, $0001
-	loadmovesprites
+UnknownScript_0x196817:
+	pokemart MARTTYPE_STANDARD, MART_CHERRYGROVE_DEX
+	closetext
 	end
-; 0x19681d
 
-CooltrainerMScript_0x19681d: ; 0x19681d
+CooltrainerMScript_0x19681d:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GAVE_MYSTERY_EGG_TO_ELM
 	iftrue UnknownScript_0x19682b
-	2writetext UnknownText_0x196834
+	writetext UnknownText_0x196834
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x19682b
 
-UnknownScript_0x19682b: ; 0x19682b
-	2writetext UnknownText_0x196873
+UnknownScript_0x19682b:
+	writetext UnknownText_0x196873
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x196831
 
-YoungsterScript_0x196831: ; 0x196831
+YoungsterScript_0x196831:
 	jumptextfaceplayer UnknownText_0x1968a0
-; 0x196834
 
-UnknownText_0x196834: ; 0x196834
+UnknownText_0x196834:
 	text "They're fresh out"
 	line "of # BALLS!"
 
 	para "When will they get"
 	line "more of them?"
 	done
-; 0x196873
 
-UnknownText_0x196873: ; 0x196873
+UnknownText_0x196873:
 	text "# BALLS are in"
 	line "stock! Now I can"
 	cont "catch #MON!"
 	done
-; 0x1968a0
 
-UnknownText_0x1968a0: ; 0x1968a0
+UnknownText_0x1968a0:
 	text "When I was walking"
 	line "in the grass, a"
 
@@ -73,27 +70,24 @@ UnknownText_0x1968a0: ; 0x1968a0
 	para "You should keep an"
 	line "ANTIDOTE with you."
 	done
-; 0x196934
 
-CherrygroveMart_MapEventHeader: ; 0x196934
+CherrygroveMart_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 1, GROUP_CHERRYGROVE_CITY, MAP_CHERRYGROVE_CITY
-	warp_def $7, $3, 1, GROUP_CHERRYGROVE_CITY, MAP_CHERRYGROVE_CITY
+	warp_def $7, $2, 1, CHERRYGROVE_CITY
+	warp_def $7, $3, 1, CHERRYGROVE_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_CLERK, 7, 5, $9, $0, 255, 255, $0, 0, ClerkScript_0x19680a, $ffff
-	person_event SPRITE_COOLTRAINER_M, 10, 11, $5, $2, 255, 255, $0, 0, CooltrainerMScript_0x19681d, $ffff
-	person_event SPRITE_YOUNGSTER, 9, 6, $6, $0, 255, 255, $80, 0, YoungsterScript_0x196831, $ffff
-; 0x19696b
-
+	person_event SPRITE_CLERK, 3, 1, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ClerkScript_0x19680a, -1
+	person_event SPRITE_COOLTRAINER_M, 6, 7, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 2, -1, -1, 0, PERSONTYPE_SCRIPT, 0, CooltrainerMScript_0x19681d, -1
+	person_event SPRITE_YOUNGSTER, 5, 2, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, YoungsterScript_0x196831, -1

@@ -1,50 +1,48 @@
-CianwoodPharmacy_MapScriptHeader: ; 0x9df97
-	; trigger count
+const_value set 2
+	const CIANWOODPHARMACY_PHARMACIST
+
+CianwoodPharmacy_MapScriptHeader:
+.MapTriggers:
 	db 1
 
 	; triggers
-	dw UnknownScript_0x9df9d, $0000
+	dw CianwoodPharmacyTrigger, 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x9df9d
 
-UnknownScript_0x9df9d: ; 0x9df9d
+CianwoodPharmacyTrigger:
 	end
-; 0x9df9e
 
-PharmacistScript_0x9df9e: ; 0x9df9e
+CianwoodPharmacist:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_SECRETPOTION_FROM_PHARMACY
-	iftrue UnknownScript_0x9dfc4
-	checkevent $0037
-	iffalse UnknownScript_0x9dfc4
-	2writetext UnknownText_0x9dfcd
-	keeptextopen
-	giveitem SECRETPOTION, $1
-	2writetext UnknownText_0x9e056
+	iftrue .Mart
+	checkevent EVENT_JASMINE_EXPLAINED_AMPHYS_SICKNESS
+	iffalse .Mart
+	writetext PharmacistGiveSecretpotionText
+	buttonsound
+	giveitem SECRETPOTION
+	writetext ReceivedSecretpotionText
 	playsound SFX_KEY_ITEM
-	waitbutton
+	waitsfx
 	itemnotify
 	setevent EVENT_GOT_SECRETPOTION_FROM_PHARMACY
-	2writetext UnknownText_0x9e070
+	writetext PharmacistDescribeSecretpotionText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9dfc4
 
-UnknownScript_0x9dfc4: ; 0x9dfc4
-	pokemart $3, $0004
-	loadmovesprites
+.Mart:
+	pokemart MARTTYPE_PHARMACY, MART_CIANWOOD
+	closetext
 	end
-; 0x9dfca
 
-MapCianwoodPharmacySignpost1Script: ; 0x9dfca
-	jumpstd $0001
-; 0x9dfcd
+CianwoodPharmacyBookshelf:
+	jumpstd difficultbookshelf
 
-UnknownText_0x9dfcd: ; 0x9dfcd
+PharmacistGiveSecretpotionText:
 	text "Your #MON ap-"
 	line "pear to be fine."
 
@@ -62,42 +60,37 @@ UnknownText_0x9dfcd: ; 0x9dfcd
 	para "This ought to do"
 	line "the trick."
 	done
-; 0x9e056
 
-UnknownText_0x9e056: ; 0x9e056
-	text $52, " received"
+ReceivedSecretpotionText:
+	text "<PLAYER> received"
 	line "SECRETPOTION."
 	done
-; 0x9e070
 
-UnknownText_0x9e070: ; 0x9e070
+PharmacistDescribeSecretpotionText:
 	text "My SECRETPOTION is"
 	line "a tad too strong."
 
 	para "I only offer it in"
 	line "an emergency."
 	done
-; 0x9e0b7
 
-CianwoodPharmacy_MapEventHeader: ; 0x9e0b7
+CianwoodPharmacy_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 4, GROUP_CIANWOOD_CITY, MAP_CIANWOOD_CITY
-	warp_def $7, $3, 4, GROUP_CIANWOOD_CITY, MAP_CIANWOOD_CITY
+	warp_def $7, $2, 4, CIANWOOD_CITY
+	warp_def $7, $3, 4, CIANWOOD_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 1, 0, $0, MapCianwoodPharmacySignpost1Script
-	signpost 1, 1, $0, MapCianwoodPharmacySignpost1Script
+	signpost 1, 0, SIGNPOST_READ, CianwoodPharmacyBookshelf
+	signpost 1, 1, SIGNPOST_READ, CianwoodPharmacyBookshelf
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_PHARMACIST, 7, 6, $6, $0, 255, 255, $80, 0, PharmacistScript_0x9df9e, $ffff
-; 0x9e0de
-
+	person_event SPRITE_PHARMACIST, 3, 2, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, CianwoodPharmacist, -1

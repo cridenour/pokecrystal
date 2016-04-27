@@ -1,8 +1,8 @@
 Music_TinTower: ; f6811
-	dbw $c0, Music_TinTower_Ch1
-	dbw $01, Music_TinTower_Ch2
-	dbw $02, Music_TinTower_Ch3
-	dbw $03, Music_TinTower_Ch4
+	musicheader 4, 1, Music_TinTower_Ch1
+	musicheader 1, 2, Music_TinTower_Ch2
+	musicheader 1, 3, Music_TinTower_Ch3
+	musicheader 1, 4, Music_TinTower_Ch4
 ; f681d
 
 Music_TinTower_Ch1: ; f681d
@@ -294,5 +294,3 @@ Music_TinTower_branch_f694c: ; f694c
 	note F_, 2
 	loopchannel 0, Music_TinTower_branch_f694c
 ; f6974
-
-

@@ -1,51 +1,48 @@
-TinTower4F_MapScriptHeader: ; 0x185a56
-	; trigger count
+const_value set 2
+	const TINTOWER4F_POKE_BALL1
+	const TINTOWER4F_POKE_BALL2
+	const TINTOWER4F_POKE_BALL3
+
+TinTower4F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x185a58
 
-ItemFragment_0x185a58: ; 0x185a58
-	db ULTRA_BALL, 1
-; 0x185a5a
+TinTower4FUltraBall:
+	itemball ULTRA_BALL
 
-ItemFragment_0x185a5a: ; 0x185a5a
-	db PP_UP, 1
-; 0x185a5c
+TinTower4FPPUp:
+	itemball PP_UP
 
-ItemFragment_0x185a5c: ; 0x185a5c
-	db ESCAPE_ROPE, 1
-; 0x185a5e
+TinTower4FEscapeRope:
+	itemball ESCAPE_ROPE
 
-MapTinTower4FSignpostItem0: ; 0x185a5e
-	dw $007d
-	db MAX_POTION
-	
-; 0x185a61
+TinTower4FHiddenMaxPotion:
+	dwb EVENT_TIN_TOWER_4F_HIDDEN_MAX_POTION, MAX_POTION
 
-TinTower4F_MapEventHeader: ; 0x185a61
+
+TinTower4F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 4
-	warp_def $4, $2, 2, GROUP_TIN_TOWER_5F, MAP_TIN_TOWER_5F
-	warp_def $2, $10, 2, GROUP_TIN_TOWER_3F, MAP_TIN_TOWER_3F
-	warp_def $e, $2, 3, GROUP_TIN_TOWER_5F, MAP_TIN_TOWER_5F
-	warp_def $f, $11, 4, GROUP_TIN_TOWER_5F, MAP_TIN_TOWER_5F
+	warp_def $4, $2, 2, TIN_TOWER_5F
+	warp_def $2, $10, 2, TIN_TOWER_3F
+	warp_def $e, $2, 3, TIN_TOWER_5F
+	warp_def $f, $11, 4, TIN_TOWER_5F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 1
-	signpost 6, 11, $7, MapTinTower4FSignpostItem0
+	signpost 6, 11, SIGNPOST_ITEM, TinTower4FHiddenMaxPotion
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_POKE_BALL, 14, 18, $1, $0, 255, 255, $1, 0, ItemFragment_0x185a58, $064c
-	person_event SPRITE_POKE_BALL, 18, 21, $1, $0, 255, 255, $1, 0, ItemFragment_0x185a5a, $064d
-	person_event SPRITE_POKE_BALL, 16, 6, $1, $0, 255, 255, $1, 0, ItemFragment_0x185a5c, $064e
-; 0x185aa7
-
+	person_event SPRITE_POKE_BALL, 10, 14, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, TinTower4FUltraBall, EVENT_TIN_TOWER_4F_ULTRA_BALL
+	person_event SPRITE_POKE_BALL, 14, 17, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, TinTower4FPPUp, EVENT_TIN_TOWER_4F_PP_UP
+	person_event SPRITE_POKE_BALL, 12, 2, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, TinTower4FEscapeRope, EVENT_TIN_TOWER_4F_ESCAPE_ROPE

@@ -1,219 +1,146 @@
-Route40_MapScriptHeader: ; 0x1a6160
-	; trigger count
+const_value set 2
+	const ROUTE40_OLIVINE_RIVAL1
+	const ROUTE40_OLIVINE_RIVAL2
+	const ROUTE40_SWIMMER_GIRL1
+	const ROUTE40_SWIMMER_GIRL2
+	const ROUTE40_ROCK1
+	const ROUTE40_ROCK2
+	const ROUTE40_ROCK3
+	const ROUTE40_LASS1
+	const ROUTE40_MONICA
+	const ROUTE40_POKEFAN_M
+	const ROUTE40_LASS2
+	const ROUTE40_STANDING_YOUNGSTER
+
+Route40_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
 
-	dbw 2, UnknownScript_0x1a6165
-; 0x1a6165
+	dbw MAPCALLBACK_OBJECTS, MonicaCallback
 
-UnknownScript_0x1a6165: ; 0x1a6165
-	clearevent $07cf
-	checkcode $b
-	if_equal MONDAY, UnknownScript_0x1a6171
-	disappear $a
+MonicaCallback:
+	clearevent EVENT_BATTLE_TOWER_OUTSIDE_SAILOR
+	checkcode VAR_WEEKDAY
+	if_equal MONDAY, .MonicaAppears
+	disappear ROUTE40_MONICA
 	return
-; 0x1a6171
 
-UnknownScript_0x1a6171: ; 0x1a6171
-	appear $a
+.MonicaAppears:
+	appear ROUTE40_MONICA
 	return
-; 0x1a6174
 
-TrainerSwimmerfElaine: ; 0x1a6174
-	; bit/flag number
-	dw $3e8
+TrainerSwimmerfElaine:
+	trainer EVENT_BEAT_SWIMMERF_ELAINE, SWIMMERF, ELAINE, SwimmerfElaineSeenText, SwimmerfElaineBeatenText, 0, SwimmerfElaineScript
 
-	; trainer group && trainer id
-	db SWIMMERF, ELAINE
-
-	; text when seen
-	dw SwimmerfElaineSeenText
-
-	; text when trainer beaten
-	dw SwimmerfElaineBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SwimmerfElaineScript
-; 0x1a6180
-
-SwimmerfElaineScript: ; 0x1a6180
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a637b
+SwimmerfElaineScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a637b
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a6188
 
-TrainerSwimmerfPaula: ; 0x1a6188
-	; bit/flag number
-	dw $3e9
+TrainerSwimmerfPaula:
+	trainer EVENT_BEAT_SWIMMERF_PAULA, SWIMMERF, PAULA, SwimmerfPaulaSeenText, SwimmerfPaulaBeatenText, 0, SwimmerfPaulaScript
 
-	; trainer group && trainer id
-	db SWIMMERF, PAULA
-
-	; text when seen
-	dw SwimmerfPaulaSeenText
-
-	; text when trainer beaten
-	dw SwimmerfPaulaBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SwimmerfPaulaScript
-; 0x1a6194
-
-SwimmerfPaulaScript: ; 0x1a6194
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a63f5
+SwimmerfPaulaScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a63f5
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a619c
 
-TrainerSwimmermSimon: ; 0x1a619c
-	; bit/flag number
-	dw $595
+TrainerSwimmermSimon:
+	trainer EVENT_BEAT_SWIMMERM_SIMON, SWIMMERM, SIMON, SwimmermSimonSeenText, SwimmermSimonBeatenText, 0, SwimmermSimonScript
 
-	; trainer group && trainer id
-	db SWIMMERM, SIMON
-
-	; text when seen
-	dw SwimmermSimonSeenText
-
-	; text when trainer beaten
-	dw SwimmermSimonBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SwimmermSimonScript
-; 0x1a61a8
-
-SwimmermSimonScript: ; 0x1a61a8
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a6282
+SwimmermSimonScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a6282
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a61b0
 
-TrainerSwimmermRandall: ; 0x1a61b0
-	; bit/flag number
-	dw $596
+TrainerSwimmermRandall:
+	trainer EVENT_BEAT_SWIMMERM_RANDALL, SWIMMERM, RANDALL, SwimmermRandallSeenText, SwimmermRandallBeatenText, 0, SwimmermRandallScript
 
-	; trainer group && trainer id
-	db SWIMMERM, RANDALL
-
-	; text when seen
-	dw SwimmermRandallSeenText
-
-	; text when trainer beaten
-	dw SwimmermRandallBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SwimmermRandallScript
-; 0x1a61bc
-
-SwimmermRandallScript: ; 0x1a61bc
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a62fa
+SwimmermRandallScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a62fa
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a61c4
 
-LassScript_0x1a61c4: ; 0x1a61c4
+LassScript_0x1a61c4:
 	jumptextfaceplayer UnknownText_0x1a6429
-; 0x1a61c7
 
-PokefanMScript_0x1a61c7: ; 0x1a61c7
-	special $00a0
-	iftrue UnknownScript_0x1a61d0
+PokefanMScript_0x1a61c7:
+	special Mobile_DummyReturnFalse
+	iftrue .mobile
 	jumptextfaceplayer UnknownText_0x1a646a
-; 0x1a61d0
 
-UnknownScript_0x1a61d0: ; 0x1a61d0
+.mobile
 	jumptextfaceplayer UnknownText_0x1a649b
-; 0x1a61d3
 
-LassScript_0x1a61d3: ; 0x1a61d3
+LassScript_0x1a61d3:
 	jumptextfaceplayer UnknownText_0x1a64e6
-; 0x1a61d6
 
-StandingYoungsterScript_0x1a61d6: ; 0x1a61d6
+StandingYoungsterScript_0x1a61d6:
 	jumptextfaceplayer UnknownText_0x1a6564
-; 0x1a61d9
 
-BuenaScript_0x1a61d9: ; 0x1a61d9
+MonicaScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_SHARP_BEAK_FROM_MONICA
-	iftrue UnknownScript_0x1a6207
-	checkcode $b
-	if_not_equal MONDAY, UnknownScript_0x1a620d
+	iftrue MonicaMondayScript
+	checkcode VAR_WEEKDAY
+	if_not_equal MONDAY, MonicaNotMondayScript
 	checkevent EVENT_MET_MONICA_OF_MONDAY
-	iftrue UnknownScript_0x1a61f4
-	2writetext UnknownText_0x1a6606
-	keeptextopen
+	iftrue .MetMonica
+	writetext MeetMonicaText
+	buttonsound
 	setevent EVENT_MET_MONICA_OF_MONDAY
-UnknownScript_0x1a61f4: ; 0x1a61f4
-	2writetext UnknownText_0x1a6636
-	keeptextopen
-	verbosegiveitem SHARP_BEAK, 1
-	iffalse UnknownScript_0x1a620b
+.MetMonica:
+	writetext MonicaGivesGiftText
+	buttonsound
+	verbosegiveitem SHARP_BEAK
+	iffalse MonicaDoneScript
 	setevent EVENT_GOT_SHARP_BEAK_FROM_MONICA
-	2writetext UnknownText_0x1a666c
+	writetext MonicaGaveGiftText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a6207
 
-UnknownScript_0x1a6207: ; 0x1a6207
-	2writetext UnknownText_0x1a66dc
+MonicaMondayScript:
+	writetext MonicaMondayText
+	waitbutton
+MonicaDoneScript:
 	closetext
-UnknownScript_0x1a620b: ; 0x1a620b
-	loadmovesprites
 	end
-; 0x1a620d
 
-UnknownScript_0x1a620d: ; 0x1a620d
-	2writetext UnknownText_0x1a6737
+MonicaNotMondayScript:
+	writetext MonicaNotMondayText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a6213
 
-MapRoute40Signpost0Script: ; 0x1a6213
-	jumptext UnknownText_0x1a6767
-; 0x1a6216
+Route40Sign:
+	jumptext Route40SignText
 
-RockScript_0x1a6216: ; 0x1a6216
-	jumpstd $000f
-; 0x1a6219
+Route40Rock:
+	jumpstd smashrock
 
-MapRoute40SignpostItem1: ; 0x1a6219
-	dw $00ab
-	db HYPER_POTION
-; 0x1a621c
+Route40HiddenHyperPotion:
+	dwb EVENT_ROUTE_40_HIDDEN_HYPER_POTION, HYPER_POTION
 
-MovementData_0x1a621c: ; 0x1a621c
+MovementData_0x1a621c:
 	step_right
 	step_up
 	step_up
@@ -222,128 +149,111 @@ MovementData_0x1a621c: ; 0x1a621c
 	step_up
 	step_up
 	step_end
-; 0x1a6224
 
-MovementData_0x1a6224: ; 0x1a6224
+MovementData_0x1a6224:
 	step_up
 	step_up
 	step_up
 	step_up
 	step_up
 	step_end
-; 0x1a622a
 
-MovementData_0x1a622a: ; 0x1a622a
+MovementData_0x1a622a:
 	step_up
 	step_up
 	step_up
 	step_up
 	step_end
-; 0x1a622f
 
-SwimmermSimonSeenText: ; 0x1a622f
+SwimmermSimonSeenText:
 	text "You have to warm"
 	line "up before going"
 	cont "into the water."
 
 	para "That's basic."
 	done
-; 0x1a626e
 
-SwimmermSimonBeatenText: ; 0x1a626e
+SwimmermSimonBeatenText:
 	text "OK! Uncle! I give!"
 	done
-; 0x1a6282
 
-UnknownText_0x1a6282: ; 0x1a6282
+UnknownText_0x1a6282:
 	text "CIANWOOD CITY is"
 	line "a good distance"
 	cont "away from here."
 	done
-; 0x1a62b4
 
-SwimmermRandallSeenText: ; 0x1a62b4
+SwimmermRandallSeenText:
 	text "Hey, you're young"
 	line "and fit!"
 
 	para "Don't ride your"
 	line "#MON! Swim!"
 	done
-; 0x1a62ea
 
-SwimmermRandallBeatenText: ; 0x1a62ea
+SwimmermRandallBeatenText:
 	text "Uh-oh. I lost…"
 	done
-; 0x1a62fa
 
-UnknownText_0x1a62fa: ; 0x1a62fa
+UnknownText_0x1a62fa:
 	text "Swimming exercises"
 	line "your entire body."
 	cont "It's healthy."
 	done
-; 0x1a632d
 
-SwimmerfElaineSeenText: ; 0x1a632d
+SwimmerfElaineSeenText:
 	text "Are you going to"
 	line "CIANWOOD?"
 
 	para "How about a quick"
 	line "battle first?"
 	done
-; 0x1a6369
 
-SwimmerfElaineBeatenText: ; 0x1a6369
+SwimmerfElaineBeatenText:
 	text "I lost that one!"
 	done
-; 0x1a637b
 
-UnknownText_0x1a637b: ; 0x1a637b
+UnknownText_0x1a637b:
 	text "I'd say I'm a bet-"
 	line "ter swimmer than"
 	cont "you. Yeah!"
 	done
-; 0x1a63a9
 
-SwimmerfPaulaSeenText: ; 0x1a63a9
+SwimmerfPaulaSeenText:
 	text "No inner tube for"
 	line "me."
 
 	para "I'm hanging on to"
 	line "a sea #MON!"
 	done
-; 0x1a63dd
 
-SwimmerfPaulaBeatenText: ; 0x1a63dd
+SwimmerfPaulaBeatenText:
 	text "Ooh, I'm feeling"
 	line "dizzy!"
 	done
-; 0x1a63f5
 
-UnknownText_0x1a63f5: ; 0x1a63f5
+UnknownText_0x1a63f5:
 	text "While I float like"
 	line "this, the waves"
 	cont "carry me along."
 	done
-; 0x1a6429
 
-UnknownText_0x1a6429: ; 0x1a6429
+UnknownText_0x1a6429:
 	text "Although you can't"
 	line "see it from here,"
 
 	para "CIANWOOD is across"
 	line "the sea."
 	done
-; 0x1a646a
 
-UnknownText_0x1a646a: ; 0x1a646a
+UnknownText_0x1a646a:
 	text "Hm! There's a big"
 	line "building up ahead!"
 
 	para "What is it?"
 	done
-; 0x1a649b
 
-UnknownText_0x1a649b: ; 0x1a649b
+UnknownText_0x1a649b:
 	text "Hm! Look at all"
 	line "those serious-"
 	cont "looking trainers"
@@ -351,9 +261,8 @@ UnknownText_0x1a649b: ; 0x1a649b
 
 	para "What? What?"
 	done
-; 0x1a64e6
 
-UnknownText_0x1a64e6: ; 0x1a64e6
+UnknownText_0x1a64e6:
 	text "I came to OLIVINE"
 	line "by ship to see the"
 
@@ -364,9 +273,8 @@ UnknownText_0x1a64e6: ; 0x1a64e6
 	line "feels so different"
 	cont "from a big city."
 	done
-; 0x1a6564
 
-UnknownText_0x1a6564: ; 0x1a6564
+UnknownText_0x1a6564:
 	text "Have you gone to"
 	line "the BATTLE TOWER?"
 
@@ -382,24 +290,21 @@ UnknownText_0x1a6564: ; 0x1a6564
 	para "you shouldn't do"
 	line "badly at all."
 	done
-; 0x1a6606
 
-UnknownText_0x1a6606: ; 0x1a6606
+MeetMonicaText:
 	text "MONICA: Glad to"
 	line "meet you. I'm"
 
 	para "MONICA of Monday."
 	done
-; 0x1a6636
 
-UnknownText_0x1a6636: ; 0x1a6636
+MonicaGivesGiftText:
 	text "As a token of our"
 	line "friendship, I have"
 	cont "a gift for you!"
 	done
-; 0x1a666c
 
-UnknownText_0x1a666c: ; 0x1a666c
+MonicaGaveGiftText:
 	text "MONICA: It's an"
 	line "item that raises"
 
@@ -410,9 +315,8 @@ UnknownText_0x1a666c: ; 0x1a666c
 	line "bird #MON with"
 	cont "that item."
 	done
-; 0x1a66dc
 
-UnknownText_0x1a66dc: ; 0x1a66dc
+MonicaMondayText:
 	text "MONICA: My broth-"
 	line "ers and sisters"
 
@@ -422,52 +326,47 @@ UnknownText_0x1a66dc: ; 0x1a66dc
 	para "See if you could"
 	line "find them all!"
 	done
-; 0x1a6737
 
-UnknownText_0x1a6737: ; 0x1a6737
+MonicaNotMondayText:
 	text "MONICA: I don't"
 	line "think today is"
 	cont "Monday. How sad…"
 	done
-; 0x1a6767
 
-UnknownText_0x1a6767: ; 0x1a6767
+Route40SignText:
 	text "ROUTE 40"
 
 	para "CIANWOOD CITY -"
 	line "OLIVINE CITY"
 	done
-; 0x1a678e
 
-Route40_MapEventHeader: ; 0x1a678e
+Route40_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 1
-	warp_def $5, $9, 1, GROUP_ROUTE_40_BATTLE_TOWER_GATE, MAP_ROUTE_40_BATTLE_TOWER_GATE
+	warp_def $5, $9, 1, ROUTE_40_BATTLE_TOWER_GATE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 10, 14, $0, MapRoute40Signpost0Script
-	signpost 8, 7, $7, MapRoute40SignpostItem1
+	signpost 10, 14, SIGNPOST_READ, Route40Sign
+	signpost 8, 7, SIGNPOST_ITEM, Route40HiddenHyperPotion
 
-	; people-events
+.PersonEvents:
 	db 12
-	person_event SPRITE_OLIVINE_RIVAL, 19, 18, $9, $0, 255, 255, $82, 4, TrainerSwimmermSimon, $ffff
-	person_event SPRITE_OLIVINE_RIVAL, 34, 22, $8, $0, 255, 255, $82, 5, TrainerSwimmermRandall, $ffff
-	person_event SPRITE_SWIMMER_GIRL, 23, 7, $9, $0, 255, 255, $a2, 4, TrainerSwimmerfElaine, $ffff
-	person_event SPRITE_SWIMMER_GIRL, 29, 14, $1f, $0, 255, 255, $a2, 3, TrainerSwimmerfPaula, $ffff
-	person_event SPRITE_ROCK, 15, 11, $18, $0, 255, 255, $0, 0, RockScript_0x1a6216, $ffff
-	person_event SPRITE_ROCK, 13, 10, $18, $0, 255, 255, $0, 0, RockScript_0x1a6216, $ffff
-	person_event SPRITE_ROCK, 12, 11, $18, $0, 255, 255, $0, 0, RockScript_0x1a6216, $ffff
-	person_event SPRITE_LASS, 17, 15, $6, $0, 255, 255, $0, 0, LassScript_0x1a61c4, $ffff
-	person_event SPRITE_BUENA, 14, 12, $3, $0, 255, 255, $0, 0, BuenaScript_0x1a61d9, $075e
-	person_event SPRITE_POKEFAN_M, 10, 11, $9, $0, 255, 255, $0, 0, PokefanMScript_0x1a61c7, $ffff
-	person_event SPRITE_LASS, 8, 17, $3, $0, 255, 255, $a0, 0, LassScript_0x1a61d3, $ffff
-	person_event SPRITE_STANDING_YOUNGSTER, 13, 20, $3, $0, 255, 255, $90, 0, StandingYoungsterScript_0x1a61d6, $07cf
-; 0x1a683f
-
+	person_event SPRITE_OLIVINE_RIVAL, 15, 14, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 4, TrainerSwimmermSimon, -1
+	person_event SPRITE_OLIVINE_RIVAL, 30, 18, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 5, TrainerSwimmermRandall, -1
+	person_event SPRITE_SWIMMER_GIRL, 19, 3, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_TRAINER, 4, TrainerSwimmerfElaine, -1
+	person_event SPRITE_SWIMMER_GIRL, 25, 10, SPRITEMOVEDATA_SPINCLOCKWISE, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_TRAINER, 3, TrainerSwimmerfPaula, -1
+	person_event SPRITE_ROCK, 11, 7, SPRITEMOVEDATA_SMASHABLE_ROCK, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, Route40Rock, -1
+	person_event SPRITE_ROCK, 9, 6, SPRITEMOVEDATA_SMASHABLE_ROCK, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, Route40Rock, -1
+	person_event SPRITE_ROCK, 8, 7, SPRITEMOVEDATA_SMASHABLE_ROCK, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, Route40Rock, -1
+	person_event SPRITE_LASS, 13, 11, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, LassScript_0x1a61c4, -1
+	person_event SPRITE_BUENA, 10, 8, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, MonicaScript, EVENT_ROUTE_40_MONICA_OF_MONDAY
+	person_event SPRITE_POKEFAN_M, 6, 7, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, PokefanMScript_0x1a61c7, -1
+	person_event SPRITE_LASS, 4, 13, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, LassScript_0x1a61d3, -1
+	person_event SPRITE_STANDING_YOUNGSTER, 9, 16, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, StandingYoungsterScript_0x1a61d6, EVENT_BATTLE_TOWER_OUTSIDE_SAILOR

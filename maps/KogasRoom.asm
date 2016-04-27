@@ -1,96 +1,91 @@
-KogasRoom_MapScriptHeader: ; 0x18071b
-	; trigger count
+const_value set 2
+	const KOGASROOM_KOGA
+
+KogasRoom_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x180728, $0000
-	dw UnknownScript_0x18072c, $0000
+	dw UnknownScript_0x180728, 0
+	dw UnknownScript_0x18072c, 0
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
 
-	dbw 1, UnknownScript_0x18072d
-; 0x180728
+	dbw MAPCALLBACK_TILES, UnknownScript_0x18072d
 
-UnknownScript_0x180728: ; 0x180728
+UnknownScript_0x180728:
 	priorityjump UnknownScript_0x180742
 	end
-; 0x18072c
 
-UnknownScript_0x18072c: ; 0x18072c
+UnknownScript_0x18072c:
 	end
-; 0x18072d
 
-UnknownScript_0x18072d: ; 0x18072d
-	checkevent EVENT_WILLS_ROOM_ENTRANCE_CLOSED
+UnknownScript_0x18072d:
+	checkevent EVENT_KOGAS_ROOM_ENTRANCE_CLOSED
 	iffalse UnknownScript_0x180737
 	changeblock $4, $e, $2a
-UnknownScript_0x180737: ; 0x180737
+UnknownScript_0x180737:
 	checkevent EVENT_KOGAS_ROOM_EXIT_OPEN
 	iffalse UnknownScript_0x180741
 	changeblock $4, $2, $16
-UnknownScript_0x180741: ; 0x180741
+UnknownScript_0x180741:
 	return
-; 0x180742
 
-UnknownScript_0x180742: ; 0x180742
-	applymovement $0, MovementData_0x18078e
+UnknownScript_0x180742:
+	applymovement PLAYER, MovementData_0x18078e
 	refreshscreen $86
 	playsound SFX_STRENGTH
 	earthquake 80
 	changeblock $4, $e, $2a
 	reloadmappart
-	loadmovesprites
-	dotrigger $1
-	setevent EVENT_WILLS_ROOM_ENTRANCE_CLOSED
-	waitbutton
-	end
-; 0x18075a
-
-KogaScript_0x18075a: ; 0x18075a
-	faceplayer
-	loadfont
-	checkevent $05b9
-	iftrue UnknownScript_0x180788
-	2writetext UnknownText_0x180793
 	closetext
-	loadmovesprites
-	winlosstext UnknownText_0x1808a9, $0000
+	dotrigger $1
+	setevent EVENT_KOGAS_ROOM_ENTRANCE_CLOSED
+	waitsfx
+	end
+
+KogaScript_0x18075a:
+	faceplayer
+	opentext
+	checkevent EVENT_BEAT_ELITE_4_KOGA
+	iftrue UnknownScript_0x180788
+	writetext UnknownText_0x180793
+	waitbutton
+	closetext
+	winlosstext UnknownText_0x1808a9, 0
 	loadtrainer KOGA, 1
 	startbattle
-	returnafterbattle
-	setevent $05b9
-	loadfont
-	2writetext UnknownText_0x1808ca
+	reloadmapafterbattle
+	setevent EVENT_BEAT_ELITE_4_KOGA
+	opentext
+	writetext UnknownText_0x1808ca
+	waitbutton
 	closetext
-	loadmovesprites
 	playsound SFX_ENTER_DOOR
 	changeblock $4, $2, $16
 	reloadmappart
-	loadmovesprites
-	setevent EVENT_KOGAS_ROOM_EXIT_OPEN
-	waitbutton
-	end
-; 0x180788
-
-UnknownScript_0x180788: ; 0x180788
-	2writetext UnknownText_0x1808ca
 	closetext
-	loadmovesprites
+	setevent EVENT_KOGAS_ROOM_EXIT_OPEN
+	waitsfx
 	end
-; 0x18078e
 
-MovementData_0x18078e: ; 0x18078e
+UnknownScript_0x180788:
+	writetext UnknownText_0x1808ca
+	waitbutton
+	closetext
+	end
+
+MovementData_0x18078e:
 	step_up
 	step_up
 	step_up
 	step_up
 	step_end
-; 0x180793
 
-UnknownText_0x180793: ; 0x180793
+UnknownText_0x180793:
 	text "Fwahahahaha!"
 
 	para "I am KOGA of the"
@@ -118,16 +113,14 @@ UnknownText_0x180793: ; 0x180793
 	para "force--you shall"
 	line "see soon enough!"
 	done
-; 0x1808a9
 
-UnknownText_0x1808a9: ; 0x1808a9
+UnknownText_0x1808a9:
 	text "Ah!"
 	line "You have proven"
 	cont "your worth!"
 	done
-; 0x1808ca
 
-UnknownText_0x1808ca: ; 0x1808ca
+UnknownText_0x1808ca:
 	text "I subjected you to"
 	line "everything I could"
 	cont "muster."
@@ -140,27 +133,24 @@ UnknownText_0x1808ca: ; 0x1808ca
 	line "room, and put your"
 	cont "abilities to test!"
 	done
-; 0x18095f
 
-KogasRoom_MapEventHeader: ; 0x18095f
+KogasRoom_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 4
-	warp_def $11, $4, 2, GROUP_WILLS_ROOM, MAP_WILLS_ROOM
-	warp_def $11, $5, 3, GROUP_WILLS_ROOM, MAP_WILLS_ROOM
-	warp_def $2, $4, 1, GROUP_BRUNOS_ROOM, MAP_BRUNOS_ROOM
-	warp_def $2, $5, 2, GROUP_BRUNOS_ROOM, MAP_BRUNOS_ROOM
+	warp_def $11, $4, 2, WILLS_ROOM
+	warp_def $11, $5, 3, WILLS_ROOM
+	warp_def $2, $4, 1, BRUNOS_ROOM
+	warp_def $2, $5, 2, BRUNOS_ROOM
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_KOGA, 11, 9, $6, $0, 255, 255, $90, 0, KogaScript_0x18075a, $ffff
-; 0x180986
-
+	person_event SPRITE_KOGA, 7, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, KogaScript_0x18075a, -1

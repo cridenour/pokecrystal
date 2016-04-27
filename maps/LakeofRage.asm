@@ -1,346 +1,258 @@
-LakeofRage_MapScriptHeader: ; 0x70000
-	; trigger count
+const_value set 2
+	const LAKEOFRAGE_LANCE
+	const LAKEOFRAGE_GRAMPS
+	const LAKEOFRAGE_SUPER_NERD1
+	const LAKEOFRAGE_COOLTRAINER_F1
+	const LAKEOFRAGE_FISHER1
+	const LAKEOFRAGE_FISHER2
+	const LAKEOFRAGE_COOLTRAINER_M
+	const LAKEOFRAGE_COOLTRAINER_F2
+	const LAKEOFRAGE_GYARADOS
+	const LAKEOFRAGE_WESLEY
+	const LAKEOFRAGE_POKE_BALL1
+	const LAKEOFRAGE_POKE_BALL2
+
+LakeofRage_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x70010, $0000
-	dw UnknownScript_0x70011, $0000
+	maptrigger .Trigger0
+	maptrigger .Trigger1
 
-	; callback count
+.MapCallbacks:
 	db 2
 
 	; callbacks
 
-	dbw 5, UnknownScript_0x70012
+	dbw MAPCALLBACK_NEWMAP, .FlyPoint
+	dbw MAPCALLBACK_OBJECTS, .Wesley
 
-	dbw 2, UnknownScript_0x70016
-; 0x70010
-
-UnknownScript_0x70010: ; 0x70010
+.Trigger0:
 	end
-; 0x70011
 
-UnknownScript_0x70011: ; 0x70011
+.Trigger1:
 	end
-; 0x70012
 
-UnknownScript_0x70012: ; 0x70012
-	setflag $004a
+.FlyPoint:
+	setflag ENGINE_FLYPOINT_LAKE_OF_RAGE
 	return
-; 0x70016
 
-UnknownScript_0x70016: ; 0x70016
-	checkcode $b
-	if_equal WEDNESDAY, UnknownScript_0x7001f
-	disappear $b
+.Wesley:
+	checkcode VAR_WEEKDAY
+	if_equal WEDNESDAY, .WesleyAppears
+	disappear LAKEOFRAGE_WESLEY
 	return
-; 0x7001f
 
-UnknownScript_0x7001f: ; 0x7001f
-	appear $b
+.WesleyAppears:
+	appear LAKEOFRAGE_WESLEY
 	return
-; 0x70022
 
-LanceScript_0x70022: ; 0x70022
+LanceScript_0x70022:
 	checkevent EVENT_REFUSED_TO_HELP_LANCE_AT_LAKE_OF_RAGE
 	iftrue UnknownScript_0x70057
-	loadfont
-	2writetext UnknownText_0x70157
-	keeptextopen
+	opentext
+	writetext UnknownText_0x70157
+	buttonsound
 	faceplayer
-	2writetext UnknownText_0x701b4
+	writetext UnknownText_0x701b4
 	yesorno
 	iffalse UnknownScript_0x7004e
-UnknownScript_0x70035: ; 0x70035
-	2writetext UnknownText_0x702c6
+UnknownScript_0x70035:
+	writetext UnknownText_0x702c6
+	waitbutton
 	closetext
-	loadmovesprites
 	playsound SFX_WARP_TO
-	applymovement $2, MovementData_0x70155
-	disappear $2
-	clearevent $06d5
+	applymovement LAKEOFRAGE_LANCE, MovementData_0x70155
+	disappear LAKEOFRAGE_LANCE
+	clearevent EVENT_MAHOGANY_MART_LANCE_AND_DRAGONITE
 	setevent EVENT_DECIDED_TO_HELP_LANCE
-	domaptrigger GROUP_MAHOGANY_MART_1F, MAP_MAHOGANY_MART_1F, $1
+	domaptrigger MAHOGANY_MART_1F, $1
 	end
-; 0x7004e
 
-UnknownScript_0x7004e: ; 0x7004e
-	2writetext UnknownText_0x70371
+UnknownScript_0x7004e:
+	writetext UnknownText_0x70371
+	waitbutton
 	closetext
-	loadmovesprites
 	setevent EVENT_REFUSED_TO_HELP_LANCE_AT_LAKE_OF_RAGE
 	end
-; 0x70057
 
-UnknownScript_0x70057: ; 0x70057
+UnknownScript_0x70057:
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x703a5
+	opentext
+	writetext UnknownText_0x703a5
 	yesorno
 	iffalse UnknownScript_0x7004e
-	2jump UnknownScript_0x70035
-; 0x70063
+	jump UnknownScript_0x70035
 
-GyaradosScript_0x70063: ; 0x70063
-	loadfont
-	2writetext UnknownText_0x703cb
+GyaradosScript_0x70063:
+	opentext
+	writetext UnknownText_0x703cb
 	pause 15
 	cry GYARADOS
-	loadmovesprites
-	loadpokedata GYARADOS, 30
-	writecode $3, $7
+	closetext
+	loadwildmon GYARADOS, 30
+	writecode VAR_BATTLETYPE, BATTLETYPE_SHINY
 	startbattle
 	if_equal $1, UnknownScript_0x7007a
-	disappear $a
-UnknownScript_0x7007a: ; 0x7007a
-	returnafterbattle
-	loadfont
-	giveitem RED_SCALE, $1
-	waitbutton
-	2writetext UnknownText_0x703df
+	disappear LAKEOFRAGE_GYARADOS
+UnknownScript_0x7007a:
+	reloadmapafterbattle
+	opentext
+	giveitem RED_SCALE
+	waitsfx
+	writetext UnknownText_0x703df
 	playsound SFX_ITEM
-	waitbutton
+	waitsfx
 	itemnotify
-	loadmovesprites
+	closetext
 	dotrigger $0
-	appear $2
+	appear LAKEOFRAGE_LANCE
 	end
-; 0x7008e
 
-GrampsScript_0x7008e: ; 0x7008e
+GrampsScript_0x7008e:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_CLEARED_ROCKET_HIDEOUT
 	iftrue UnknownScript_0x7009c
-	2writetext UnknownText_0x703f8
+	writetext UnknownText_0x703f8
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7009c
 
-UnknownScript_0x7009c: ; 0x7009c
-	2writetext UnknownText_0x70421
+UnknownScript_0x7009c:
+	writetext UnknownText_0x70421
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x700a2
 
-SuperNerdScript_0x700a2: ; 0x700a2
+SuperNerdScript_0x700a2:
 	jumptextfaceplayer UnknownText_0x70444
-; 0x700a5
 
-CooltrainerFScript_0x700a5: ; 0x700a5
+CooltrainerFScript_0x700a5:
 	jumptextfaceplayer UnknownText_0x704bb
-; 0x700a8
 
-MapLakeofRageSignpost0Script: ; 0x700a8
+MapLakeofRageSignpost0Script:
 	jumptext UnknownText_0x708d7
-; 0x700ab
 
-MapLakeofRageSignpost1Script: ; 0x700ab
-	loadfont
-	2writetext UnknownText_0x70903
+MapLakeofRageSignpost1Script:
+	opentext
+	writetext UnknownText_0x70903
 	checkevent EVENT_CLEARED_ROCKET_HIDEOUT
 	iftrue UnknownScript_0x700b8
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x700b8
 
-UnknownScript_0x700b8: ; 0x700b8
-	keeptextopen
-	special $001a
-	loadmovesprites
-	end
-; 0x700be
-
-TrainerFisherAndre: ; 0x700be
-	; bit/flag number
-	dw $455
-
-	; trainer group && trainer id
-	db FISHER, ANDRE
-
-	; text when seen
-	dw FisherAndreSeenText
-
-	; text when trainer beaten
-	dw FisherAndreBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw FisherAndreScript
-; 0x700ca
-
-FisherAndreScript: ; 0x700ca
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x7058f
+UnknownScript_0x700b8:
+	buttonsound
+	special Special_MagikarpHouseSign
 	closetext
-	loadmovesprites
 	end
-; 0x700d2
 
-TrainerFisherRaymond: ; 0x700d2
-	; bit/flag number
-	dw $456
+TrainerFisherAndre:
+	trainer EVENT_BEAT_FISHER_ANDRE, FISHER, ANDRE, FisherAndreSeenText, FisherAndreBeatenText, 0, FisherAndreScript
 
-	; trainer group && trainer id
-	db FISHER, RAYMOND
-
-	; text when seen
-	dw FisherRaymondSeenText
-
-	; text when trainer beaten
-	dw FisherRaymondBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw FisherRaymondScript
-; 0x700de
-
-FisherRaymondScript: ; 0x700de
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x70611
+FisherAndreScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x7058f
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x700e6
 
-TrainerCooltrainermAaron: ; 0x700e6
-	; bit/flag number
-	dw $549
+TrainerFisherRaymond:
+	trainer EVENT_BEAT_FISHER_RAYMOND, FISHER, RAYMOND, FisherRaymondSeenText, FisherRaymondBeatenText, 0, FisherRaymondScript
 
-	; trainer group && trainer id
-	db COOLTRAINERM, AARON
-
-	; text when seen
-	dw CooltrainermAaronSeenText
-
-	; text when trainer beaten
-	dw CooltrainermAaronBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw CooltrainermAaronScript
-; 0x700f2
-
-CooltrainermAaronScript: ; 0x700f2
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x7069c
+FisherRaymondScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x70611
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x700fa
 
-TrainerCooltrainerfLois: ; 0x700fa
-	; bit/flag number
-	dw $55c
+TrainerCooltrainermAaron:
+	trainer EVENT_BEAT_COOLTRAINERM_AARON, COOLTRAINERM, AARON, CooltrainermAaronSeenText, CooltrainermAaronBeatenText, 0, CooltrainermAaronScript
 
-	; trainer group && trainer id
-	db COOLTRAINERF, LOIS
-
-	; text when seen
-	dw CooltrainerfLoisSeenText
-
-	; text when trainer beaten
-	dw CooltrainerfLoisBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw CooltrainerfLoisScript
-; 0x70106
-
-CooltrainerfLoisScript: ; 0x70106
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x70752
+CooltrainermAaronScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x7069c
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7010e
 
-SuperNerdScript_0x7010e: ; 0x7010e
+TrainerCooltrainerfLois:
+	trainer EVENT_BEAT_COOLTRAINERF_LOIS, COOLTRAINERF, LOIS, CooltrainerfLoisSeenText, CooltrainerfLoisBeatenText, 0, CooltrainerfLoisScript
+
+CooltrainerfLoisScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x70752
+	waitbutton
+	closetext
+	end
+
+WesleyScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_BLACKBELT_FROM_WESLEY
-	iftrue UnknownScript_0x7013c
-	checkcode $b
-	if_not_equal WEDNESDAY, UnknownScript_0x70142
+	iftrue WesleyWednesdayScript
+	checkcode VAR_WEEKDAY
+	if_not_equal WEDNESDAY, WesleyNotWednesdayScript
 	checkevent EVENT_MET_WESLEY_OF_WEDNESDAY
-	iftrue UnknownScript_0x70129
-	2writetext UnknownText_0x70784
-	keeptextopen
+	iftrue .MetWesley
+	writetext MeetWesleyText
+	buttonsound
 	setevent EVENT_MET_WESLEY_OF_WEDNESDAY
-UnknownScript_0x70129: ; 0x70129
-	2writetext UnknownText_0x707dd
-	keeptextopen
-	verbosegiveitem BLACKBELT, 1
-	iffalse UnknownScript_0x70140
+.MetWesley:
+	writetext WesleyGivesGiftText
+	buttonsound
+	verbosegiveitem BLACKBELT
+	iffalse WesleyDoneScript
 	setevent EVENT_GOT_BLACKBELT_FROM_WESLEY
-	2writetext UnknownText_0x7080b
+	writetext WesleyGaveGiftText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7013c
 
-UnknownScript_0x7013c: ; 0x7013c
-	2writetext UnknownText_0x70844
+WesleyWednesdayScript:
+	writetext WesleyWednesdayText
+	waitbutton
+WesleyDoneScript:
 	closetext
-UnknownScript_0x70140: ; 0x70140
-	loadmovesprites
 	end
-; 0x70142
 
-UnknownScript_0x70142: ; 0x70142
-	2writetext UnknownText_0x708a9
+WesleyNotWednesdayScript:
+	writetext WesleyNotWednesdayText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x70148
 
-ItemFragment_0x70148: ; 0x70148
-	db ELIXER, 1
-; 0x7014a
+LakeofRageElixer:
+	itemball ELIXER
 
-ItemFragment_0x7014a: ; 0x7014a
-	db TM_43, 1
-; 0x7014c
+LakeofRageTMDetect:
+	itemball TM_DETECT
 
-MapLakeofRageSignpostItem2: ; 0x7014c
-	dw $00b5
-	db FULL_RESTORE
-	
-; 0x7014f
+LakeofRageHiddenFullRestore:
+	dwb EVENT_LAKE_OF_RAGE_HIDDEN_FULL_RESTORE, FULL_RESTORE
 
-MapLakeofRageSignpostItem3: ; 0x7014f
-	dw $00b6
-	db RARE_CANDY
-	
-; 0x70152
 
-MapLakeofRageSignpostItem4: ; 0x70152
-	dw $00b7
-	db MAX_POTION
-	
-; 0x70155
+LakeofRageHiddenRareCandy:
+	dwb EVENT_LAKE_OF_RAGE_HIDDEN_RARE_CANDY, RARE_CANDY
 
-MovementData_0x70155: ; 0x70155
+
+LakeofRageHiddenMaxPotion:
+	dwb EVENT_LAKE_OF_RAGE_HIDDEN_MAX_POTION, MAX_POTION
+
+
+MovementData_0x70155:
 	teleport_from
 	step_end
-; 0x70157
 
-UnknownText_0x70157: ; 0x70157
+UnknownText_0x70157:
 	text "This lake is full"
 	line "of GYARADOS but"
 	cont "nothing else…"
@@ -349,14 +261,13 @@ UnknownText_0x70157: ; 0x70157
 	line "are being forced"
 	cont "to evolve…"
 	done
-; 0x701b4
 
-UnknownText_0x701b4: ; 0x701b4
+UnknownText_0x701b4:
 	text "Did you come here"
 	line "because of the"
 	cont "rumors?"
 
-	para "You're ", $52, "?"
+	para "You're <PLAYER>?"
 	line "I'm LANCE, a"
 	cont "trainer like you."
 
@@ -366,7 +277,7 @@ UnknownText_0x701b4: ; 0x701b4
 
 	para "I saw the way you"
 	line "battled earlier,"
-	cont $14, "."
+	cont "<PLAY_G>."
 
 	para "I can tell that"
 	line "you're a trainer"
@@ -378,9 +289,8 @@ UnknownText_0x701b4: ; 0x701b4
 	line "could you help me"
 	cont "investigate?"
 	done
-; 0x702c6
 
-UnknownText_0x702c6: ; 0x702c6
+UnknownText_0x702c6:
 	text "LANCE: Excellent!"
 
 	para "It seems that the"
@@ -396,49 +306,42 @@ UnknownText_0x702c6: ; 0x702c6
 	line "the cause."
 
 	para "I'll be waiting"
-	line "for you, ", $14, "."
+	line "for you, <PLAY_G>."
 	done
-; 0x70371
 
-UnknownText_0x70371: ; 0x70371
+UnknownText_0x70371:
 	text "Oh… Well, if you"
 	line "change your mind,"
 	cont "please help me."
 	done
-; 0x703a5
 
-UnknownText_0x703a5: ; 0x703a5
+UnknownText_0x703a5:
 	text "LANCE: Hm? Are you"
 	line "going to help me?"
 	done
-; 0x703cb
 
-UnknownText_0x703cb: ; 0x703cb
+UnknownText_0x703cb:
 	text "GYARADOS: Gyashaa!"
 	done
-; 0x703df
 
-UnknownText_0x703df: ; 0x703df
-	text $52, " obtained a"
+UnknownText_0x703df:
+	text "<PLAYER> obtained a"
 	line "RED SCALE."
 	done
-; 0x703f8
 
-UnknownText_0x703f8: ; 0x703f8
+UnknownText_0x703f8:
 	text "The GYARADOS are"
 	line "angry!"
 
 	para "It's a bad omen!"
 	done
-; 0x70421
 
-UnknownText_0x70421: ; 0x70421
+UnknownText_0x70421:
 	text "Hahah! The MAGI-"
 	line "KARP are biting!"
 	done
-; 0x70444
 
-UnknownText_0x70444: ; 0x70444
+UnknownText_0x70444:
 	text "I heard this lake"
 	line "was made by ram-"
 	cont "paging GYARADOS."
@@ -449,9 +352,8 @@ UnknownText_0x70444: ; 0x70444
 	para "to their mass out-"
 	line "break now?"
 	done
-; 0x704bb
 
-UnknownText_0x704bb: ; 0x704bb
+UnknownText_0x704bb:
 	text "Did my eyes de-"
 	line "ceive me? I saw a"
 
@@ -462,53 +364,46 @@ UnknownText_0x704bb: ; 0x704bb
 	line "GYARADOS were"
 	cont "usually blue?"
 	done
-; 0x70522
 
-FisherAndreSeenText: ; 0x70522
+FisherAndreSeenText:
 	text "Let me battle with"
 	line "the #MON I just"
 	cont "caught!"
 	done
-; 0x7054e
 
-FisherAndreBeatenText: ; 0x7054e
+FisherAndreBeatenText:
 	text "I might be an ex-"
 	line "pert angler, but"
 
 	para "I stink as a #-"
 	line "MON trainer…"
 	done
-; 0x7058f
 
-UnknownText_0x7058f: ; 0x7058f
+UnknownText_0x7058f:
 	text "I won't lose as an"
 	line "angler! I catch"
 	cont "#MON all day."
 	done
-; 0x705c0
 
-FisherRaymondSeenText: ; 0x705c0
+FisherRaymondSeenText:
 	text "No matter what I"
 	line "do, all I catch"
 
 	para "are the same #-"
 	line "MON…"
 	done
-; 0x705f7
 
-FisherRaymondBeatenText: ; 0x705f7
+FisherRaymondBeatenText:
 	text "My line's all"
 	line "tangled up…"
 	done
-; 0x70611
 
-UnknownText_0x70611: ; 0x70611
+UnknownText_0x70611:
 	text "Why can't I catch"
 	line "any good #MON?"
 	done
-; 0x70632
 
-CooltrainermAaronSeenText: ; 0x70632
+CooltrainermAaronSeenText:
 	text "If a trainer spots"
 	line "another trainer,"
 
@@ -518,24 +413,21 @@ CooltrainermAaronSeenText: ; 0x70632
 	para "That is our"
 	line "destiny."
 	done
-; 0x70688
 
-CooltrainermAaronBeatenText: ; 0x70688
+CooltrainermAaronBeatenText:
 	text "Whew…"
 	line "Good battle."
 	done
-; 0x7069c
 
-UnknownText_0x7069c: ; 0x7069c
+UnknownText_0x7069c:
 	text "#MON and their"
 	line "trainer become"
 
 	para "powerful through"
 	line "constant battling."
 	done
-; 0x706df
 
-CooltrainerfLoisSeenText: ; 0x706df
+CooltrainerfLoisSeenText:
 	text "What happened to"
 	line "the red GYARADOS?"
 
@@ -547,21 +439,18 @@ CooltrainerfLoisSeenText: ; 0x706df
 	para "I know--let's"
 	line "battle!"
 	done
-; 0x70745
 
-CooltrainerfLoisBeatenText: ; 0x70745
+CooltrainerfLoisBeatenText:
 	text "Good going!"
 	done
-; 0x70752
 
-UnknownText_0x70752: ; 0x70752
+UnknownText_0x70752:
 	text "Come to think of"
 	line "it, I've seen a"
 	cont "pink BUTTERFREE."
 	done
-; 0x70784
 
-UnknownText_0x70784: ; 0x70784
+MeetWesleyText:
 	text "WESLEY: Well, how"
 	line "do you do?"
 
@@ -571,23 +460,20 @@ UnknownText_0x70784: ; 0x70784
 	para "I'm WESLEY of"
 	line "Wednesday."
 	done
-; 0x707dd
 
-UnknownText_0x707dd: ; 0x707dd
+WesleyGivesGiftText:
 	text "Pleased to meet"
 	line "you. Please take a"
 	cont "souvenir."
 	done
-; 0x7080b
 
-UnknownText_0x7080b: ; 0x7080b
+WesleyGaveGiftText:
 	text "WESLEY: BLACKBELT"
 	line "beefs up the power"
 	cont "of fighting moves."
 	done
-; 0x70844
 
-UnknownText_0x70844: ; 0x70844
+WesleyWednesdayText:
 	text "WESLEY: Since you"
 	line "found me, you must"
 
@@ -597,61 +483,55 @@ UnknownText_0x70844: ; 0x70844
 	para "Or did you just"
 	line "get lucky?"
 	done
-; 0x708a9
 
-UnknownText_0x708a9: ; 0x708a9
+WesleyNotWednesdayText:
 	text "WESLEY: Today's"
 	line "not Wednesday."
 	cont "That's too bad."
 	done
-; 0x708d7
 
-UnknownText_0x708d7: ; 0x708d7
+UnknownText_0x708d7:
 	text "LAKE OF RAGE,"
 	line "also known as"
 	cont "GYARADOS LAKE."
 	done
-; 0x70903
 
-UnknownText_0x70903: ; 0x70903
+UnknownText_0x70903:
 	text "FISHING GURU'S"
 	line "HOUSE"
 	done
-; 0x70919
 
-LakeofRage_MapEventHeader: ; 0x70919
+LakeofRage_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $3, $7, 1, GROUP_LAKE_OF_RAGE_HIDDEN_POWER_HOUSE, MAP_LAKE_OF_RAGE_HIDDEN_POWER_HOUSE
-	warp_def $1f, $1b, 1, GROUP_LAKE_OF_RAGE_MAGIKARP_HOUSE, MAP_LAKE_OF_RAGE_MAGIKARP_HOUSE
+	warp_def $3, $7, 1, LAKE_OF_RAGE_HIDDEN_POWER_HOUSE
+	warp_def $1f, $1b, 1, LAKE_OF_RAGE_MAGIKARP_HOUSE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 5
-	signpost 27, 21, $0, MapLakeofRageSignpost0Script
-	signpost 31, 25, $0, MapLakeofRageSignpost1Script
-	signpost 28, 11, $7, MapLakeofRageSignpostItem2
-	signpost 4, 4, $7, MapLakeofRageSignpostItem3
-	signpost 5, 35, $7, MapLakeofRageSignpostItem4
+	signpost 27, 21, SIGNPOST_READ, MapLakeofRageSignpost0Script
+	signpost 31, 25, SIGNPOST_READ, MapLakeofRageSignpost1Script
+	signpost 28, 11, SIGNPOST_ITEM, LakeofRageHiddenFullRestore
+	signpost 4, 4, SIGNPOST_ITEM, LakeofRageHiddenRareCandy
+	signpost 5, 35, SIGNPOST_ITEM, LakeofRageHiddenMaxPotion
 
-	; people-events
+.PersonEvents:
 	db 12
-	person_event SPRITE_LANCE, 32, 25, $7, $0, 255, 255, $0, 0, LanceScript_0x70022, $06d4
-	person_event SPRITE_GRAMPS, 30, 24, $7, $0, 255, 255, $0, 0, GrampsScript_0x7008e, $ffff
-	person_event SPRITE_SUPER_NERD, 17, 40, $8, $0, 255, 255, $0, 0, SuperNerdScript_0x700a2, $ffff
-	person_event SPRITE_COOLTRAINER_F, 33, 29, $5, $1, 255, 255, $0, 0, CooltrainerFScript_0x700a5, $ffff
-	person_event SPRITE_FISHER, 27, 34, $8, $0, 255, 255, $92, 1, TrainerFisherAndre, $0735
-	person_event SPRITE_FISHER, 30, 28, $7, $0, 255, 255, $92, 1, TrainerFisherRaymond, $0735
-	person_event SPRITE_COOLTRAINER_M, 19, 8, $9, $0, 255, 255, $82, 1, TrainerCooltrainermAaron, $0735
-	person_event SPRITE_COOLTRAINER_F, 11, 40, $8, $0, 255, 255, $82, 0, TrainerCooltrainerfLois, $0735
-	person_event SPRITE_GYARADOS, 26, 22, $16, $0, 255, 255, $80, 0, GyaradosScript_0x70063, $0751
-	person_event SPRITE_SUPER_NERD, 8, 8, $6, $0, 255, 255, $0, 0, SuperNerdScript_0x7010e, $075c
-	person_event SPRITE_POKE_BALL, 14, 11, $1, $0, 255, 255, $1, 0, ItemFragment_0x70148, $0645
-	person_event SPRITE_POKE_BALL, 6, 39, $1, $0, 255, 255, $1, 0, ItemFragment_0x7014a, $0646
-; 0x709de
-
+	person_event SPRITE_LANCE, 28, 21, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, LanceScript_0x70022, EVENT_LAKE_OF_RAGE_LANCE
+	person_event SPRITE_GRAMPS, 26, 20, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, GrampsScript_0x7008e, -1
+	person_event SPRITE_SUPER_NERD, 13, 36, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, SuperNerdScript_0x700a2, -1
+	person_event SPRITE_COOLTRAINER_F, 29, 25, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, 0, PERSONTYPE_SCRIPT, 0, CooltrainerFScript_0x700a5, -1
+	person_event SPRITE_FISHER, 23, 30, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 1, TrainerFisherAndre, EVENT_LAKE_OF_RAGE_CIVILIANS
+	person_event SPRITE_FISHER, 26, 24, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 1, TrainerFisherRaymond, EVENT_LAKE_OF_RAGE_CIVILIANS
+	person_event SPRITE_COOLTRAINER_M, 15, 4, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 1, TrainerCooltrainermAaron, EVENT_LAKE_OF_RAGE_CIVILIANS
+	person_event SPRITE_COOLTRAINER_F, 7, 36, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 0, TrainerCooltrainerfLois, EVENT_LAKE_OF_RAGE_CIVILIANS
+	person_event SPRITE_GYARADOS, 22, 18, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, GyaradosScript_0x70063, EVENT_LAKE_OF_RAGE_RED_GYARADOS
+	person_event SPRITE_SUPER_NERD, 4, 4, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, WesleyScript, EVENT_LAKE_OF_RAGE_WESLEY_OF_WEDNESDAY
+	person_event SPRITE_POKE_BALL, 10, 7, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, LakeofRageElixer, EVENT_LAKE_OF_RAGE_ELIXER
+	person_event SPRITE_POKE_BALL, 2, 35, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, LakeofRageTMDetect, EVENT_LAKE_OF_RAGE_TM_DETECT

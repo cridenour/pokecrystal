@@ -1,114 +1,105 @@
-ManiasHouse_MapScriptHeader: ; 0x9d276
-	; trigger count
+const_value set 2
+	const MANIASHOUSE_ROCKER
+
+ManiasHouse_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x9d278
 
-RockerScript_0x9d278: ; 0x9d278
+ManiaScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_MANIA_TOOK_SHUCKIE_OR_LET_YOU_KEEP_HIM
-	iftrue UnknownScript_0x9d2fa
+	iftrue .default_postevent
 	checkevent EVENT_GOT_SHUCKIE
-	iftrue UnknownScript_0x9d2a4
-	2writetext UnknownText_0x9d303
+	iftrue .alreadyhaveshuckie
+	writetext ManiaText_AskLookAfterShuckle
 	yesorno
-	iffalse UnknownScript_0x9d2b6
-	special SPECIAL_GIVESHUCKLE
-	iffalse UnknownScript_0x9d2b0
-	2writetext UnknownText_0x9d3ed
-	keeptextopen
-	waitbutton
-	2writetext UnknownText_0x9d41b
+	iffalse .refusetotakeshuckie
+	special SpecialGiveShuckle
+	iffalse .partyfull
+	writetext ManiaText_TakeCareOfShuckle
+	buttonsound
+	waitsfx
+	writetext ManiaText_GotShuckle
 	playsound SFX_KEY_ITEM
-	waitbutton
-	loadmovesprites
+	waitsfx
+	closetext
 	setevent EVENT_GOT_SHUCKIE
 	end
-; 0x9d2a4
 
-UnknownScript_0x9d2a4: ; 0x9d2a4
-	checkflag $0055
-	iffalse UnknownScript_0x9d2bc
-	2writetext UnknownText_0x9d3ed
+.alreadyhaveshuckie
+	checkflag ENGINE_SHUCKLE_GIVEN
+	iffalse .returnshuckie
+	writetext ManiaText_TakeCareOfShuckle
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9d2b0
 
-UnknownScript_0x9d2b0: ; 0x9d2b0
-	2writetext UnknownText_0x9d42f
+.partyfull
+	writetext ManiaText_PartyFull
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9d2b6
 
-UnknownScript_0x9d2b6: ; 0x9d2b6
-	2writetext UnknownText_0x9d449
+.refusetotakeshuckie
+	writetext ManiaText_IfHeComesBack
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9d2bc
 
-UnknownScript_0x9d2bc: ; 0x9d2bc
-	2writetext UnknownText_0x9d470
+.returnshuckie
+	writetext ManiaText_CanIHaveMyMonBack
 	yesorno
-	iffalse UnknownScript_0x9d2ee
-	special $004c
-	if_equal $0, UnknownScript_0x9d2df
-	if_equal $1, UnknownScript_0x9d2ee
-	if_equal $3, UnknownScript_0x9d2e5
-	if_equal $4, UnknownScript_0x9d2fa
-	2writetext UnknownText_0x9d4b1
+	iffalse .refused
+	special SpecialReturnShuckle
+	if_equal $0, .wrong
+	if_equal $1, .refused
+	if_equal $3, .superhappy
+	if_equal $4, .default_postevent
+	writetext ManiaText_ThankYou
+	waitbutton
 	closetext
-	loadmovesprites
 	setevent EVENT_MANIA_TOOK_SHUCKIE_OR_LET_YOU_KEEP_HIM
 	end
-; 0x9d2df
 
-UnknownScript_0x9d2df: ; 0x9d2df
-	2writetext UnknownText_0x9d4bd
+.wrong
+	writetext ManiaText_ShuckleNotThere
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9d2e5
 
-UnknownScript_0x9d2e5: ; 0x9d2e5
-	2writetext UnknownText_0x9d4e3
+.superhappy
+	writetext ManiaText_ShuckleLikesYou
+	waitbutton
 	closetext
-	loadmovesprites
 	setevent EVENT_MANIA_TOOK_SHUCKIE_OR_LET_YOU_KEEP_HIM
 	end
-; 0x9d2ee
 
-UnknownScript_0x9d2ee: ; 0x9d2ee
-	2writetext UnknownText_0x9d53f
+.refused
+	writetext ManiaText_SameAsBeingRobbed
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9d2f4
 
-UnknownScript_0x9d2f4: ; 0x9d2f4
-	2writetext UnknownText_0x9d5b0
+.nothingleft
+	writetext ManiaText_ShuckleIsYourLastMon
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9d2fa
 
-UnknownScript_0x9d2fa: ; 0x9d2fa
-	2writetext UnknownText_0x9d56c
+.default_postevent
+	writetext ManiaText_HappinessSpeech
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9d300
 
-UnknownScript_0x9d300: ; 0x9d300
-	jumpstd $0002
-; 0x9d303
+UnknownScript_0x9d300:
+	jumpstd picturebookshelf
 
-UnknownText_0x9d303: ; 0x9d303
+ManiaText_AskLookAfterShuckle:
 	text "I, I'm in shock!"
 
 	para "A guy about your"
@@ -131,36 +122,31 @@ UnknownText_0x9d303: ; 0x9d303
 	para "after my #MON"
 	line "for a while?"
 	done
-; 0x9d3ed
 
-UnknownText_0x9d3ed: ; 0x9d3ed
+ManiaText_TakeCareOfShuckle:
 	text "Oh, thank you!"
 
 	para "Take good care of"
 	line "it, please!"
 	done
-; 0x9d41b
 
-UnknownText_0x9d41b: ; 0x9d41b
-	text $52, " received a"
+ManiaText_GotShuckle:
+	text "<PLAYER> received a"
 	line "#MON."
 	done
-; 0x9d42f
 
-UnknownText_0x9d42f: ; 0x9d42f
+ManiaText_PartyFull:
 	text "Your #MON party"
 	line "is full."
 	done
-; 0x9d449
 
-UnknownText_0x9d449: ; 0x9d449
+ManiaText_IfHeComesBack:
 	text "Oh, no… What'll"
 	line "I do if he comes"
 	cont "back?"
 	done
-; 0x9d470
 
-UnknownText_0x9d470: ; 0x9d470
+ManiaText_CanIHaveMyMonBack:
 	text "Hi! How's my #-"
 	line "MON?"
 
@@ -168,21 +154,18 @@ UnknownText_0x9d470: ; 0x9d470
 	line "now, so may I have"
 	cont "it back?"
 	done
-; 0x9d4b1
 
-UnknownText_0x9d4b1: ; 0x9d4b1
+ManiaText_ThankYou:
 	text "Thank you!"
 	done
-; 0x9d4bd
 
-UnknownText_0x9d4bd: ; 0x9d4bd
+ManiaText_ShuckleNotThere:
 	text "Hey, you don't"
 	line "have my #MON"
 	cont "with you."
 	done
-; 0x9d4e3
 
-UnknownText_0x9d4e3: ; 0x9d4e3
+ManiaText_ShuckleLikesYou:
 	text "My #MON has"
 	line "come to like you."
 
@@ -192,50 +175,44 @@ UnknownText_0x9d4e3: ; 0x9d4e3
 	para "But promise to"
 	line "be good to it!"
 	done
-; 0x9d53f
 
-UnknownText_0x9d53f: ; 0x9d53f
+ManiaText_SameAsBeingRobbed:
 	text "Oh, no, no… That's"
 	line "the same as being"
 	cont "robbed."
 	done
-; 0x9d56c
 
-UnknownText_0x9d56c: ; 0x9d56c
+ManiaText_HappinessSpeech:
 	text "For #MON, hap-"
 	line "piness is being"
 
 	para "with a person who"
 	line "treats them well."
 	done
-; 0x9d5b0
 
-UnknownText_0x9d5b0: ; 0x9d5b0
+ManiaText_ShuckleIsYourLastMon:
 	text "If I take my #-"
 	line "MON back, what are"
 
 	para "you going to use"
 	line "in battle?"
 	done
-; 0x9d5f0
 
-ManiasHouse_MapEventHeader: ; 0x9d5f0
+ManiasHouse_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 1, GROUP_CIANWOOD_CITY, MAP_CIANWOOD_CITY
-	warp_def $7, $3, 1, GROUP_CIANWOOD_CITY, MAP_CIANWOOD_CITY
+	warp_def $7, $2, 1, CIANWOOD_CITY
+	warp_def $7, $3, 1, CIANWOOD_CITY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_ROCKER, 8, 6, $3, $0, 255, 255, $0, 0, RockerScript_0x9d278, $ffff
-; 0x9d60d
-
+	person_event SPRITE_ROCKER, 4, 2, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ManiaScript, -1

@@ -1,153 +1,97 @@
-Route14_MapScriptHeader: ; 0x1ad47d
-	; trigger count
+const_value set 2
+	const ROUTE14_POKEFAN_M1
+	const ROUTE14_YOUNGSTER
+	const ROUTE14_POKEFAN_M2
+	const ROUTE14_KIM
+
+Route14_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1ad47f
 
-TeacherScript_0x1ad47f: ; 0x1ad47f
+Kim:
 	faceplayer
-	loadfont
+	opentext
 	trade $5
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1ad486
 
-TrainerPokefanmCarter: ; 0x1ad486
-	; bit/flag number
-	dw $4d1
+TrainerPokefanmCarter:
+	trainer EVENT_BEAT_POKEFANM_CARTER, POKEFANM, CARTER, PokefanmCarterSeenText, PokefanmCarterBeatenText, 0, PokefanmCarterScript
 
-	; trainer group && trainer id
-	db POKEFANM, CARTER
-
-	; text when seen
-	dw PokefanmCarterSeenText
-
-	; text when trainer beaten
-	dw PokefanmCarterBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw PokefanmCarterScript
-; 0x1ad492
-
-PokefanmCarterScript: ; 0x1ad492
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1ad508
+PokefanmCarterScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1ad508
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1ad49a
 
-TrainerBird_keeperRoy: ; 0x1ad49a
-	; bit/flag number
-	dw $403
+TrainerBird_keeperRoy:
+	trainer EVENT_BEAT_BIRD_KEEPER_ROY, BIRD_KEEPER, ROY, Bird_keeperRoySeenText, Bird_keeperRoyBeatenText, 0, Bird_keeperRoyScript
 
-	; trainer group && trainer id
-	db BIRD_KEEPER, ROY
-
-	; text when seen
-	dw Bird_keeperRoySeenText
-
-	; text when trainer beaten
-	dw Bird_keeperRoyBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw Bird_keeperRoyScript
-; 0x1ad4a6
-
-Bird_keeperRoyScript: ; 0x1ad4a6
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1ad5a4
+Bird_keeperRoyScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1ad5a4
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1ad4ae
 
-TrainerPokefanmTrevor: ; 0x1ad4ae
-	; bit/flag number
-	dw $4d2
+TrainerPokefanmTrevor:
+	trainer EVENT_BEAT_POKEFANM_TREVOR, POKEFANM, TREVOR, PokefanmTrevorSeenText, PokefanmTrevorBeatenText, 0, PokefanmTrevorScript
 
-	; trainer group && trainer id
-	db POKEFANM, TREVOR
-
-	; text when seen
-	dw PokefanmTrevorSeenText
-
-	; text when trainer beaten
-	dw PokefanmTrevorBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw PokefanmTrevorScript
-; 0x1ad4ba
-
-PokefanmTrevorScript: ; 0x1ad4ba
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1ad660
+PokefanmTrevorScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1ad660
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1ad4c2
 
-PokefanmCarterSeenText: ; 0x1ad4c2
+PokefanmCarterSeenText:
 	text "Let me tell you,"
 	line "I had a hard time"
 
 	para "catching my prized"
 	line "#MON."
 	done
-; 0x1ad4ff
 
-PokefanmCarterBeatenText: ; 0x1ad4ff
+PokefanmCarterBeatenText:
 	text "Awaaah!"
 	done
-; 0x1ad508
 
-UnknownText_0x1ad508: ; 0x1ad508
+UnknownText_0x1ad508:
 	text "SQUIRTLE, CHARMAN-"
 	line "DER and BULBASAUR…"
 
 	para "I think that's a"
 	line "well-balanced mix."
 	done
-; 0x1ad552
 
-Bird_keeperRoySeenText: ; 0x1ad552
+Bird_keeperRoySeenText:
 	text "My dream is to fly"
 	line "with my beloved"
 	cont "bird #MON."
 	done
-; 0x1ad581
 
-Bird_keeperRoyBeatenText: ; 0x1ad581
+Bird_keeperRoyBeatenText:
 	text "I can dream, but I"
 	line "can't ever fly…"
 	done
-; 0x1ad5a4
 
-UnknownText_0x1ad5a4: ; 0x1ad5a4
+UnknownText_0x1ad5a4:
 	text "You have #MON"
 	line "that know the HM"
 
 	para "move FLY, don't"
 	line "you? I envy you."
 	done
-; 0x1ad5e4
 
-PokefanmTrevorSeenText: ; 0x1ad5e4
+PokefanmTrevorSeenText:
 	text "Hi. Did you know…?"
 
 	para "#MON get more"
@@ -157,41 +101,36 @@ PokefanmTrevorSeenText: ; 0x1ad5e4
 	line "place that they"
 	cont "remember."
 	done
-; 0x1ad640
 
-PokefanmTrevorBeatenText: ; 0x1ad640
+PokefanmTrevorBeatenText:
 	text "Where did I meet"
 	line "this PSYDUCK?"
 	done
-; 0x1ad660
 
-UnknownText_0x1ad660: ; 0x1ad660
+UnknownText_0x1ad660:
 	text "If only there were"
 	line "an easy way to"
 
 	para "identify where I"
 	line "got my #MON…"
 	done
-; 0x1ad6a1
 
-Route14_MapEventHeader: ; 0x1ad6a1
+Route14_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 0
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 4
-	person_event SPRITE_POKEFAN_M, 19, 15, $9, $0, 255, 255, $82, 3, TrainerPokefanmCarter, $ffff
-	person_event SPRITE_YOUNGSTER, 31, 15, $a, $0, 255, 255, $92, 3, TrainerBird_keeperRoy, $ffff
-	person_event SPRITE_POKEFAN_M, 15, 10, $a, $0, 255, 255, $82, 3, TrainerPokefanmTrevor, $ffff
-	person_event SPRITE_TEACHER, 9, 11, $5, $1, 255, 255, $a0, 4, TeacherScript_0x1ad47f, $ffff
-; 0x1ad6db
-
+	person_event SPRITE_POKEFAN_M, 15, 11, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 3, TrainerPokefanmCarter, -1
+	person_event SPRITE_YOUNGSTER, 27, 11, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 3, TrainerBird_keeperRoy, -1
+	person_event SPRITE_POKEFAN_M, 11, 6, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 3, TrainerPokefanmTrevor, -1
+	person_event SPRITE_TEACHER, 5, 7, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 4, Kim, -1

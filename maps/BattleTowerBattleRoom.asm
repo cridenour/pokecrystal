@@ -1,171 +1,163 @@
-BattleTowerBattleRoom_MapScriptHeader: ; 0x9f40f
-	; trigger count
+const_value set 2
+	const BATTLETOWERBATTLEROOM_YOUNGSTER
+	const BATTLETOWERBATTLEROOM_RECEPTIONIST
+
+BattleTowerBattleRoom_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x9f419, $0000
-	dw UnknownScript_0x9f420, $0000
+	dw .EnterBattleRoom, 0
+	dw .DummyTrigger, 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x9f419
 
-UnknownScript_0x9f419: ; 0x9f419
-	disappear $2
-	priorityjump UnknownScript_0x9f421
+.EnterBattleRoom: ; 0x9f419
+	disappear BATTLETOWERBATTLEROOM_YOUNGSTER
+	priorityjump Script_BattleRoom
 	dotrigger $1
-; 0x9f420
-
-UnknownScript_0x9f420: ; 0x9f420
+.DummyTrigger:
 	end
-; 0x9f421
 
-UnknownScript_0x9f421: ; 0x9f421
-	applymovement $0, MovementData_0x9e58c
-UnknownScript_0x9f425: ; 0x9f425
-	writebyte $2
-	special $007a
-	appear $2
+Script_BattleRoom: ; 0x9f421
+	applymovement PLAYER, MovementData_BattleTowerBattleRoomPlayerWalksIn
+; beat all 7 opponents in a row
+Script_BattleRoomLoop: ; 0x9f425
+	writebyte BATTLETOWERBATTLEROOM_YOUNGSTER
+	special Function_LoadOpponentTrainerAndPokemonsWithOTSprite
+	appear BATTLETOWERBATTLEROOM_YOUNGSTER
 	warpsound
-	waitbutton
-	applymovement $2, MovementData_0x9e592
-	loadfont
-	storetext 1
-	keeptextopen
-	loadmovesprites
-	special $0077
-	special $002e
+	waitsfx
+	applymovement BATTLETOWERBATTLEROOM_YOUNGSTER, MovementData_BattleTowerBattleRoomOpponentWalksIn
+	opentext
+	battletowertext 1
+	buttonsound
+	closetext
+	special BattleTowerBattle ; calls predef startbattle
+	special FadeOutPalettes
 	reloadmap
-	if_not_equal $0, UnknownScript_0x9f4c2
-	copybytetovar $cf64
-	if_equal $7, UnknownScript_0x9f4d9
-	applymovement $2, MovementData_0x9e597
+	if_not_equal $0, Script_FailedBattleTowerChallenge
+	copybytetovar wNrOfBeatenBattleTowerTrainers ; wcf64
+	if_equal BATTLETOWER_NROFTRAINERS, Script_BeatenAllTrainers
+	applymovement BATTLETOWERBATTLEROOM_YOUNGSTER, MovementData_BattleTowerBattleRoomOpponentWalksOut
 	warpsound
-	disappear $2
-	applymovement $3, MovementData_0x9e59c
-	applymovement $0, MovementData_0x9e5a7
-	loadfont
-	2writetext UnknownText_0x9ee92
-	closetext
-	loadmovesprites
-	playmusic MUSIC_HEAL
-	special $002e
-	special $00a4
-	pause 60
-	special $0031
-	special $003d
-	loadfont
-	2writetext UnknownText_0x9eebc
-	yesorno
-	iffalse UnknownScript_0x9f483
-UnknownScript_0x9f477: ; 0x9f477
-	loadmovesprites
-	applymovement $0, MovementData_0x9e5a9
-	applymovement $3, MovementData_0x9e5a1
-	2jump UnknownScript_0x9f425
-; 0x9f483
-
-UnknownScript_0x9f483: ; 0x9f483
-	2writetext UnknownText_0x9ef5e
-	yesorno
-	iffalse UnknownScript_0x9f4a3
-	writebyte $7
-	special $0086
-	writebyte $1f
-	special $0086
-	writebyte $3
-	special $0086
-	playsound SFX_SAVE
+	disappear BATTLETOWERBATTLEROOM_YOUNGSTER
+	applymovement BATTLETOWERBATTLEROOM_RECEPTIONIST, MovementData_BattleTowerBattleRoomReceptionistWalksToPlayer
+	applymovement PLAYER, MovementData_BattleTowerBattleRoomPlayerTurnsToFaceReceptionist
+	opentext
+	writetext Text_YourPkmnWillBeHealedToFullHealth
 	waitbutton
-	special $002e
-	special $007e
-UnknownScript_0x9f4a3: ; 0x9f4a3
-	2writetext UnknownText_0x9efbf
+	closetext
+	playmusic MUSIC_HEAL
+	special FadeOutPalettes
+	special LoadMapPalettes
+	pause 60
+	special FadeInPalettes
+	special RestartMapMusic
+	opentext
+	writetext Text_NextUpOpponentNo
 	yesorno
-	iffalse UnknownScript_0x9f477
-	writebyte $4
-	special $0086
-	writebyte $6
-	special $0086
-	loadmovesprites
-	special $002e
-	warpfacing $1, GROUP_BATTLE_TOWER_1F, MAP_BATTLE_TOWER_1F, $7, $7
-	loadfont
-	2jump UnknownScript_0x9e4b0
-; 0x9f4c2
+	iffalse Script_DontBattleNextOpponent
+Script_ContinueAndBattleNextOpponent: ; 0x9f477
+	closetext
+	applymovement PLAYER, MovementData_BattleTowerBattleRoomPlayerTurnsToFaceNextOpponent
+	applymovement BATTLETOWERBATTLEROOM_RECEPTIONIST, MovementData_BattleTowerBattleRoomReceptionistWalksAway
+	jump Script_BattleRoomLoop
 
-UnknownScript_0x9f4c2: ; 0x9f4c2
+Script_DontBattleNextOpponent: ; 0x9f483
+	writetext Text_SaveAndEndTheSession
+	yesorno
+	iffalse Script_DontSaveAndEndTheSession
+	writebyte BATTLETOWERACTION_SAVELEVELGROUP ; save level group
+	special BattleTowerAction
+	writebyte BATTLETOWERACTION_SAVEOPTIONS ; choose reward
+	special BattleTowerAction
+	writebyte BATTLETOWERACTION_SAVE_AND_QUIT ; quicksave
+	special BattleTowerAction
+	playsound SFX_SAVE
+	waitsfx
+	special FadeOutPalettes
+	special Reset
+Script_DontSaveAndEndTheSession: ; 0x9f4a3
+	writetext Text_CancelYourBattleRoomChallenge
+	yesorno
+	iffalse Script_ContinueAndBattleNextOpponent
+	writebyte BATTLETOWERACTION_CHALLENGECANCELED
+	special BattleTowerAction
+	writebyte BATTLETOWERACTION_06
+	special BattleTowerAction
+	closetext
+	special FadeOutPalettes
+	warpfacing UP, BATTLE_TOWER_1F, $7, $7
+	opentext
+	jump Script_BattleTowerHopeToServeYouAgain
+
+Script_FailedBattleTowerChallenge:
 	pause 60
-	special $002f
-	warpfacing $1, GROUP_BATTLE_TOWER_1F, MAP_BATTLE_TOWER_1F, $7, $7
-	writebyte $4
-	special $0086
-	loadfont
-	2writetext UnknownText_0x9ea49
+	special Special_BattleTowerFade
+	warpfacing UP, BATTLE_TOWER_1F, $7, $7
+	writebyte BATTLETOWERACTION_CHALLENGECANCELED
+	special BattleTowerAction
+	opentext
+	writetext Text_ThanksForVisiting
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9f4d9
 
-UnknownScript_0x9f4d9: ; 0x9f4d9
+Script_BeatenAllTrainers: ; 0x9f4d9
 	pause 60
-	special $002f
-	warpfacing $1, GROUP_BATTLE_TOWER_1F, MAP_BATTLE_TOWER_1F, $7, $7
-BattleTowerBattleRoomScript_0x9f4e4: ; 0x9f4e4
-	loadfont
-	2writetext UnknownText_0x9eaef
-	2jump UnknownScript_0x9e47a
-; 0x9f4eb
+	special Special_BattleTowerFade
+	warpfacing UP, BATTLE_TOWER_1F, $7, $7
+Script_BeatenAllTrainers2:
+	opentext
+	writetext Text_CongratulationsYouveBeatenAllTheTrainers
+	jump Script_GivePlayerHisPrize
 
-UnknownScript_0x9f4eb: ; 0x9f4eb
-	writebyte $4
-	special $0086
-	loadfont
-	2writetext UnknownText_0x9f0c1
+UnreferencedScript_0x9f4eb:
+	writebyte BATTLETOWERACTION_CHALLENGECANCELED
+	special BattleTowerAction
+	opentext
+	writetext Text_TooMuchTimeElapsedNoRegister
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9f4f7
 
-UnknownScript_0x9f4f7: ; 0x9f4f7
-	writebyte $4
-	special $0086
-	writebyte $6
-	special $0086
-	loadfont
-	2writetext UnknownText_0x9ea49
-	2writetext UnknownText_0x9ec09
+UnreferencedScript_0x9f4f7:
+	writebyte BATTLETOWERACTION_CHALLENGECANCELED
+	special BattleTowerAction
+	writebyte BATTLETOWERACTION_06
+	special BattleTowerAction
+	opentext
+	writetext Text_ThanksForVisiting
+	writetext Text_WeHopeToServeYouAgain
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x9f50b
 
 
-UnknownText_0x9f50b: ; 0x9f50b
+Text_ReturnedAfterSave_Mobile:
 	text "You'll be returned"
 	line "after you SAVE."
 	done
-; 0x9f52e
 
 
-BattleTowerBattleRoom_MapEventHeader: ; 0x9f52e
+BattleTowerBattleRoom_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $3, 4, GROUP_BATTLE_TOWER_HALLWAY, MAP_BATTLE_TOWER_HALLWAY
-	warp_def $7, $4, 4, GROUP_BATTLE_TOWER_HALLWAY, MAP_BATTLE_TOWER_HALLWAY
+	warp_def $7, $3, 4, BATTLE_TOWER_HALLWAY
+	warp_def $7, $4, 4, BATTLE_TOWER_HALLWAY
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_YOUNGSTER, 4, 8, $6, $0, 255, 255, $0, 0, ObjectEvent, $0791
-	person_event SPRITE_RECEPTIONIST, 10, 5, $9, $0, 255, 255, $0, 0, ObjectEvent, $ffff
-; 0x9f558
-
+	person_event SPRITE_YOUNGSTER, 0, 4, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ObjectEvent, EVENT_BATTLE_TOWER_BATTLE_ROOM_YOUNGSTER
+	person_event SPRITE_RECEPTIONIST, 6, 1, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ObjectEvent, -1

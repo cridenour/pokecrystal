@@ -1,238 +1,225 @@
-Route29_MapScriptHeader: ; 0x1a0f4c
-	; trigger count
+const_value set 2
+	const ROUTE29_COOLTRAINER_M1
+	const ROUTE29_YOUNGSTER
+	const ROUTE29_TEACHER1
+	const ROUTE29_FRUIT_TREE
+	const ROUTE29_FISHER
+	const ROUTE29_COOLTRAINER_M2
+	const ROUTE29_TUSCANY
+	const ROUTE29_POKE_BALL
+
+Route29_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x1a0f59, $0000
-	dw UnknownScript_0x1a0f5a, $0000
+	maptrigger .Trigger0
+	maptrigger .Trigger1
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
 
-	dbw 2, UnknownScript_0x1a0f5b
-; 0x1a0f59
+	dbw MAPCALLBACK_OBJECTS, .Tuscany
 
-UnknownScript_0x1a0f59: ; 0x1a0f59
+.Trigger0:
 	end
-; 0x1a0f5a
 
-UnknownScript_0x1a0f5a: ; 0x1a0f5a
+.Trigger1:
 	end
-; 0x1a0f5b
 
-UnknownScript_0x1a0f5b: ; 0x1a0f5b
-	checkflag $001b
-	iftrue UnknownScript_0x1a0f64
-UnknownScript_0x1a0f61: ; 0x1a0f61
-	disappear $8
+.Tuscany:
+	checkflag ENGINE_ZEPHYRBADGE
+	iftrue .DoesTuscanyAppear
+
+.TuscanyDisappears:
+	disappear ROUTE29_TUSCANY
 	return
-; 0x1a0f64
 
-UnknownScript_0x1a0f64: ; 0x1a0f64
-	checkcode $b
-	if_not_equal TUESDAY, UnknownScript_0x1a0f61
-	appear $8
+.DoesTuscanyAppear:
+	checkcode VAR_WEEKDAY
+	if_not_equal TUESDAY, .TuscanyDisappears
+	appear ROUTE29_TUSCANY
 	return
-; 0x1a0f6d
 
-UnknownScript_0x1a0f6d: ; 0x1a0f6d
-	spriteface $2, $1
-	showemote $0, $2, 15
-	applymovement $2, MovementData_0x1a108d
-	spriteface $0, $2
+Route29Tutorial1:
+	spriteface ROUTE29_COOLTRAINER_M1, UP
+	showemote EMOTE_SHOCK, ROUTE29_COOLTRAINER_M1, 15
+	applymovement ROUTE29_COOLTRAINER_M1, DudeMovementData1a
+	spriteface PLAYER, LEFT
 	setevent EVENT_DUDE_TALKED_TO_YOU
-	loadfont
-	2writetext UnknownText_0x1a10df
+	opentext
+	writetext CatchingTutorialIntroText
 	yesorno
-	iffalse UnknownScript_0x1a0fd9
-	loadmovesprites
-	follow $2, $0
-	applymovement $2, MovementData_0x1a109a
-	stopfollow
-	loadpokedata RATTATA, 5
-	catchtutorial $3
-	spriteface $2, $1
-	loadfont
-	2writetext UnknownText_0x1a114d
+	iffalse Script_RefusedTutorial1
 	closetext
-	loadmovesprites
+	follow ROUTE29_COOLTRAINER_M1, PLAYER
+	applymovement ROUTE29_COOLTRAINER_M1, DudeMovementData1b
+	stopfollow
+	loadwildmon RATTATA, 5
+	catchtutorial BATTLETYPE_TUTORIAL
+	spriteface ROUTE29_COOLTRAINER_M1, UP
+	opentext
+	writetext CatchingTutorialDebriefText
+	waitbutton
+	closetext
 	dotrigger $0
 	setevent EVENT_LEARNED_TO_CATCH_POKEMON
 	end
-; 0x1a0fa3
 
-UnknownScript_0x1a0fa3: ; 0x1a0fa3
-	spriteface $2, $1
-	showemote $0, $2, 15
-	applymovement $2, MovementData_0x1a1094
-	spriteface $0, $2
+Route29Tutorial2:
+	spriteface ROUTE29_COOLTRAINER_M1, UP
+	showemote EMOTE_SHOCK, ROUTE29_COOLTRAINER_M1, 15
+	applymovement ROUTE29_COOLTRAINER_M1, DudeMovementData2a
+	spriteface PLAYER, LEFT
 	setevent EVENT_DUDE_TALKED_TO_YOU
-	loadfont
-	2writetext UnknownText_0x1a10df
+	opentext
+	writetext CatchingTutorialIntroText
 	yesorno
-	iffalse UnknownScript_0x1a0fe5
-	loadmovesprites
-	follow $2, $0
-	applymovement $2, MovementData_0x1a10a1
-	stopfollow
-	loadpokedata RATTATA, 5
-	catchtutorial $3
-	spriteface $2, $1
-	loadfont
-	2writetext UnknownText_0x1a114d
+	iffalse Script_RefusedTutorial2
 	closetext
-	loadmovesprites
+	follow ROUTE29_COOLTRAINER_M1, PLAYER
+	applymovement ROUTE29_COOLTRAINER_M1, DudeMovementData2b
+	stopfollow
+	loadwildmon RATTATA, 5
+	catchtutorial BATTLETYPE_TUTORIAL
+	spriteface ROUTE29_COOLTRAINER_M1, UP
+	opentext
+	writetext CatchingTutorialDebriefText
+	waitbutton
+	closetext
 	dotrigger $0
 	setevent EVENT_LEARNED_TO_CATCH_POKEMON
 	end
-; 0x1a0fd9
 
-UnknownScript_0x1a0fd9: ; 0x1a0fd9
-	2writetext UnknownText_0x1a1197
+Script_RefusedTutorial1:
+	writetext CatchingTutorialDeclinedText
+	waitbutton
 	closetext
-	loadmovesprites
-	applymovement $2, MovementData_0x1a109a
+	applymovement ROUTE29_COOLTRAINER_M1, DudeMovementData1b
 	dotrigger $0
 	end
-; 0x1a0fe5
 
-UnknownScript_0x1a0fe5: ; 0x1a0fe5
-	2writetext UnknownText_0x1a1197
+Script_RefusedTutorial2:
+	writetext CatchingTutorialDeclinedText
+	waitbutton
 	closetext
-	loadmovesprites
-	applymovement $2, MovementData_0x1a10a1
+	applymovement ROUTE29_COOLTRAINER_M1, DudeMovementData2b
 	dotrigger $0
 	end
-; 0x1a0ff1
 
-CooltrainerMScript_0x1a0ff1: ; 0x1a0ff1
+CatchingTutorialDudeScript:
 	faceplayer
-	loadfont
-	checkcode $10
-	if_equal $0, UnknownScript_0x1a101c
+	opentext
+	checkcode VAR_BOXSPACE
+	if_equal $0, .BoxFull
 	checkevent EVENT_LEARNED_TO_CATCH_POKEMON
-	iftrue UnknownScript_0x1a101c
+	iftrue .BoxFull
 	checkevent EVENT_GAVE_MYSTERY_EGG_TO_ELM
-	iffalse UnknownScript_0x1a101c
-	2writetext UnknownText_0x1a11e3
+	iffalse .BoxFull
+	writetext CatchingTutorialRepeatText
 	yesorno
-	iffalse UnknownScript_0x1a1022
-	loadmovesprites
-	loadpokedata RATTATA, 5
-	catchtutorial $3
-	loadfont
-	2writetext UnknownText_0x1a114d
+	iffalse .Declined
 	closetext
-	loadmovesprites
+	loadwildmon RATTATA, 5
+	catchtutorial BATTLETYPE_TUTORIAL
+	opentext
+	writetext CatchingTutorialDebriefText
+	waitbutton
+	closetext
 	setevent EVENT_LEARNED_TO_CATCH_POKEMON
 	end
-; 0x1a101c
 
-UnknownScript_0x1a101c: ; 0x1a101c
-	2writetext UnknownText_0x1a10a7
+.BoxFull:
+	writetext UnknownText_0x1a10a7
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a1022
 
-UnknownScript_0x1a1022: ; 0x1a1022
-	2writetext UnknownText_0x1a1197
+.Declined:
+	writetext CatchingTutorialDeclinedText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a1028
 
-YoungsterScript_0x1a1028: ; 0x1a1028
-	jumptextfaceplayer UnknownText_0x1a1214
-; 0x1a102b
+Route29YoungsterScript:
+	jumptextfaceplayer Route29YoungsterText
 
-TeacherScript_0x1a102b: ; 0x1a102b
-	jumptextfaceplayer UnknownText_0x1a126c
-; 0x1a102e
+Route29TeacherScript:
+	jumptextfaceplayer Route29TeacherText
 
-FisherScript_0x1a102e: ; 0x1a102e
-	jumptextfaceplayer UnknownText_0x1a12d9
-; 0x1a1031
+Route29FisherScript:
+	jumptextfaceplayer Route29FisherText
 
-CooltrainerMScript_0x1a1031: ; 0x1a1031
+CooltrainerMScript_0x1a1031:
 	faceplayer
-	loadfont
-	checktime $2
-	iftrue UnknownScript_0x1a103d
-	checktime $4
-	iftrue UnknownScript_0x1a1043
-UnknownScript_0x1a103d: ; 0x1a103d
-	2writetext UnknownText_0x1a134c
+	opentext
+	checkday
+	iftrue .day_morn
+	checknite
+	iftrue .nite
+.day_morn
+	writetext Text_WaitingForNight
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a1043
 
-UnknownScript_0x1a1043: ; 0x1a1043
-	2writetext UnknownText_0x1a137c
+.nite
+	writetext Text_WaitingForMorning
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a1049
 
-TeacherScript_0x1a1049: ; 0x1a1049
+TuscanyScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_PINK_BOW_FROM_TUSCANY
-	iftrue UnknownScript_0x1a1077
-	checkcode $b
-	if_not_equal TUESDAY, UnknownScript_0x1a107d
+	iftrue TuscanyTuesdayScript
+	checkcode VAR_WEEKDAY
+	if_not_equal TUESDAY, TuscanyNotTuesdayScript
 	checkevent EVENT_MET_TUSCANY_OF_TUESDAY
-	iftrue UnknownScript_0x1a1064
-	2writetext UnknownText_0x1a13b2
-	keeptextopen
+	iftrue .MetTuscany
+	writetext MeetTuscanyText
+	buttonsound
 	setevent EVENT_MET_TUSCANY_OF_TUESDAY
-UnknownScript_0x1a1064: ; 0x1a1064
-	2writetext UnknownText_0x1a142f
-	keeptextopen
-	verbosegiveitem PINK_BOW, 1
-	iffalse UnknownScript_0x1a107b
+.MetTuscany:
+	writetext TuscanyGivesGiftText
+	buttonsound
+	verbosegiveitem PINK_BOW
+	iffalse TuscanyDoneScript
 	setevent EVENT_GOT_PINK_BOW_FROM_TUSCANY
-	2writetext UnknownText_0x1a146f
+	writetext TuscanyGaveGiftText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a1077
 
-UnknownScript_0x1a1077: ; 0x1a1077
-	2writetext UnknownText_0x1a14e7
+TuscanyTuesdayScript:
+	writetext TuscanyTuesdayText
+	waitbutton
+TuscanyDoneScript:
 	closetext
-UnknownScript_0x1a107b: ; 0x1a107b
-	loadmovesprites
 	end
-; 0x1a107d
 
-UnknownScript_0x1a107d: ; 0x1a107d
-	2writetext UnknownText_0x1a1559
+TuscanyNotTuesdayScript:
+	writetext TuscanyNotTuesdayText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a1083
 
-MapRoute29Signpost0Script: ; 0x1a1083
-	jumptext UnknownText_0x1a158e
-; 0x1a1086
+Route29Sign1:
+	jumptext Route29Sign1Text
 
-MapRoute29Signpost1Script: ; 0x1a1086
-	jumptext UnknownText_0x1a15b9
-; 0x1a1089
+Route29Sign2:
+	jumptext Route29Sign2Text
 
-FruitTreeScript_0x1a1089: ; 0x1a1089
-	fruittree $1
-; 0x1a108b
+Route29FruitTree:
+	fruittree FRUITTREE_ROUTE_29
 
-ItemFragment_0x1a108b: ; 0x1a108b
-	db POTION, 1
-; 0x1a108d
+Route29Potion:
+	itemball POTION
 
-MovementData_0x1a108d: ; 0x1a108d
+DudeMovementData1a:
 	step_up
 	step_up
 	step_up
@@ -240,18 +227,16 @@ MovementData_0x1a108d: ; 0x1a108d
 	step_right
 	step_right
 	step_end
-; 0x1a1094
 
-MovementData_0x1a1094: ; 0x1a1094
+DudeMovementData2a:
 	step_up
 	step_up
 	step_up
 	step_right
 	step_right
 	step_end
-; 0x1a109a
 
-MovementData_0x1a109a: ; 0x1a109a
+DudeMovementData1b:
 	step_left
 	step_left
 	step_down
@@ -259,27 +244,24 @@ MovementData_0x1a109a: ; 0x1a109a
 	step_down
 	step_down
 	step_end
-; 0x1a10a1
 
-MovementData_0x1a10a1: ; 0x1a10a1
+DudeMovementData2b:
 	step_left
 	step_left
 	step_down
 	step_down
 	step_down
 	step_end
-; 0x1a10a7
 
-UnknownText_0x1a10a7: ; 0x1a10a7
+UnknownText_0x1a10a7:
 	text "#MON hide in"
 	line "the grass. Who"
 
 	para "knows when they'll"
 	line "pop out…"
 	done
-; 0x1a10df
 
-UnknownText_0x1a10df: ; 0x1a10df
+CatchingTutorialIntroText:
 	text "I've seen you a"
 	line "couple times. How"
 
@@ -290,9 +272,8 @@ UnknownText_0x1a10df: ; 0x1a10df
 	line "to show you how to"
 	cont "catch #MON?"
 	done
-; 0x1a114d
 
-UnknownText_0x1a114d: ; 0x1a114d
+CatchingTutorialDebriefText:
 	text "That's how you do"
 	line "it."
 
@@ -300,9 +281,8 @@ UnknownText_0x1a114d: ; 0x1a114d
 	line "first, #MON are"
 	cont "easier to catch."
 	done
-; 0x1a1197
 
-UnknownText_0x1a1197: ; 0x1a1197
+CatchingTutorialDeclinedText:
 	text "Oh. Fine, then."
 
 	para "Anyway, if you"
@@ -311,16 +291,14 @@ UnknownText_0x1a1197: ; 0x1a1197
 	para "#MON, you have"
 	line "to walk a lot."
 	done
-; 0x1a11e3
 
-UnknownText_0x1a11e3: ; 0x1a11e3
+CatchingTutorialRepeatText:
 	text "Huh? You want me"
 	line "to show you how to"
 	cont "catch #MON?"
 	done
-; 0x1a1214
 
-UnknownText_0x1a1214: ; 0x1a1214
+Route29YoungsterText:
 	text "Yo. How are your"
 	line "#MON?"
 
@@ -330,9 +308,8 @@ UnknownText_0x1a1214: ; 0x1a1214
 	para "battle, keep out"
 	line "of the grass."
 	done
-; 0x1a126c
 
-UnknownText_0x1a126c: ; 0x1a126c
+Route29TeacherText:
 	text "See those ledges?"
 	line "It's scary to jump"
 	cont "off them."
@@ -343,46 +320,41 @@ UnknownText_0x1a126c: ; 0x1a126c
 	para "walking through"
 	line "the grass."
 	done
-; 0x1a12d9
 
-UnknownText_0x1a12d9: ; 0x1a12d9
+Route29FisherText:
 	text "I wanted to take a"
 	line "break, so I saved"
 
 	para "to record my"
 	line "progress."
 	done
-; 0x1a1316
 
 ; possibly unused
-UnknownText_0x1a1316: ; 0x1a1316
+Text_WaitingForDay:
 	text "I'm waiting for"
 	line "#MON that"
 
 	para "appear only in the"
 	line "daytime."
 	done
-; 0x1a134c
 
-UnknownText_0x1a134c: ; 0x1a134c
+Text_WaitingForNight:
 	text "I'm waiting for"
 	line "#MON that"
 
 	para "appear only at"
 	line "night."
 	done
-; 0x1a137c
 
-UnknownText_0x1a137c: ; 0x1a137c
+Text_WaitingForMorning:
 	text "I'm waiting for"
 	line "#MON that"
 
 	para "appear only in the"
 	line "morning."
 	done
-; 0x1a13b2
 
-UnknownText_0x1a13b2: ; 0x1a13b2
+MeetTuscanyText:
 	text "TUSCANY: I do be-"
 	line "lieve that this is"
 
@@ -395,18 +367,16 @@ UnknownText_0x1a13b2: ; 0x1a13b2
 	para "I am TUSCANY of"
 	line "Tuesday."
 	done
-; 0x1a142f
 
-UnknownText_0x1a142f: ; 0x1a142f
+TuscanyGivesGiftText:
 	text "By way of intro-"
 	line "duction, please"
 
 	para "accept this gift,"
 	line "a PINK BOW."
 	done
-; 0x1a146f
 
-UnknownText_0x1a146f: ; 0x1a146f
+TuscanyGaveGiftText:
 	text "TUSCANY: Wouldn't"
 	line "you agree that it"
 	cont "is most adorable?"
@@ -417,9 +387,8 @@ UnknownText_0x1a146f: ; 0x1a146f
 	para "I am certain it"
 	line "will be of use."
 	done
-; 0x1a14e7
 
-UnknownText_0x1a14e7: ; 0x1a14e7
+TuscanyTuesdayText:
 	text "TUSCANY: Have you"
 	line "met MONICA, my"
 	cont "older sister?"
@@ -430,58 +399,52 @@ UnknownText_0x1a14e7: ; 0x1a14e7
 	para "I am the second of"
 	line "seven children."
 	done
-; 0x1a1559
 
-UnknownText_0x1a1559: ; 0x1a1559
+TuscanyNotTuesdayText:
 	text "TUSCANY: Today is"
 	line "not Tuesday. That"
 	cont "is unfortunate…"
 	done
-; 0x1a158e
 
-UnknownText_0x1a158e: ; 0x1a158e
+Route29Sign1Text:
 	text "ROUTE 29"
 
 	para "CHERRYGROVE CITY -"
 	line "NEW BARK TOWN"
 	done
-; 0x1a15b9
 
-UnknownText_0x1a15b9: ; 0x1a15b9
+Route29Sign2Text:
 	text "ROUTE 29"
 
 	para "CHERRYGROVE CITY -"
 	line "NEW BARK TOWN"
 	done
-; 0x1a15e4
 
-Route29_MapEventHeader: ; 0x1a15e4
+Route29_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 1
-	warp_def $1, $1b, 3, GROUP_ROUTE_29_46_GATE, MAP_ROUTE_29_46_GATE
+	warp_def $1, $1b, 3, ROUTE_29_46_GATE
 
-	; xy triggers
+.XYTriggers:
 	db 2
-	xy_trigger 1, $8, $35, $0, UnknownScript_0x1a0f6d, $0, $0
-	xy_trigger 1, $9, $35, $0, UnknownScript_0x1a0fa3, $0, $0
+	xy_trigger 1, $8, $35, $0, Route29Tutorial1, $0, $0
+	xy_trigger 1, $9, $35, $0, Route29Tutorial2, $0, $0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 7, 51, $0, MapRoute29Signpost0Script
-	signpost 5, 3, $0, MapRoute29Signpost1Script
+	signpost 7, 51, SIGNPOST_READ, Route29Sign1
+	signpost 5, 3, SIGNPOST_READ, Route29Sign2
 
-	; people-events
+.PersonEvents:
 	db 8
-	person_event SPRITE_COOLTRAINER_M, 16, 54, $3, $0, 255, 255, $80, 0, CooltrainerMScript_0x1a0ff1, $ffff
-	person_event SPRITE_YOUNGSTER, 20, 31, $4, $10, 255, 255, $a0, 0, YoungsterScript_0x1a1028, $ffff
-	person_event SPRITE_TEACHER, 15, 19, $5, $1, 255, 255, $a0, 0, TeacherScript_0x1a102b, $ffff
-	person_event SPRITE_FRUIT_TREE, 6, 16, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x1a1089, $ffff
-	person_event SPRITE_FISHER, 7, 29, $7, $0, 255, 255, $90, 0, FisherScript_0x1a102e, $ffff
-	person_event SPRITE_COOLTRAINER_M, 8, 17, $6, $0, 255, 255, $80, 0, CooltrainerMScript_0x1a1031, $ffff
-	person_event SPRITE_TEACHER, 16, 33, $3, $0, 255, 255, $0, 0, TeacherScript_0x1a1049, $0759
-	person_event SPRITE_POKE_BALL, 6, 52, $1, $0, 255, 255, $1, 0, ItemFragment_0x1a108b, $06ad
-; 0x1a1671
-
+	person_event SPRITE_COOLTRAINER_M, 12, 50, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, CatchingTutorialDudeScript, -1
+	person_event SPRITE_YOUNGSTER, 16, 27, SPRITEMOVEDATA_WALK_UP_DOWN, 1, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, Route29YoungsterScript, -1
+	person_event SPRITE_TEACHER, 11, 15, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, Route29TeacherScript, -1
+	person_event SPRITE_FRUIT_TREE, 2, 12, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, Route29FruitTree, -1
+	person_event SPRITE_FISHER, 3, 25, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, Route29FisherScript, -1
+	person_event SPRITE_COOLTRAINER_M, 4, 13, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, CooltrainerMScript_0x1a1031, -1
+	person_event SPRITE_TEACHER, 12, 29, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, TuscanyScript, EVENT_ROUTE_29_TUSCANY_OF_TUESDAY
+	person_event SPRITE_POKE_BALL, 2, 48, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, Route29Potion, EVENT_ROUTE_29_POTION

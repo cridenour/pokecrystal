@@ -1,246 +1,155 @@
-AzaleaGym_MapScriptHeader: ; 0x18ec1c
-	; trigger count
+const_value set 2
+	const AZALEAGYM_BUGSY
+	const AZALEAGYM_BUG_CATCHER1
+	const AZALEAGYM_BUG_CATCHER2
+	const AZALEAGYM_BUG_CATCHER3
+	const AZALEAGYM_TWIN1
+	const AZALEAGYM_TWIN2
+	const AZALEAGYM_GYM_GUY
+
+AzaleaGym_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x18ec1e
 
-BugsyScript_0x18ec1e: ; 0x18ec1e
+BugsyScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_BEAT_BUGSY
-	iftrue UnknownScript_0x18ec48
-	2writetext UnknownText_0x18ed0b
+	iftrue .FightDone
+	writetext BugsyText_INeverLose
+	waitbutton
 	closetext
-	loadmovesprites
-	winlosstext UnknownText_0x18edae, $0000
+	winlosstext BugsyText_ResearchIncomplete, 0
 	loadtrainer BUGSY, 1
 	startbattle
-	returnafterbattle
+	reloadmapafterbattle
 	setevent EVENT_BEAT_BUGSY
-	loadfont
-	2writetext UnknownText_0x18ee14
+	opentext
+	writetext Text_ReceivedHiveBadge
 	playsound SFX_GET_BADGE
-	waitbutton
-	setflag $001c
-	checkcode $7
-	2call UnknownScript_0x18ec73
-UnknownScript_0x18ec48: ; 0x18ec48
+	waitsfx
+	setflag ENGINE_HIVEBADGE
+	checkcode VAR_BADGES
+	scall AzaleaGymTriggerRockets
+.FightDone:
 	checkevent EVENT_GOT_TM49_FURY_CUTTER
-	iftrue UnknownScript_0x18ec6d
+	iftrue .GotFuryCutter
 	setevent EVENT_BEAT_TWINS_AMY_AND_MAY
 	setevent EVENT_BEAT_BUG_CATCHER_BENNY
 	setevent EVENT_BEAT_BUG_CATCHER_AL
 	setevent EVENT_BEAT_BUG_CATCHER_JOSH
-	2writetext UnknownText_0x18ee2b
-	keeptextopen
-	verbosegiveitem TM_49, 1
-	iffalse UnknownScript_0x18ec71
+	writetext BugsyText_HiveBadgeSpeech
+	buttonsound
+	verbosegiveitem TM_FURY_CUTTER
+	iffalse .NoRoomForFuryCutter
 	setevent EVENT_GOT_TM49_FURY_CUTTER
-	2writetext UnknownText_0x18eefa
+	writetext BugsyText_FuryCutterSpeech
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18ec6d
 
-UnknownScript_0x18ec6d: ; 0x18ec6d
-	2writetext UnknownText_0x18ef98
+.GotFuryCutter:
+	writetext BugsyText_BugMonsAreDeep
+	waitbutton
+.NoRoomForFuryCutter:
 	closetext
-UnknownScript_0x18ec71: ; 0x18ec71
-	loadmovesprites
 	end
-; 0x18ec73
 
-UnknownScript_0x18ec73: ; 0x18ec73
-	if_equal $7, UnknownScript_0x18ec7f
-	if_equal $6, UnknownScript_0x18ec7c
+AzaleaGymTriggerRockets:
+	if_equal 7, .RadioTowerRockets
+	if_equal 6, .GoldenrodRockets
 	end
-; 0x18ec7c
 
-UnknownScript_0x18ec7c: ; 0x18ec7c
-	jumpstd $0012
-; 0x18ec7f
+.GoldenrodRockets:
+	jumpstd goldenrodrockets
 
-UnknownScript_0x18ec7f: ; 0x18ec7f
-	jumpstd $0013
-; 0x18ec82
+.RadioTowerRockets:
+	jumpstd radiotowerrockets
 
-TrainerTwinsAmyandmay1: ; 0x18ec82
-	; bit/flag number
-	dw $464
+TrainerTwinsAmyandmay1:
+	trainer EVENT_BEAT_TWINS_AMY_AND_MAY, TWINS, AMYANDMAY1, TwinsAmyandmay1SeenText, TwinsAmyandmay1BeatenText, 0, .AfterScript
 
-	; trainer group && trainer id
-	db TWINS, AMYANDMAY1
-
-	; text when seen
-	dw TwinsAmyandmay1SeenText
-
-	; text when trainer beaten
-	dw TwinsAmyandmay1BeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw TwinsAmyandmay1Script
-; 0x18ec8e
-
-TwinsAmyandmay1Script: ; 0x18ec8e
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x18f1fc
+.AfterScript:
+	end_if_just_battled
+	opentext
+	writetext TwinsAmyandmay1AfterBattleText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18ec96
 
-TrainerTwinsAmyandmay2: ; 0x18ec96
-	; bit/flag number
-	dw $464
+TrainerTwinsAmyandmay2:
+	trainer EVENT_BEAT_TWINS_AMY_AND_MAY, TWINS, AMYANDMAY2, TwinsAmyandmay2SeenText, TwinsAmyandmay2BeatenText, 0, .AfterScript
 
-	; trainer group && trainer id
-	db TWINS, AMYANDMAY2
-
-	; text when seen
-	dw TwinsAmyandmay2SeenText
-
-	; text when trainer beaten
-	dw TwinsAmyandmay2BeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw TwinsAmyandmay2Script
-; 0x18eca2
-
-TwinsAmyandmay2Script: ; 0x18eca2
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x18f269
+.AfterScript:
+	end_if_just_battled
+	opentext
+	writetext TwinsAmyandmay2AfterBattleText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18ecaa
 
-TrainerBug_catcherBug_catcher_benny: ; 0x18ecaa
-	; bit/flag number
-	dw $53c
+TrainerBug_catcherbenny:
+	trainer EVENT_BEAT_BUG_CATCHER_BENNY, BUG_CATCHER, BUG_CATCHER_BENNY, Bug_catcherbennySeenText, Bug_catcherbennyBeatenText, 0, .AfterScript
 
-	; trainer group && trainer id
-	db BUG_CATCHER, BUG_CATCHER_BENNY
-
-	; text when seen
-	dw Bug_catcherBug_catcher_bennySeenText
-
-	; text when trainer beaten
-	dw Bug_catcherBug_catcher_bennyBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw Bug_catcherBug_catcher_bennyScript
-; 0x18ecb6
-
-Bug_catcherBug_catcher_bennyScript: ; 0x18ecb6
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x18f053
+.AfterScript:
+	end_if_just_battled
+	opentext
+	writetext Bug_catcherbennyAfterBattleText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18ecbe
 
-TrainerBug_catcherAl: ; 0x18ecbe
-	; bit/flag number
-	dw $53d
+TrainerBug_catcherAl:
+	trainer EVENT_BEAT_BUG_CATCHER_AL, BUG_CATCHER, AL, Bug_catcherAlSeenText, Bug_catcherAlBeatenText, 0, .AfterScript
 
-	; trainer group && trainer id
-	db BUG_CATCHER, AL
-
-	; text when seen
-	dw Bug_catcherAlSeenText
-
-	; text when trainer beaten
-	dw Bug_catcherAlBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw Bug_catcherAlScript
-; 0x18ecca
-
-Bug_catcherAlScript: ; 0x18ecca
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x18f0d3
+.AfterScript:
+	end_if_just_battled
+	opentext
+	writetext Bug_catcherAlAfterBattleText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18ecd2
 
-TrainerBug_catcherJosh: ; 0x18ecd2
-	; bit/flag number
-	dw $53e
+TrainerBug_catcherJosh:
+	trainer EVENT_BEAT_BUG_CATCHER_JOSH, BUG_CATCHER, JOSH, Bug_catcherJoshSeenText, Bug_catcherJoshBeatenText, 0, .AfterScript
 
-	; trainer group && trainer id
-	db BUG_CATCHER, JOSH
-
-	; text when seen
-	dw Bug_catcherJoshSeenText
-
-	; text when trainer beaten
-	dw Bug_catcherJoshBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw Bug_catcherJoshScript
-; 0x18ecde
-
-Bug_catcherJoshScript: ; 0x18ecde
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x18f17e
+.AfterScript:
+	end_if_just_battled
+	opentext
+	writetext Bug_catcherJoshAfterBattleText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18ece6
 
-AzaleaGymGuyScript: ; 0x18ece6
+AzaleaGymGuyScript:
 	faceplayer
 	checkevent EVENT_BEAT_BUGSY
 	iftrue .AzaleaGymGuyWinScript
-	loadfont
-	2writetext AzaleaGymGuyText
+	opentext
+	writetext AzaleaGymGuyText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
 
-.AzaleaGymGuyWinScript
-	loadfont
-	2writetext AzaleaGymGuyWinText
+.AzaleaGymGuyWinScript:
+	opentext
+	writetext AzaleaGymGuyWinText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x18ecfb
 
-MapAzaleaGymSignpost1Script: ; 0x18ecfb
-	checkflag $001c
-	iftrue UnknownScript_0x18ed04
-	jumpstd $002d
-; 0x18ed04
-
-UnknownScript_0x18ed04: ; 0x18ed04
+AzaleaGymStatue:
+	checkflag ENGINE_HIVEBADGE
+	iftrue .Beaten
+	jumpstd gymstatue1
+.Beaten:
 	trainertotext BUGSY, 1, $1
-	jumpstd $002e
-; 0x18ed0b
+	jumpstd gymstatue2
 
-UnknownText_0x18ed0b: ; 0x18ed0b
+BugsyText_INeverLose:
 	text "I'm BUGSY!"
 	line "I never lose when"
 
@@ -257,9 +166,8 @@ UnknownText_0x18ed0b: ; 0x18ed0b
 	line "what I've learned"
 	cont "from my studies."
 	done
-; 0x18edae
 
-UnknownText_0x18edae: ; 0x18edae
+BugsyText_ResearchIncomplete:
 	text "Whoa, amazing!"
 	line "You're an expert"
 	cont "on #MON!"
@@ -270,15 +178,13 @@ UnknownText_0x18edae: ; 0x18edae
 	para "OK, you win. Take"
 	line "this BADGE."
 	done
-; 0x18ee14
 
-UnknownText_0x18ee14: ; 0x18ee14
-	text $52, " received"
+Text_ReceivedHiveBadge:
+	text "<PLAYER> received"
 	line "HIVEBADGE."
 	done
-; 0x18ee2b
 
-UnknownText_0x18ee2b: ; 0x18ee2b
+BugsyText_HiveBadgeSpeech:
 	text "Do you know the"
 	line "benefits of HIVE-"
 	cont "BADGE?"
@@ -298,9 +204,8 @@ UnknownText_0x18ee2b: ; 0x18ee2b
 	para "Here, I also want"
 	line "you to have this."
 	done
-; 0x18eefa
 
-UnknownText_0x18eefa: ; 0x18eefa
+BugsyText_FuryCutterSpeech:
 	text "TM49 contains"
 	line "FURY CUTTER."
 
@@ -315,9 +220,8 @@ UnknownText_0x18eefa: ; 0x18eefa
 	para "Isn't that great?"
 	line "I discovered it!"
 	done
-; 0x18ef98
 
-UnknownText_0x18ef98: ; 0x18ef98
+BugsyText_BugMonsAreDeep:
 	text "Bug #MON are"
 	line "deep. There are"
 
@@ -327,46 +231,40 @@ UnknownText_0x18ef98: ; 0x18ef98
 	para "Study your favor-"
 	line "ites thoroughly."
 	done
-; 0x18eff8
 
-Bug_catcherBug_catcher_bennySeenText: ; 0x18eff8
+Bug_catcherbennySeenText:
 	text "Bug #MON evolve"
 	line "young. So they get"
 
 	para "stronger that much"
 	line "faster."
 	done
-; 0x18f037
 
-Bug_catcherBug_catcher_bennyBeatenText: ; 0x18f037
+Bug_catcherbennyBeatenText:
 	text "Just evolving"
 	line "isn't enough!"
 	done
-; 0x18f053
 
-UnknownText_0x18f053: ; 0x18f053
+Bug_catcherbennyAfterBattleText:
 	text "#MON become"
 	line "stronger if they"
 	cont "evolve. Really!"
 	done
-; 0x18f081
 
-Bug_catcherAlSeenText: ; 0x18f081
+Bug_catcherAlSeenText:
 	text "Bug #MON are"
 	line "cool and tough!"
 
 	para "I'll prove it to"
 	line "you!"
 	done
-; 0x18f0b4
 
-Bug_catcherAlBeatenText: ; 0x18f0b4
+Bug_catcherAlBeatenText:
 	text "You proved how"
 	line "tough you are…"
 	done
-; 0x18f0d3
 
-UnknownText_0x18f0d3: ; 0x18f0d3
+Bug_catcherAlAfterBattleText:
 	text "They're so cool,"
 	line "but most girls"
 
@@ -375,9 +273,8 @@ UnknownText_0x18f0d3: ; 0x18f0d3
 
 	para "I don't know why…"
 	done
-; 0x18f118
 
-Bug_catcherJoshSeenText: ; 0x18f118
+Bug_catcherJoshSeenText:
 	text "You saved all the"
 	line "SLOWPOKE? Whew,"
 	cont "you're mighty!"
@@ -386,60 +283,51 @@ Bug_catcherJoshSeenText: ; 0x18f118
 	line "#MON are pretty"
 	cont "tough too!"
 	done
-; 0x18f174
 
-Bug_catcherJoshBeatenText: ; 0x18f174
+Bug_catcherJoshBeatenText:
 	text "Urrgggh!"
 	done
-; 0x18f17e
 
-UnknownText_0x18f17e: ; 0x18f17e
+Bug_catcherJoshAfterBattleText:
 	text "I guess I should"
 	line "teach them better"
 	cont "moves…"
 	done
-; 0x18f1a9
 
-TwinsAmyandmay1SeenText: ; 0x18f1a9
+TwinsAmyandmay1SeenText:
 	text "AMY: Hi! Are you"
 	line "challenging the"
 	cont "LEADER? No way!"
 	done
-; 0x18f1db
 
-TwinsAmyandmay1BeatenText: ; 0x18f1db
+TwinsAmyandmay1BeatenText:
 	text "AMY & MAY: Oh,"
 	line "double goodness!"
 	done
-; 0x18f1fc
 
-UnknownText_0x18f1fc: ; 0x18f1fc
+TwinsAmyandmay1AfterBattleText:
 	text "AMY: You're"
 	line "really strong!"
 	done
-; 0x18f217
 
-TwinsAmyandmay2SeenText: ; 0x18f217
+TwinsAmyandmay2SeenText:
 	text "MAY: You want to"
 	line "see the LEADER?"
 	cont "We come first!"
 	done
-; 0x18f248
 
-TwinsAmyandmay2BeatenText: ; 0x18f248
+TwinsAmyandmay2BeatenText:
 	text "AMY & MAY: Oh,"
 	line "double goodness!"
 	done
-; 0x18f269
 
-UnknownText_0x18f269: ; 0x18f269
+TwinsAmyandmay2AfterBattleText:
 	text "MAY: Our bug #-"
 	line "MON lost! Oh, what"
 	cont "a shame."
 	done
-; 0x18f296
 
-AzaleaGymGuyText: ; 0x18f296
+AzaleaGymGuyText:
 	text "Yo, challenger!"
 
 	para "BUGSY's young, but"
@@ -460,9 +348,8 @@ AzaleaGymGuyText: ; 0x18f296
 	line "are super-effec-"
 	cont "tive too."
 	done
-; 0x18f359
 
-AzaleaGymGuyWinText: ; 0x18f359
+AzaleaGymGuyWinText:
 	text "Well done! That"
 	line "was a great clash"
 
@@ -473,35 +360,30 @@ AzaleaGymGuyWinText: ; 0x18f359
 	line "you, the future of"
 	cont "#MON is bright!"
 	done
-; 0x18f3cc
 
-AzaleaGym_MapEventHeader: ; 0x18f3cc
+AzaleaGym_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $f, $4, 5, GROUP_AZALEA_TOWN, MAP_AZALEA_TOWN
-	warp_def $f, $5, 5, GROUP_AZALEA_TOWN, MAP_AZALEA_TOWN
+	warp_def $f, $4, 5, AZALEA_TOWN
+	warp_def $f, $5, 5, AZALEA_TOWN
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 13, 3, $0, MapAzaleaGymSignpost1Script
-	signpost 13, 6, $0, MapAzaleaGymSignpost1Script
+	signpost 13, 3, SIGNPOST_READ, AzaleaGymStatue
+	signpost 13, 6, SIGNPOST_READ, AzaleaGymStatue
 
-	; people-events
+.PersonEvents:
 	db 7
-	person_event SPRITE_BUGSY, 11, 9, $3, $0, 255, 255, $a0, 0, BugsyScript_0x18ec1e, $ffff
-	person_event SPRITE_BUG_CATCHER, 7, 9, $a, $0, 255, 255, $b2, 2, TrainerBug_catcherBug_catcher_benny, $ffff
-	person_event SPRITE_BUG_CATCHER, 12, 12, $6, $0, 255, 255, $b2, 3, TrainerBug_catcherAl, $ffff
-	person_event SPRITE_BUG_CATCHER, 6, 4, $6, $0, 255, 255, $b2, 3, TrainerBug_catcherJosh, $ffff
-	person_event SPRITE_TWIN, 14, 8, $6, $0, 255, 255, $82, 1, TrainerTwinsAmyandmay1, $ffff
-	person_event SPRITE_TWIN, 14, 9, $6, $0, 255, 255, $82, 1, TrainerTwinsAmyandmay2, $ffff
-	person_event SPRITE_GYM_GUY, 17, 11, $6, $0, 255, 255, $80, 0, AzaleaGymGuyScript, $ffff
-; 0x18f441
-
-
-
+	person_event SPRITE_BUGSY, 7, 5, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, BugsyScript, -1
+	person_event SPRITE_BUG_CATCHER, 3, 5, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 2, TrainerBug_catcherbenny, -1
+	person_event SPRITE_BUG_CATCHER, 8, 8, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 3, TrainerBug_catcherAl, -1
+	person_event SPRITE_BUG_CATCHER, 2, 0, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 3, TrainerBug_catcherJosh, -1
+	person_event SPRITE_TWIN, 10, 4, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 1, TrainerTwinsAmyandmay1, -1
+	person_event SPRITE_TWIN, 10, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 1, TrainerTwinsAmyandmay2, -1
+	person_event SPRITE_GYM_GUY, 13, 7, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, AzaleaGymGuyScript, -1

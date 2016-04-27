@@ -1,140 +1,125 @@
-GoldenrodDeptStore6F_MapScriptHeader: ; 0x563f3
-	; trigger count
+const_value set 2
+	const GOLDENRODDEPTSTORE6F_LASS
+	const GOLDENRODDEPTSTORE6F_SUPER_NERD
+
+GoldenrodDeptStore6F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x563f5
 
-MapGoldenrodDeptStore6FSignpost5Script: ; 0x563f5
-	loadfont
-	2writetext UnknownText_0x564cb
-UnknownScript_0x563f9: ; 0x563f9
-	special $0051
-	loadmenudata MenuDataHeader_0x56478
-	interpretmenu2
-	writebackup
-	if_equal $1, UnknownScript_0x5640f
-	if_equal $2, UnknownScript_0x56429
-	if_equal $3, UnknownScript_0x56443
-	loadmovesprites
+GoldenrodVendingMachine:
+	opentext
+	writetext GoldenrodVendingText
+.Start:
+	special PlaceMoneyTopRight
+	loadmenudata .MenuData
+	verticalmenu
+	closewindow
+	if_equal $1, .FreshWater
+	if_equal $2, .SodaPop
+	if_equal $3, .Lemonade
+	closetext
 	end
-; 0x5640f
 
-UnknownScript_0x5640f: ; 0x5640f
+.FreshWater:
 	checkmoney $0, 200
-	if_equal $2, UnknownScript_0x5646a
-	giveitem FRESH_WATER, $1
-	iffalse UnknownScript_0x56471
+	if_equal $2, .NotEnoughMoney
+	giveitem FRESH_WATER
+	iffalse .NotEnoughSpace
 	takemoney $0, 200
 	itemtotext FRESH_WATER, $0
-	2jump UnknownScript_0x5645d
-; 0x56429
+	jump .VendItem
 
-UnknownScript_0x56429: ; 0x56429
+.SodaPop:
 	checkmoney $0, 300
-	if_equal $2, UnknownScript_0x5646a
-	giveitem SODA_POP, $1
-	iffalse UnknownScript_0x56471
+	if_equal $2, .NotEnoughMoney
+	giveitem SODA_POP
+	iffalse .NotEnoughSpace
 	takemoney $0, 300
 	itemtotext SODA_POP, $0
-	2jump UnknownScript_0x5645d
-; 0x56443
+	jump .VendItem
 
-UnknownScript_0x56443: ; 0x56443
+.Lemonade:
 	checkmoney $0, 350
-	if_equal $2, UnknownScript_0x5646a
-	giveitem LEMONADE, $1
-	iffalse UnknownScript_0x56471
+	if_equal $2, .NotEnoughMoney
+	giveitem LEMONADE
+	iffalse .NotEnoughSpace
 	takemoney $0, 350
 	itemtotext LEMONADE, $0
-	2jump UnknownScript_0x5645d
-; 0x5645d
+	jump .VendItem
 
-UnknownScript_0x5645d: ; 0x5645d
+.VendItem:
 	pause 10
 	playsound SFX_ENTER_DOOR
-	2writetext UnknownText_0x564ef
-	keeptextopen
+	writetext GoldenrodClangText
+	buttonsound
 	itemnotify
-	2jump UnknownScript_0x563f9
-; 0x5646a
+	jump .Start
 
-UnknownScript_0x5646a: ; 0x5646a
-	2writetext UnknownText_0x56512
-	closetext
-	2jump UnknownScript_0x563f9
-; 0x56471
+.NotEnoughMoney:
+	writetext GoldenrodVendingNoMoneyText
+	waitbutton
+	jump .Start
 
-UnknownScript_0x56471: ; 0x56471
-	2writetext UnknownText_0x5652b
-	closetext
-	2jump UnknownScript_0x563f9
-; 0x56478
+.NotEnoughSpace:
+	writetext GoldenrodVendingNoSpaceText
+	waitbutton
+	jump .Start
 
-
-MenuDataHeader_0x56478: ; 0x56478
+.MenuData:
 	db $40 ; flags
 	db 02, 00 ; start coords
 	db 11, 19 ; end coords
-	dw MenuData2_0x56480
+	dw .MenuData2
 	db 1 ; default option
-; 0x56480
 
-MenuData2_0x56480: ; 0x56480
+.MenuData2:
 	db $80 ; flags
 	db 4 ; items
 	db "FRESH WATER  ¥200@"
 	db "SODA POP     ¥300@"
 	db "LEMONADE     ¥350@"
 	db "CANCEL@"
-; 0x564bf
 
 
-LassScript_0x564bf: ; 0x564bf
+LassScript_0x564bf:
 	jumptextfaceplayer UnknownText_0x5654b
-; 0x564c2
 
-SuperNerdScript_0x564c2: ; 0x564c2
+SuperNerdScript_0x564c2:
 	jumptextfaceplayer UnknownText_0x565ca
-; 0x564c5
 
-MapGoldenrodDeptStore6FSignpost0Script: ; 0x564c5
-	jumptext UnknownText_0x5661a
-; 0x564c8
+GoldenrodDeptStore6FDirectory:
+	jumptext GoldenrodDeptStore6FDirectoryText
 
-MapGoldenrodDeptStore6FSignpost1Script: ; 0x564c8
-	jumpstd $0014
-; 0x564cb
+GoldenrodDeptStore6FElevatorButton:
+	jumpstd elevatorbutton
 
-UnknownText_0x564cb: ; 0x564cb
+GoldenrodVendingText:
 	text "A vending machine!"
 	line "Here's the menu."
 	done
-; 0x564ef
 
-UnknownText_0x564ef: ; 0x564ef
+GoldenrodClangText:
 	text "Clang! A can of"
 	line "@"
-	text_from_ram $d099
+	text_from_ram StringBuffer3
 	text $55
 	db "popped out!"
 	done
-; 0x56512
 
-UnknownText_0x56512: ; 0x56512
+GoldenrodVendingNoMoneyText:
 	text "Oops, not enough"
 	line "money."
 	done
-; 0x5652b
 
-UnknownText_0x5652b: ; 0x5652b
+GoldenrodVendingNoSpaceText:
 	text "There's no more"
 	line "room for stuff."
 	done
-; 0x5654b
 
-UnknownText_0x5654b: ; 0x5654b
+UnknownText_0x5654b:
 	text "Do you listen to"
 	line "LUCKY CHANNEL?"
 
@@ -147,9 +132,8 @@ UnknownText_0x5654b: ; 0x5654b
 	para "get different ID"
 	line "numbers."
 	done
-; 0x565ca
 
-UnknownText_0x565ca: ; 0x565ca
+UnknownText_0x565ca:
 	text "If you're tired,"
 	line "try the vending"
 	cont "machine's drinks."
@@ -157,41 +141,37 @@ UnknownText_0x565ca: ; 0x565ca
 	para "Your #MON will"
 	line "love them too."
 	done
-; 0x5661a
 
-UnknownText_0x5661a: ; 0x5661a
+GoldenrodDeptStore6FDirectoryText:
 	text "Take a Break from"
 	line "Shopping!"
 
 	para "6F TRANQUIL SQUARE"
 	done
-; 0x5664a
 
-GoldenrodDeptStore6F_MapEventHeader: ; 0x5664a
+GoldenrodDeptStore6F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 3
-	warp_def $0, $f, 2, GROUP_GOLDENROD_DEPT_STORE_5F, MAP_GOLDENROD_DEPT_STORE_5F
-	warp_def $0, $2, 1, GROUP_GOLDENROD_DEPT_STORE_ELEVATOR, MAP_GOLDENROD_DEPT_STORE_ELEVATOR
-	warp_def $0, $d, 1, GROUP_GOLDENROD_DEPT_STORE_ROOF, MAP_GOLDENROD_DEPT_STORE_ROOF
+	warp_def $0, $f, 2, GOLDENROD_DEPT_STORE_5F
+	warp_def $0, $2, 1, GOLDENROD_DEPT_STORE_ELEVATOR
+	warp_def $0, $d, 1, GOLDENROD_DEPT_STORE_ROOF
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 6
-	signpost 0, 14, $0, MapGoldenrodDeptStore6FSignpost0Script
-	signpost 0, 3, $0, MapGoldenrodDeptStore6FSignpost1Script
-	signpost 1, 8, $1, MapGoldenrodDeptStore6FSignpost5Script
-	signpost 1, 9, $1, MapGoldenrodDeptStore6FSignpost5Script
-	signpost 1, 10, $1, MapGoldenrodDeptStore6FSignpost5Script
-	signpost 1, 11, $1, MapGoldenrodDeptStore6FSignpost5Script
+	signpost 0, 14, SIGNPOST_READ, GoldenrodDeptStore6FDirectory
+	signpost 0, 3, SIGNPOST_READ, GoldenrodDeptStore6FElevatorButton
+	signpost 1, 8, SIGNPOST_UP, GoldenrodVendingMachine
+	signpost 1, 9, SIGNPOST_UP, GoldenrodVendingMachine
+	signpost 1, 10, SIGNPOST_UP, GoldenrodVendingMachine
+	signpost 1, 11, SIGNPOST_UP, GoldenrodVendingMachine
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_LASS, 6, 14, $5, $1, 255, 255, $a0, 0, LassScript_0x564bf, $ffff
-	person_event SPRITE_SUPER_NERD, 6, 12, $7, $0, 255, 255, $80, 0, SuperNerdScript_0x564c2, $ffff
-; 0x56697
-
+	person_event SPRITE_LASS, 2, 10, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, LassScript_0x564bf, -1
+	person_event SPRITE_SUPER_NERD, 2, 8, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, SuperNerdScript_0x564c2, -1

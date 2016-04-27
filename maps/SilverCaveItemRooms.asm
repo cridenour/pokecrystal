@@ -1,37 +1,36 @@
-SilverCaveItemRooms_MapScriptHeader: ; 0x18c65c
-	; trigger count
+const_value set 2
+	const SILVERCAVEITEMROOMS_POKE_BALL1
+	const SILVERCAVEITEMROOMS_POKE_BALL2
+
+SilverCaveItemRooms_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x18c65e
 
-ItemFragment_0x18c65e: ; 0x18c65e
-	db MAX_REVIVE, 1
-; 0x18c660
+SilverCaveItemRoomsMaxRevive:
+	itemball MAX_REVIVE
 
-ItemFragment_0x18c660: ; 0x18c660
-	db FULL_RESTORE, 1
-; 0x18c662
+SilverCaveItemRoomsFullRestore:
+	itemball FULL_RESTORE
 
-SilverCaveItemRooms_MapEventHeader: ; 0x18c662
+SilverCaveItemRooms_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $3, $d, 3, GROUP_SILVER_CAVE_ROOM_2, MAP_SILVER_CAVE_ROOM_2
-	warp_def $f, $7, 4, GROUP_SILVER_CAVE_ROOM_2, MAP_SILVER_CAVE_ROOM_2
+	warp_def $3, $d, 3, SILVER_CAVE_ROOM_2
+	warp_def $f, $7, 4, SILVER_CAVE_ROOM_2
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_POKE_BALL, 7, 10, $1, $0, 255, 255, $1, 0, ItemFragment_0x18c65e, $069c
-	person_event SPRITE_POKE_BALL, 15, 19, $1, $0, 255, 255, $1, 0, ItemFragment_0x18c660, $069d
-; 0x18c68c
-
+	person_event SPRITE_POKE_BALL, 3, 6, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, SilverCaveItemRoomsMaxRevive, EVENT_SILVER_CAVE_ITEM_ROOMS_MAX_REVIVE
+	person_event SPRITE_POKE_BALL, 11, 15, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, SilverCaveItemRoomsFullRestore, EVENT_SILVER_CAVE_ITEM_ROOMS_FULL_RESTORE

@@ -1,98 +1,93 @@
-WillsRoom_MapScriptHeader: ; 0x1804b9
-	; trigger count
+const_value set 2
+	const WILLSROOM_WILL
+
+WillsRoom_MapScriptHeader:
+.MapTriggers:
 	db 2
 
 	; triggers
-	dw UnknownScript_0x1804c6, $0000
-	dw UnknownScript_0x1804ca, $0000
+	dw UnknownScript_0x1804c6, 0
+	dw UnknownScript_0x1804ca, 0
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
 
-	dbw 1, UnknownScript_0x1804cb
-; 0x1804c6
+	dbw MAPCALLBACK_TILES, UnknownScript_0x1804cb
 
-UnknownScript_0x1804c6: ; 0x1804c6
+UnknownScript_0x1804c6:
 	priorityjump UnknownScript_0x1804e0
 	end
-; 0x1804ca
 
-UnknownScript_0x1804ca: ; 0x1804ca
+UnknownScript_0x1804ca:
 	end
-; 0x1804cb
 
-UnknownScript_0x1804cb: ; 0x1804cb
-	checkevent $0309
+UnknownScript_0x1804cb:
+	checkevent EVENT_WILLS_ROOM_ENTRANCE_CLOSED
 	iffalse UnknownScript_0x1804d5
 	changeblock $4, $e, $2a
-UnknownScript_0x1804d5: ; 0x1804d5
+UnknownScript_0x1804d5:
 	checkevent EVENT_WILLS_ROOM_EXIT_OPEN
 	iffalse UnknownScript_0x1804df
 	changeblock $4, $2, $16
-UnknownScript_0x1804df: ; 0x1804df
+UnknownScript_0x1804df:
 	return
-; 0x1804e0
 
-UnknownScript_0x1804e0: ; 0x1804e0
-	applymovement $0, MovementData_0x18052c
+UnknownScript_0x1804e0:
+	applymovement PLAYER, MovementData_0x18052c
 	refreshscreen $86
 	playsound SFX_STRENGTH
 	earthquake 80
 	changeblock $4, $e, $2a
 	reloadmappart
-	loadmovesprites
-	dotrigger $1
-	setevent $0309
-	waitbutton
-	end
-; 0x1804f8
-
-WillScript_0x1804f8: ; 0x1804f8
-	faceplayer
-	loadfont
-	checkevent $05b8
-	iftrue UnknownScript_0x180526
-	2writetext UnknownText_0x180531
 	closetext
-	loadmovesprites
-	winlosstext UnknownText_0x18062c, $0000
+	dotrigger $1
+	setevent EVENT_WILLS_ROOM_ENTRANCE_CLOSED
+	waitsfx
+	end
+
+WillScript_0x1804f8:
+	faceplayer
+	opentext
+	checkevent EVENT_BEAT_ELITE_4_WILL
+	iftrue UnknownScript_0x180526
+	writetext UnknownText_0x180531
+	waitbutton
+	closetext
+	winlosstext UnknownText_0x18062c, 0
 	loadtrainer WILL, 1
 	startbattle
-	returnafterbattle
-	setevent $05b8
-	loadfont
-	2writetext UnknownText_0x180644
+	reloadmapafterbattle
+	setevent EVENT_BEAT_ELITE_4_WILL
+	opentext
+	writetext UnknownText_0x180644
+	waitbutton
 	closetext
-	loadmovesprites
 	playsound SFX_ENTER_DOOR
 	changeblock $4, $2, $16
 	reloadmappart
-	loadmovesprites
-	setevent EVENT_WILLS_ROOM_EXIT_OPEN
-	waitbutton
-	end
-; 0x180526
-
-UnknownScript_0x180526: ; 0x180526
-	2writetext UnknownText_0x180644
 	closetext
-	loadmovesprites
+	setevent EVENT_WILLS_ROOM_EXIT_OPEN
+	waitsfx
 	end
-; 0x18052c
 
-MovementData_0x18052c: ; 0x18052c
+UnknownScript_0x180526:
+	writetext UnknownText_0x180644
+	waitbutton
+	closetext
+	end
+
+MovementData_0x18052c:
 	step_up
 	step_up
 	step_up
 	step_up
 	step_end
-; 0x180531
 
-UnknownText_0x180531: ; 0x180531
+UnknownText_0x180531:
 	text "Welcome to #MON"
-	line "LEAGUE, ", $52, "."
+	line "LEAGUE, <PLAYER>."
 
 	para "Allow me to intro-"
 	line "duce myself. I am"
@@ -114,15 +109,13 @@ UnknownText_0x180531: ; 0x180531
 	para "Losing is not an"
 	line "option!"
 	done
-; 0x18062c
 
-UnknownText_0x18062c: ; 0x18062c
+UnknownText_0x18062c:
 	text "I… I can't…"
 	line "believe it…"
 	done
-; 0x180644
 
-UnknownText_0x180644: ; 0x180644
+UnknownText_0x180644:
 	text "Even though I was"
 	line "defeated, I won't"
 	cont "change my course."
@@ -133,32 +126,29 @@ UnknownText_0x180644: ; 0x180644
 	para "stand above all"
 	line "trainers!"
 
-	para "Now, ", $52, ", move"
+	para "Now, <PLAYER>, move"
 	line "on and experience"
 
 	para "the true ferocity"
 	line "of the ELITE FOUR."
 	done
-; 0x1806f9
 
-WillsRoom_MapEventHeader: ; 0x1806f9
+WillsRoom_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 3
-	warp_def $11, $5, 4, GROUP_INDIGO_PLATEAU_POKECENTER_1F, MAP_INDIGO_PLATEAU_POKECENTER_1F
-	warp_def $2, $4, 1, GROUP_KOGAS_ROOM, MAP_KOGAS_ROOM
-	warp_def $2, $5, 2, GROUP_KOGAS_ROOM, MAP_KOGAS_ROOM
+	warp_def $11, $5, 4, INDIGO_PLATEAU_POKECENTER_1F
+	warp_def $2, $4, 1, KOGAS_ROOM
+	warp_def $2, $5, 2, KOGAS_ROOM
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_WILL, 11, 9, $6, $0, 255, 255, $80, 0, WillScript_0x1804f8, $ffff
-; 0x18071b
-
+	person_event SPRITE_WILL, 7, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, WillScript_0x1804f8, -1

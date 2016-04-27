@@ -1,12 +1,10 @@
 Music_DancingHall: ; ef9bc
-	dbw $80, Music_DancingHall_Ch1
-	dbw $01, Music_DancingHall_Ch2
-	dbw $02, Music_DancingHall_Ch3
+	musicheader 3, 1, Music_DancingHall_Ch1
+	musicheader 1, 2, Music_DancingHall_Ch2
+	musicheader 1, 3, Music_DancingHall_Ch3
 ; ef9c5
 
-
-INCBIN "baserom.gbc", $ef9c5, $ef9c6 - $ef9c5
-
+	db $3
 
 Music_DancingHall_Ch1: ; ef9c6
 	tempo 208
@@ -311,5 +309,3 @@ Music_DancingHall_branch_efae3: ; efae3
 	note D_, 1
 	loopchannel 0, Music_DancingHall_branch_efae3
 ; efb3e
-
-

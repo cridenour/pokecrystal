@@ -1,20 +1,20 @@
-BattleCommand34: ; 37418
+BattleCommand_Metronome: ; 37418
 ; metronome
 
-	call Function372d8
-	call Function34548
+	call ClearLastMove
+	call CheckUserIsCharging
 	jr nz, .asm_3742b
 
-	ld a, [$c689]
+	ld a, [wKickCounter]
 	push af
-	call BattleCommand0a
+	call BattleCommand_LowerSub
 	pop af
-	ld [$c689], a
+	ld [wKickCounter], a
 
 .asm_3742b
-	call Function37e36
+	call LoadMoveAnim
 
-.GetMove
+.GetMove:
 	call BattleRandom
 
 ; No invalid moves.
@@ -36,7 +36,7 @@ BattleCommand34: ; 37418
 
 
 	ld a, BATTLE_VARS_MOVE
-	call _GetBattleVar
+	call GetBattleVarAddr
 	ld [hl], b
 	call UpdateMoveData
 	jp ResetTurn
@@ -59,4 +59,3 @@ MetronomeExcepts: ; 37454
 	db THIEF
 	db -1
 ; 37462
-

@@ -1,90 +1,85 @@
-GoldenrodDeptStoreB1F_MapScriptHeader: ; 0x7d779
-	; trigger count
+const_value set 2
+	const GOLDENRODDEPTSTOREB1F_POKE_BALL1
+	const GOLDENRODDEPTSTOREB1F_POKE_BALL2
+	const GOLDENRODDEPTSTOREB1F_POKE_BALL3
+	const GOLDENRODDEPTSTOREB1F_POKE_BALL4
+	const GOLDENRODDEPTSTOREB1F_BLACK_BELT1
+	const GOLDENRODDEPTSTOREB1F_BLACK_BELT2
+	const GOLDENRODDEPTSTOREB1F_BLACK_BELT3
+	const GOLDENRODDEPTSTOREB1F_MACHOP
+
+GoldenrodDeptStoreB1F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 2
 
 	; callbacks
 
-	dbw 1, UnknownScript_0x7d781
+	dbw MAPCALLBACK_TILES, UnknownScript_0x7d781
 
-	dbw 5, UnknownScript_0x7d7ac
-; 0x7d781
+	dbw MAPCALLBACK_NEWMAP, UnknownScript_0x7d7ac
 
-UnknownScript_0x7d781: ; 0x7d781
-	checkevent $004a
+UnknownScript_0x7d781:
+	checkevent EVENT_RECEIVED_CARD_KEY
 	iftrue UnknownScript_0x7d78a
-	2jump UnknownScript_0x7d791
-; 0x7d78a
+	jump UnknownScript_0x7d791
 
-UnknownScript_0x7d78a: ; 0x7d78a
+UnknownScript_0x7d78a:
 	changeblock $10, $4, $d
-	2jump UnknownScript_0x7d791
-; 0x7d791
+	jump UnknownScript_0x7d791
 
-UnknownScript_0x7d791: ; 0x7d791
-	checkevent $0305
-	iftrue UnknownScript_0x7d7a2
-	checkevent $0306
-	iftrue UnknownScript_0x7d7a7
+UnknownScript_0x7d791:
+	checkevent EVENT_WAREHOUSE_LAYOUT_2
+	iftrue .Layout2
+	checkevent EVENT_WAREHOUSE_LAYOUT_3
+	iftrue .Layout3
 	changeblock $a, $8, $d
 	return
-; 0x7d7a2
 
-UnknownScript_0x7d7a2: ; 0x7d7a2
+.Layout2:
 	changeblock $4, $a, $d
 	return
-; 0x7d7a7
 
-UnknownScript_0x7d7a7: ; 0x7d7a7
+.Layout3:
 	changeblock $a, $c, $d
 	return
-; 0x7d7ac
 
-UnknownScript_0x7d7ac: ; 0x7d7ac
-	clearevent $0307
+UnknownScript_0x7d7ac:
+	clearevent EVENT_WAREHOUSE_BLOCKED_OFF
 	return
-; 0x7d7b0
 
-BlackBeltScript_0x7d7b0: ; 0x7d7b0
+BlackBeltScript_0x7d7b0:
 	jumptextfaceplayer UnknownText_0x7d7cb
-; 0x7d7b3
 
-BlackBeltScript_0x7d7b3: ; 0x7d7b3
+BlackBeltScript_0x7d7b3:
 	jumptextfaceplayer UnknownText_0x7d82c
-; 0x7d7b6
 
-BlackBeltScript_0x7d7b6: ; 0x7d7b6
+BlackBeltScript_0x7d7b6:
 	jumptextfaceplayer UnknownText_0x7d875
-; 0x7d7b9
 
-MachopScript_0x7d7b9: ; 0x7d7b9
-	loadfont
-	2writetext UnknownText_0x7d8bb
+MachopScript_0x7d7b9:
+	opentext
+	writetext UnknownText_0x7d8bb
 	cry MACHOKE
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7d7c3
 
-ItemFragment_0x7d7c3: ; 0x7d7c3
-	db ETHER, 1
-; 0x7d7c5
+GoldenrodDeptStoreB1FEther:
+	itemball ETHER
 
-ItemFragment_0x7d7c5: ; 0x7d7c5
-	db AMULET_COIN, 1
-; 0x7d7c7
+GoldenrodDeptStoreB1FAmuletCoin:
+	itemball AMULET_COIN
 
-ItemFragment_0x7d7c7: ; 0x7d7c7
-	db BURN_HEAL, 1
-; 0x7d7c9
+GoldenrodDeptStoreB1FBurnHeal:
+	itemball BURN_HEAL
 
-ItemFragment_0x7d7c9: ; 0x7d7c9
-	db ULTRA_BALL, 1
-; 0x7d7cb
+GoldenrodDeptStoreB1FUltraBall:
+	itemball ULTRA_BALL
 
-UnknownText_0x7d7cb: ; 0x7d7cb
+UnknownText_0x7d7cb:
 	text "Hey, kid! You're"
 	line "holding us up!"
 
@@ -94,9 +89,8 @@ UnknownText_0x7d7cb: ; 0x7d7cb
 	para "scenes where no"
 	line "one can see us!"
 	done
-; 0x7d82c
 
-UnknownText_0x7d82c: ; 0x7d82c
+UnknownText_0x7d82c:
 	text "I lose my passion"
 	line "for work if some-"
 	cont "one's watching."
@@ -104,9 +98,8 @@ UnknownText_0x7d82c: ; 0x7d82c
 	para "Come on, kid,"
 	line "scoot!"
 	done
-; 0x7d875
 
-UnknownText_0x7d875: ; 0x7d875
+UnknownText_0x7d875:
 	text "Oohah! Oohah!"
 
 	para "The stuff on the"
@@ -115,38 +108,34 @@ UnknownText_0x7d875: ; 0x7d875
 	para "Take it if you"
 	line "want it!"
 	done
-; 0x7d8bb
 
-UnknownText_0x7d8bb: ; 0x7d8bb
+UnknownText_0x7d8bb:
 	text "MACHOKE: Maaacho!"
 	done
-; 0x7d8ce
 
-GoldenrodDeptStoreB1F_MapEventHeader: ; 0x7d8ce
+GoldenrodDeptStoreB1F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 3
-	warp_def $2, $11, 3, GROUP_UNDERGROUND_WAREHOUSE, MAP_UNDERGROUND_WAREHOUSE
-	warp_def $4, $9, 1, GROUP_GOLDENROD_DEPT_STORE_ELEVATOR, MAP_GOLDENROD_DEPT_STORE_ELEVATOR
-	warp_def $4, $a, 2, GROUP_GOLDENROD_DEPT_STORE_ELEVATOR, MAP_GOLDENROD_DEPT_STORE_ELEVATOR
+	warp_def $2, $11, 3, UNDERGROUND_WAREHOUSE
+	warp_def $4, $9, 1, GOLDENROD_DEPT_STORE_ELEVATOR
+	warp_def $4, $a, 2, GOLDENROD_DEPT_STORE_ELEVATOR
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 8
-	person_event SPRITE_POKE_BALL, 19, 14, $1, $0, 255, 255, $1, 0, ItemFragment_0x7d7c3, $0675
-	person_event SPRITE_POKE_BALL, 6, 18, $1, $0, 255, 255, $1, 0, ItemFragment_0x7d7c5, $0676
-	person_event SPRITE_POKE_BALL, 7, 10, $1, $0, 255, 255, $1, 0, ItemFragment_0x7d7c7, $0677
-	person_event SPRITE_POKE_BALL, 19, 19, $1, $0, 255, 255, $1, 0, ItemFragment_0x7d7c9, $0678
-	person_event SPRITE_BLACK_BELT, 14, 13, $4, $10, 255, 255, $a0, 0, BlackBeltScript_0x7d7b0, $ffff
-	person_event SPRITE_BLACK_BELT, 12, 8, $3, $0, 255, 255, $80, 0, BlackBeltScript_0x7d7b3, $ffff
-	person_event SPRITE_BLACK_BELT, 17, 10, $5, $1, 255, 255, $90, 0, BlackBeltScript_0x7d7b6, $ffff
-	person_event SPRITE_MACHOP, 11, 11, $16, $0, 255, 255, $90, 0, MachopScript_0x7d7b9, $ffff
-; 0x7d94b
-
+	person_event SPRITE_POKE_BALL, 15, 10, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, GoldenrodDeptStoreB1FEther, EVENT_GOLDENROD_DEPT_STORE_B1F_ETHER
+	person_event SPRITE_POKE_BALL, 2, 14, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, GoldenrodDeptStoreB1FAmuletCoin, EVENT_GOLDENROD_DEPT_STORE_B1F_AMULET_COIN
+	person_event SPRITE_POKE_BALL, 3, 6, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, GoldenrodDeptStoreB1FBurnHeal, EVENT_GOLDENROD_DEPT_STORE_B1F_BURN_HEAL
+	person_event SPRITE_POKE_BALL, 15, 15, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, GoldenrodDeptStoreB1FUltraBall, EVENT_GOLDENROD_DEPT_STORE_B1F_ULTRA_BALL
+	person_event SPRITE_BLACK_BELT, 10, 9, SPRITEMOVEDATA_WALK_UP_DOWN, 1, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, BlackBeltScript_0x7d7b0, -1
+	person_event SPRITE_BLACK_BELT, 8, 4, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, BlackBeltScript_0x7d7b3, -1
+	person_event SPRITE_BLACK_BELT, 13, 6, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, BlackBeltScript_0x7d7b6, -1
+	person_event SPRITE_MACHOP, 7, 7, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, MachopScript_0x7d7b9, -1

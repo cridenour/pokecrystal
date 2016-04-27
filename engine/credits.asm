@@ -1,6 +1,5 @@
 INCLUDE "includes.asm"
 
-
 SECTION "Credits", ROMX, BANK[CREDITS]
 
 	const_def
@@ -118,134 +117,133 @@ const_value SET -7
 	const CREDITS_END
 
 
-Function109847:: ; 109847
-	bit 6, b
+Credits:: ; 109847
+	bit 6, b ; Hall Of Fame
 	ld a, $0
-	jr z, .asm_10984f
+	jr z, .okay
 	ld a, $40
-.asm_10984f
-	ld [$cf63], a
+.okay
+	ld [wJumptableIndex], a
 
 	ld a, [rSVBK]
 	push af
 	ld a, $5
 	ld [rSVBK], a
 
-	call WhiteBGMap
+	call ClearBGPalettes
 	call ClearTileMap
 	call ClearSprites
 
-	ld hl, $ca00
+	ld hl, wCreditsFaux2bpp
 	ld c, $80
 	ld de, $ff00
 
-.asm_10986a
+.load_loop
 	ld a, e
 	ld [hli], a
 	ld a, d
 	ld [hli], a
 	dec c
-	jr nz, .asm_10986a
+	jr nz, .load_loop
 
 	ld de, CreditsBorderGFX
-	ld hl, $9200
+	ld hl, VTiles2 tile $20
 	lb bc, BANK(CreditsBorderGFX), $09
 	call Request2bpp
 
 	ld de, CopyrightGFX
-	ld hl, $9600
+	ld hl, VTiles2 tile $60
 	lb bc, BANK(CopyrightGFX), $1d
 	call Request2bpp
 
 	ld de, TheEndGFX
-	ld hl, $9400
+	ld hl, VTiles2 tile $40
 	lb bc, BANK(TheEndGFX), $10
 	call Request2bpp
 
 	ld a, $ff
-	ld [$cf64], a
+	ld [wCreditsBorderFrame], a
 	xor a
-	ld [$cf65], a
+	ld [wCreditsBorderMon], a
 
-	call Function109bca
+	call Credits_LoadBorderGFX
 	ld e, l
 	ld d, h
 	ld hl, VTiles2
-	lb bc, BANK(CreditsMonsGFX), $10
+	lb bc, BANK(CreditsMonsGFX), 16
 	call Request2bpp
 
-	call Function109a95
+	call ConstructCreditsTilemap
 	xor a
-	ld [$cf66], a
+	ld [wCreditsLYOverride], a
 
 	ld hl, LYOverrides
 	ld bc, $100
 	xor a
 	call ByteFill
 
-	ld a, rSCX & $ff
-	ld [hLCDStatCustom], a
+	ld a, rSCX - $ff00
+	ld [hFFC6], a
 
 	call GetCreditsPalette
-	call Function32f9
-	ld a, [$ff9e]
+	call SetPalettes
+	ld a, [hVBlank]
 	push af
 	ld a, $5
-	ld [$ff9e], a
+	ld [hVBlank], a
 	ld a, $1
-	ld [$ffaa], a
+	ld [hInMenu], a
 	xor a
 	ld [hBGMapMode], a
 	ld [CreditsPos], a
-	ld [$cd21], a
+	ld [wcd21], a
 	ld [CreditsTimer], a
 
-.asm_1098de
-	call Function109908
-	call Function1098fd
-	jr nz, .asm_1098ee
+.execution_loop
+	call Credits_HandleBButton
+	call Credits_HandleAButton
+	jr nz, .exit_credits
 
-	call Function109926
+	call Credits_Jumptable
 	call DelayFrame
-	jr .asm_1098de
+	jr .execution_loop
 
-.asm_1098ee
-	call WhiteBGMap
+.exit_credits
+	call ClearBGPalettes
 	xor a
-	ld [hLCDStatCustom], a
+	ld [hFFC6], a
 	ld [hBGMapAddress], a
 	pop af
-	ld [$ff9e], a
+	ld [hVBlank], a
 	pop af
 	ld [rSVBK], a
 	ret
 ; 1098fd
 
-Function1098fd: ; 1098fd
+Credits_HandleAButton: ; 1098fd
 	ld a, [hJoypadDown]
-	and $1
+	and A_BUTTON
 	ret z
-	ld a, [$cf63]
+	ld a, [wJumptableIndex]
 	bit 7, a
 	ret
 ; 109908
 
-Function109908: ; 109908
+Credits_HandleBButton: ; 109908
 	ld a, [hJoypadDown]
-	and $2
+	and B_BUTTON
 	ret z
-	ld a, [$cf63]
+	ld a, [wJumptableIndex]
 	bit 6, a
 	ret z
 	ld hl, CreditsPos
 	ld a, [hli]
 	cp $d
-	jr nc, .asm_10991e
+	jr nc, .okay
 	ld a, [hli]
 	and a
 	ret z
-
-.asm_10991e
+.okay
 	ld hl, CreditsTimer
 	ld a, [hl]
 	and a
@@ -254,14 +252,15 @@ Function109908: ; 109908
 	ret
 ; 109926
 
-Function109926: ; 109926
-	ld a, [$cf63]
+Credits_Jumptable: ; 109926
+	ld a, [wJumptableIndex]
 	and $f
 	ld e, a
-	ld d, $0
-	ld hl, $5937
+	ld d, 0
+	ld hl, .Jumptable
+rept 2
 	add hl, de
-	add hl, de
+endr
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
@@ -269,120 +268,114 @@ Function109926: ; 109926
 ; 109937
 
 
-; no known jump sources
-Jumptable_109937: ; 109937 (42:5937)
+.Jumptable: ; 109937 (42:5937)
+
 	dw ParseCredits
-	dw Function109951
-	dw Function109951
-	dw Function10995e
-	dw Function109964
-	dw Function10997b
-	dw Function109986
-	dw Function109951
-	dw Function109951
-	dw Function109951
-	dw Function109964
-	dw Function10997b
-	dw Function109956
+	dw Credits_Next
+	dw Credits_Next
+	dw Credits_PrepBGMapUpdate
+	dw Credits_UpdateGFXRequestPath
+	dw Credits_RequestGFX
+	dw Credits_LYOverride
+	dw Credits_Next
+	dw Credits_Next
+	dw Credits_Next
+	dw Credits_UpdateGFXRequestPath
+	dw Credits_RequestGFX
+	dw Credits_LoopBack
 
 
-; known jump sources: 109961 (42:5961), 109983 (42:5983), 1099a0 (42:59a0), 109a62 (42:5a62)
-Function109951: ; 109951 (42:5951)
-	ld hl, $cf63
+Credits_Next: ; 109951 (42:5951)
+	ld hl, wJumptableIndex
 	inc [hl]
 	ret
 
-; no known jump sources
-Function109956: ; 109956 (42:5956)
-	ld hl, $cf63
+Credits_LoopBack: ; 109956 (42:5956)
+	ld hl, wJumptableIndex
 	ld a, [hl]
 	and $f0
 	ld [hl], a
 	ret
 
-; no known jump sources
-Function10995e: ; 10995e (42:595e)
+Credits_PrepBGMapUpdate: ; 10995e (42:595e)
 	xor a
-	ld [hBGMapMode], a ; $ff00+$d4
-	jp Function109951
+	ld [hBGMapMode], a
+	jp Credits_Next
 
-; no known jump sources
-Function109964: ; 109964 (42:5964)
-	call Function109bca
+Credits_UpdateGFXRequestPath: ; 109964 (42:5964)
+	call Credits_LoadBorderGFX
 	ld a, l
-	ld [$cf68], a
+	ld [Requested2bppSource], a
 	ld a, h
-	ld [$cf69], a
-	ld a, $0
-	ld [$cf6a], a
-	ld a, $90
-	ld [$cf6b], a
-	jr Function10997b
+	ld [Requested2bppSource + 1], a
+	ld a, VTiles2 % $100
+	ld [Requested2bppDest], a
+	ld a, VTiles2 / $100
+	ld [Requested2bppDest + 1], a
+	jr Credits_RequestGFX
 
-; known jump sources: 109979 (42:5979)
-Function10997b: ; 10997b (42:597b)
+Credits_RequestGFX: ; 10997b (42:597b)
 	xor a
-	ld [hBGMapMode], a ; $ff00+$d4
+	ld [hBGMapMode], a
 	ld a, $8
-	ld [$cf67], a
-	jp Function109951
+	ld [Requested2bpp], a
+	jp Credits_Next
 
-; known jump sources: 10998a (42:598a)
-Function109986: ; 109986 (42:5986)
-	ld a, [rLY] ; $ff00+$44
+Credits_LYOverride: ; 109986 (42:5986)
+	ld a, [rLY]
 	cp $30
-	jr c, Function109986
-	ld a, [$cf66]
+	jr c, Credits_LYOverride
+	ld a, [wCreditsLYOverride]
+rept 2
 	dec a
-	dec a
-	ld [$cf66], a
-	ld hl, $d11f
-	call Function1099a3
-	ld hl, $d187
-	call Function1099a3
-	jp Function109951
+endr
+	ld [wCreditsLYOverride], a
+	ld hl, LYOverrides + $1f
+	call .Fill
+	ld hl, LYOverrides + $87
+	call .Fill
+	jp Credits_Next
 
-; known jump sources: 109997 (42:5997), 10999d (42:599d)
-Function1099a3: ; 1099a3 (42:59a3)
+.Fill: ; 1099a3 (42:59a3)
 	ld c, $8
-.asm_1099a5
+.loop
 	ld [hli], a
 	dec c
-	jr nz, .asm_1099a5
+	jr nz, .loop
 	ret
 ; 1099aa
 
 
 ParseCredits: ; 1099aa
-	ld hl, $cf63
+	ld hl, wJumptableIndex
 	bit 7, [hl]
 	jp nz, .done
-	
+
 ; Wait until the timer has run out to parse the next command.
 	ld hl, CreditsTimer
 	ld a, [hl]
 	and a
 	jr z, .parse
-	
+
 ; One tick has passed.
 	dec [hl]
 	jp .done
-	
+
 .parse
 ; First, let's clear the current text display,
 ; starting from line 5.
 	xor a
-	ld [$ffd4], a
+	ld [hBGMapMode], a
 	hlcoord 0, 5
 	ld bc, 20 * 12
 	ld a, " "
 	call ByteFill
-	
+
 ; Then read the script.
-	
+
 .loop
 	call .get
-	
+
 ; Commands:
 	cp CREDITS_END
 	jp z, .end
@@ -398,40 +391,41 @@ ParseCredits: ; 1099aa
 	jr z, .wait2
 	cp CREDITS_THEEND
 	jr z, .theend
-	
+
 ; If it's not a command, it's a string identifier.
-	
+
 	push af
 	ld e, a
 	ld d, 0
 	ld hl, CreditsStrings
+rept 2
 	add hl, de
-	add hl, de
+endr
 	ld a, [hli]
 	ld d, [hl]
 	ld e, a
 	pop af
-	
+
 ; Strings spanning multiple lines have special cases.
-	
+
 	cp COPYRIGHT
 	jr z, .copyright
-	
+
 	cp STAFF
 	jr c, .staff
-	
+
 ; The rest start from line 6.
 
 	hlcoord 0, 6
 	jr .print
-	
+
 .copyright
 	hlcoord 2, 6
 	jr .print
-	
+
 .staff
 	hlcoord 0, 6
-	
+
 .print
 ; Print strings spaced every two lines.
 	call .get
@@ -439,28 +433,28 @@ ParseCredits: ; 1099aa
 	call AddNTimes
 	call PlaceString
 	jr .loop
-	
+
 .theend
 ; Display "The End" graphic.
-	call Function109c11
+	call Credits_TheEnd
 	jr .loop
-	
+
 .scene
 ; Update the scene number and corresponding palette.
 	call .get
-	ld [$cf65], a ; scene
+	ld [wCreditsBorderMon], a ; scene
 	xor a
-	ld [$cf64], a ; frame
+	ld [wCreditsBorderFrame], a ; frame
 	call GetCreditsPalette
-	call $32f9 ; update hw pal registers
+	call SetPalettes ; update hw pal registers
 	jr .loop
-	
+
 .clear
 ; Clear the banner.
 	ld a, $ff
-	ld [$cf64], a ; frame
+	ld [wCreditsBorderFrame], a ; frame
 	jr .loop
-	
+
 .music
 ; Play the credits music.
 	ld de, MUSIC_CREDITS
@@ -471,36 +465,36 @@ ParseCredits: ; 1099aa
 	pop de
 	call PlayMusic
 	jp .loop
-	
+
 .wait2
 ; Wait for some amount of ticks.
 	call .get
 	ld [CreditsTimer], a
 	jr .done
-	
+
 .wait
 ; Wait for some amount of ticks, and do something else.
 	call .get
 	ld [CreditsTimer], a
-	
+
 	xor a
-	ld [$ffd5], a
+	ld [hBGMapThird], a
 	ld a, 1
-	ld [$ffd4], a
-	
+	ld [hBGMapMode], a
+
 .done
-	jp $5951
-	
+	jp Credits_Next
+
 .end
 ; Stop execution.
-	ld hl, $cf63
+	ld hl, wJumptableIndex
 	set 7, [hl]
-	ld a, $20
-	ld [$c2a7], a
-	ld a, $5c
-	ld [$c2a9], a
-	ld a, $00
-	ld [$c2aa], a
+	ld a, 32
+	ld [MusicFade], a
+	ld a, MUSIC_POST_CREDITS % $100
+	ld [MusicFadeID], a
+	ld a, MUSIC_POST_CREDITS / $100
+	ld [MusicFadeIDHi], a
 	ret
 
 .get
@@ -513,7 +507,7 @@ ParseCredits: ; 1099aa
 	ld d, a
 	ld hl, CreditsScript
 	add hl, de
-	
+
 	inc de
 	ld a, e
 	ld [CreditsPos], a
@@ -526,109 +520,110 @@ ParseCredits: ; 1099aa
 ; 109a95
 
 
-; known jump sources: 1098ac (42:58ac)
-Function109a95: ; 109a95 (42:5a95)
+ConstructCreditsTilemap: ; 109a95 (42:5a95)
 	xor a
-	ld [hBGMapMode], a ; $ff00+$d4
+	ld [hBGMapMode], a
 	ld a, $c
-	ld [hBGMapAddress], a ; $ff00+$d6
+	ld [hBGMapAddress], a
+
 	ld a, $28
-	ld hl, TileMap ; $c4a0 (aliases: SpritesEnd)
-	ld bc, $168
+	hlcoord 0, 0
+	ld bc, SCREEN_HEIGHT * SCREEN_WIDTH
 	call ByteFill
+
 	ld a, $7f
-	ld hl, $c4f0
-	ld bc, $118
+	hlcoord 0, 4
+	ld bc, (SCREEN_HEIGHT - 4) * SCREEN_WIDTH
 	call ByteFill
-	ld hl, $c4f0
+
+	hlcoord 0, 4
 	ld a, $24
-	call Function109b1d
-	ld hl, $c5f4
+	call DrawCreditsBorder
+
+	hlcoord 0, 17
 	ld a, $20
-	call Function109b1d
-	ld hl, AttrMap ; $cdd9
-	ld bc, $50
+	call DrawCreditsBorder
+
+	hlcoord 0, 0, AttrMap
+	ld bc, 4 * SCREEN_WIDTH
 	xor a
 	call ByteFill
-	ld hl, $ce29
-	ld bc, $14
+
+	hlcoord 0, 4, AttrMap
+	ld bc, SCREEN_WIDTH
 	ld a, $1
 	call ByteFill
-	ld hl, $ce3d
-	ld bc, $f0
+
+	hlcoord 0, 5, AttrMap
+	ld bc, 12 * SCREEN_WIDTH
 	ld a, $2
 	call ByteFill
-	ld hl, $cf2d
-	ld bc, $14
+
+	hlcoord 0, 17, AttrMap
+	ld bc, SCREEN_WIDTH
 	ld a, $1
 	call ByteFill
-	call Function3200
+
+	call WaitBGMap2
 	xor a
-	ld [hBGMapMode], a ; $ff00+$d4
-	ld [hBGMapAddress], a ; $ff00+$d6
-	ld hl, TileMap ; $c4a0 (aliases: SpritesEnd)
-	call Function109aff
-	call Function3200
+	ld [hBGMapMode], a
+	ld [hBGMapAddress], a
+	hlcoord 0, 0
+	call .InitTopPortion
+	call WaitBGMap2
 	ret
 
-; known jump sources: 109af8 (42:5af8)
-Function109aff: ; 109aff (42:5aff)
-	ld b, $5
-.asm_109b01
+.InitTopPortion: ; 109aff (42:5aff)
+	ld b, 5
+.outer_loop
 	push hl
-	ld de, $11
-	ld c, $4
+	ld de, SCREEN_WIDTH - 3
+	ld c, 4
 	xor a
-.asm_109b08
+.inner_loop
+rept 3
 	ld [hli], a
 	inc a
-	ld [hli], a
-	inc a
-	ld [hli], a
-	inc a
+endr
 	ld [hl], a
 	inc a
 	add hl, de
 	dec c
-	jr nz, .asm_109b08
+	jr nz, .inner_loop
 	pop hl
+rept 4
 	inc hl
-	inc hl
-	inc hl
-	inc hl
+endr
 	dec b
-	jr nz, .asm_109b01
+	jr nz, .outer_loop
 	ret
 
-; known jump sources: 109ab7 (42:5ab7), 109abf (42:5abf)
-Function109b1d: ; 109b1d (42:5b1d)
-	ld c, $5
-.asm_109b1f
+DrawCreditsBorder: ; 109b1d (42:5b1d)
+	ld c, SCREEN_WIDTH / 4
+.loop
 	push af
+rept 3
 	ld [hli], a
 	inc a
-	ld [hli], a
-	inc a
-	ld [hli], a
-	inc a
+endr
 	ld [hli], a
 	pop af
 	dec c
-	jr nz, .asm_109b1f
+	jr nz, .loop
 	ret
 
 GetCreditsPalette: ; 109b2c
 	call .GetPalAddress
-	
+
 	push hl
 	ld a, 0
 	call .UpdatePals
 	pop hl
 	ret
-	
-.GetPalAddress
+
+.GetPalAddress:
 ; Each set of palette data is 24 bytes long.
-	ld a, [$cf65] ; scene
+	ld a, [wCreditsBorderMon] ; scene
 	and 3
 	add a
 	add a ; * 8
@@ -640,26 +635,26 @@ GetCreditsPalette: ; 109b2c
 	add hl, de ; * 3
 	add hl, de
 	ret
-	
-.UpdatePals
+
+.UpdatePals:
 ; Update the first three colors in both palette buffers.
-	
+
 	push af
 	push hl
-	add $d000 % $100
+	add UnknBGPals % $100
 	ld e, a
 	ld a, 0
-	adc $d000 / $100
+	adc UnknBGPals / $100
 	ld d, a
 	ld bc, 24
 	call CopyBytes
-	
+
 	pop hl
 	pop af
-	add $d080 % $100
+	add BGPals % $100
 	ld e, a
 	ld a, 0
-	adc $d080 / $100
+	adc BGPals / $100
 	ld d, a
 	ld bc, 24
 	call CopyBytes
@@ -733,83 +728,80 @@ CreditsPalettes:
 	RGB 31, 31, 31
 ; 109bca
 
-; known jump sources: 10989e (42:589e), 109964 (42:5964)
-Function109bca: ; 109bca (42:5bca)
-	ld hl, $cf64
+Credits_LoadBorderGFX: ; 109bca (42:5bca)
+	ld hl, wCreditsBorderFrame
 	ld a, [hl]
 	cp $ff
-	jr z, .asm_109bed
+	jr z, .init
 
 	and 3
 	ld e, a
 	inc a
 	and 3
 	ld [hl], a
-	ld a, [$cf65]
+	ld a, [wCreditsBorderMon]
 	and 3
+rept 2
 	add a
-	add a
+endr
 	add e
 	add a
 	ld e, a
 	ld d, 0
-	ld hl, CreditsMonsFrames
+	ld hl, .Frames
 	add hl, de
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
 	ret
 
-.asm_109bed
-	ld hl, $ca00
+.init
+	ld hl, wCreditsFaux2bpp
 	ret
 ; 109bf1 (42:5bf1)
 
-CreditsMonsFrames: ; 109bf1
+.Frames: ; 109bf1
 	dw CreditsPichuGFX
-	dw CreditsPichuGFX     + $100
-	dw CreditsPichuGFX     + $200
-	dw CreditsPichuGFX     + $300
+	dw CreditsPichuGFX     + 16 tiles
+	dw CreditsPichuGFX     + 32 tiles
+	dw CreditsPichuGFX     + 48 tiles
 	dw CreditsSmoochumGFX
-	dw CreditsSmoochumGFX  + $100
-	dw CreditsSmoochumGFX  + $200
-	dw CreditsSmoochumGFX  + $300
+	dw CreditsSmoochumGFX  + 16 tiles
+	dw CreditsSmoochumGFX  + 32 tiles
+	dw CreditsSmoochumGFX  + 48 tiles
 	dw CreditsDittoGFX
-	dw CreditsDittoGFX     + $100
-	dw CreditsDittoGFX     + $200
-	dw CreditsDittoGFX     + $300
+	dw CreditsDittoGFX     + 16 tiles
+	dw CreditsDittoGFX     + 32 tiles
+	dw CreditsDittoGFX     + 48 tiles
 	dw CreditsIgglybuffGFX
-	dw CreditsIgglybuffGFX + $100
-	dw CreditsIgglybuffGFX + $200
-	dw CreditsIgglybuffGFX + $300
+	dw CreditsIgglybuffGFX + 16 tiles
+	dw CreditsIgglybuffGFX + 32 tiles
+	dw CreditsIgglybuffGFX + 48 tiles
 ; 109c11
 
-; known jump sources: 109a1b (42:5a1b)
-Function109c11: ; 109c11 (42:5c11)
+Credits_TheEnd: ; 109c11 (42:5c11)
 	ld a, $40
-	ld hl, $c55a
-	call Function109c1c
-	ld hl, $c56e
-
-; known jump sources: 109c16 (42:5c16)
-Function109c1c: ; 109c1c (42:5c1c)
-	ld c, $8
-.asm_109c1e
+	hlcoord 6, 9
+	call .Load
+	hlcoord 6, 10
+.Load: ; 109c1c (42:5c1c)
+	ld c, 8
+.loop
 	ld [hli], a
 	inc a
 	dec c
-	jr nz, .asm_109c1e
+	jr nz, .loop
 	ret
 ; 109c24 (42:5c24)
 
 
-CreditsBorderGFX:    INCBIN "gfx/credits/border.w72.2bpp"
+CreditsBorderGFX:    INCBIN "gfx/credits/border.2bpp"
 
 CreditsMonsGFX:
-CreditsPichuGFX:     INCBIN "gfx/credits/pichu.w32.2bpp"
-CreditsSmoochumGFX:  INCBIN "gfx/credits/smoochum.w32.2bpp"
-CreditsDittoGFX:     INCBIN "gfx/credits/ditto.w32.2bpp"
-CreditsIgglybuffGFX: INCBIN "gfx/credits/igglybuff.w32.2bpp"
+CreditsPichuGFX:     INCBIN "gfx/credits/pichu.2bpp"
+CreditsSmoochumGFX:  INCBIN "gfx/credits/smoochum.2bpp"
+CreditsDittoGFX:     INCBIN "gfx/credits/ditto.2bpp"
+CreditsIgglybuffGFX: INCBIN "gfx/credits/igglybuff.2bpp"
 
 
 CreditsScript: ; 10acb4
@@ -1253,9 +1245,9 @@ CreditsStrings:
 .TakaoOhara:          db "    TAKAO OHARA@"           ; "おおはら たかお@"
 .YuichiroIto:         db "    YUICHIRO ITO@"          ; "いとう ゆういちろう@"
 .TakaoShimizu:        db "   TAKAO SHIMIZU@"          ; "しみず たかお@"
-.Planning:            db " SPECIAL PRODUCTION", $4e
-                      db "      PLANNING", $4e        ; "きかくかいはつぶ@"
-                      db " & DEVELOPMENT DEPT.@"
+.Planning:            db " SPECIAL PRODUCTION"
+                    next "      PLANNING"             ; "きかくかいはつぶ@"
+                    next " & DEVELOPMENT DEPT.@"
 .KeitaNakamura:       db "   KEITA NAKAMURA@"         ; "なかむら けいた@"
 .HirotakaUemura:      db "  HIROTAKA UEMURA@"         ; "うえむら ひろたか@"
 .HiroakiTamura:       db "   HIROAKI TAMURA@"         ; "たむら ひろあき@"
@@ -1280,9 +1272,9 @@ CreditsStrings:
 .TerukiMurakawa:      db "  TERUKI MURAKAWA@"
 .KazuyoshiOsawa:      db "  KAZUYOSHI OSAWA@"
 .KimikoNakamichi:     db "  KIMIKO NAKAMICHI@"
-.Staff:               db "      #MON", $4e            ; "ポケットモンスター", $4e
-                      db "  CRYSTAL VERSION", $4e     ; "  クりスタル バージョン", $4e
-                      db "       STAFF@"              ; "    スタッフ@"
+.Staff:               db "      #MON"                 ; "ポケットモンスター"
+                    next "  CRYSTAL VERSION"          ; "  クりスタル バージョン"
+                    next "       STAFF@"              ; "    スタッフ@"
 .Director:            db "      DIRECTOR@"            ; "エグゼクティブ ディレクター@"
 .CoDirector:          db "    CO-DIRECTOR@"           ; "ディレクター@"
 .Programmers:         db "    PROGRAMMERS@"           ; "プログラム@"
@@ -1314,10 +1306,10 @@ CreditsStrings:
 .PaadTesting:         db "    PAAD TESTING@"
 
 .Copyright:
-;  (C) 1  9  9  5 - 2  0  0  1     N  i  n  t  e  n  d  o
-db $60,$61,$62,$63,$64,$65,$66, $67, $68, $69, $6a, $6b, $6c, $4e
-;  (C) 1  9  9  5 - 2  0  0  1    C  r  e  a  t  u  r  e  s      i  n  c .
-db $60,$61,$62,$63,$64,$65,$66, $6d, $6e, $6f, $70, $71, $72,  $7a, $7b, $7c, $4e
-;  (C) 1  9  9  5 - 2  0  0  1  G   A   M   E   F   R   E   A   K     i  n  c .
-db $60,$61,$62,$63,$64,$65,$66, $73, $74, $75, $76, $77, $78, $79,  $7a, $7b, $7c, "@"
-
+	;    (C) 1  9  9  5 - 2  0  0  1     N  i  n  t  e  n  d  o
+	db   $60,$61,$62,$63,$64,$65,$66, $67, $68, $69, $6a, $6b, $6c
+	;    (C) 1  9  9  5 - 2  0  0  1    C  r  e  a  t  u  r  e  s      i  n  c .
+	next $60,$61,$62,$63,$64,$65,$66, $6d, $6e, $6f, $70, $71, $72,  $7a, $7b, $7c
+	;    (C) 1  9  9  5 - 2  0  0  1  G   A   M   E   F   R   E   A   K     i  n  c .
+	next $60,$61,$62,$63,$64,$65,$66, $73, $74, $75, $76, $77, $78, $79,  $7a, $7b, $7c
+	db "@"

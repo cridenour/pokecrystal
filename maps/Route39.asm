@@ -1,291 +1,205 @@
-Route39_MapScriptHeader: ; 0x1a5af3
-	; trigger count
+const_value set 2
+	const ROUTE39_SAILOR
+	const ROUTE39_POKEFAN_M
+	const ROUTE39_POKEFAN_F1
+	const ROUTE39_MILTANK1
+	const ROUTE39_MILTANK2
+	const ROUTE39_MILTANK3
+	const ROUTE39_MILTANK4
+	const ROUTE39_PSYCHIC_NORMAN
+	const ROUTE39_FRUIT_TREE
+	const ROUTE39_POKEFAN_F2
+
+Route39_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1a5af5
 
-TaurosScript_0x1a5af5: ; 0x1a5af5
-	loadfont
-	2writetext UnknownText_0x1a5bf9
+Route39Miltank:
+	opentext
+	writetext Route39MiltankText
 	cry MILTANK
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a5aff
 
-TrainerPokefanmDerek1: ; 0x1a5aff
-	; bit/flag number
-	dw $4ce
+TrainerPokefanmDerek1:
+	trainer EVENT_BEAT_POKEFANM_DEREK, POKEFANM, DEREK1, PokefanmDerek1SeenText, PokefanmDerek1BeatenText, 0, PokefanmDerek1Script
 
-	; trainer group && trainer id
-	db POKEFANM, DEREK1
-
-	; text when seen
-	dw PokefanmDerek1SeenText
-
-	; text when trainer beaten
-	dw PokefanmDerek1BeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw PokefanmDerek1Script
-; 0x1a5b0b
-
-PokefanmDerek1Script: ; 0x1a5b0b
-	writecode $17, $1c
-	talkaftercancel
-	loadfont
-	checkflag $0083
+PokefanmDerek1Script:
+	writecode VAR_CALLERID, PHONE_POKEFANM_DEREK
+	end_if_just_battled
+	opentext
+	checkflag ENGINE_DEREK_HAS_NUGGET
 	iftrue UnknownScript_0x1a5b4a
-	checkcellnum $1c
+	checkcellnum PHONE_POKEFANM_DEREK
 	iftrue UnknownScript_0x1a5b6e
 	checkpoke PIKACHU
 	iffalse UnknownScript_0x1a5b5c
-	checkevent EVENT_SHOWED_DEREK_PIKACHU
+	checkevent EVENT_DEREK_ASKED_FOR_PHONE_NUMBER
 	iftrue UnknownScript_0x1a5b33
-	2writetext UnknownText_0x1a5cf8
-	keeptextopen
-	setevent EVENT_SHOWED_DEREK_PIKACHU
-	2call UnknownScript_0x1a5b62
-	2jump UnknownScript_0x1a5b36
-; 0x1a5b33
+	writetext UnknownText_0x1a5cf8
+	buttonsound
+	setevent EVENT_DEREK_ASKED_FOR_PHONE_NUMBER
+	scall UnknownScript_0x1a5b62
+	jump UnknownScript_0x1a5b36
 
-UnknownScript_0x1a5b33: ; 0x1a5b33
-	2call UnknownScript_0x1a5b66
-UnknownScript_0x1a5b36: ; 0x1a5b36
-	askforphonenumber $1c
+UnknownScript_0x1a5b33:
+	scall UnknownScript_0x1a5b66
+UnknownScript_0x1a5b36:
+	askforphonenumber PHONE_POKEFANM_DEREK
 	if_equal $1, UnknownScript_0x1a5b76
 	if_equal $2, UnknownScript_0x1a5b72
 	trainertotext POKEFANM, DEREK1, $0
-	2call UnknownScript_0x1a5b6a
-	2jump UnknownScript_0x1a5b6e
-; 0x1a5b4a
+	scall UnknownScript_0x1a5b6a
+	jump UnknownScript_0x1a5b6e
 
-UnknownScript_0x1a5b4a: ; 0x1a5b4a
-	2call UnknownScript_0x1a5b7a
-	verbosegiveitem NUGGET, 1
+UnknownScript_0x1a5b4a:
+	scall UnknownScript_0x1a5b7a
+	verbosegiveitem NUGGET
 	iffalse UnknownScript_0x1a5b59
-	clearflag $0083
-	2jump UnknownScript_0x1a5b6e
-; 0x1a5b59
+	clearflag ENGINE_DEREK_HAS_NUGGET
+	jump UnknownScript_0x1a5b6e
 
-UnknownScript_0x1a5b59: ; 0x1a5b59
-	2jump UnknownScript_0x1a5b7e
-; 0x1a5b5c
+UnknownScript_0x1a5b59:
+	jump UnknownScript_0x1a5b7e
 
-UnknownScript_0x1a5b5c: ; 0x1a5b5c
-	2writetext UnknownText_0x1a5dec
+UnknownScript_0x1a5b5c:
+	writetext UnknownText_0x1a5dec
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a5b62
 
-UnknownScript_0x1a5b62: ; 0x1a5b62
-	jumpstd $0019
+UnknownScript_0x1a5b62:
+	jumpstd asknumber1m
 	end
-; 0x1a5b66
 
-UnknownScript_0x1a5b66: ; 0x1a5b66
-	jumpstd $001a
+UnknownScript_0x1a5b66:
+	jumpstd asknumber2m
 	end
-; 0x1a5b6a
 
-UnknownScript_0x1a5b6a: ; 0x1a5b6a
-	jumpstd $001b
+UnknownScript_0x1a5b6a:
+	jumpstd registerednumberm
 	end
-; 0x1a5b6e
 
-UnknownScript_0x1a5b6e: ; 0x1a5b6e
-	jumpstd $001c
+UnknownScript_0x1a5b6e:
+	jumpstd numberacceptedm
 	end
-; 0x1a5b72
 
-UnknownScript_0x1a5b72: ; 0x1a5b72
-	jumpstd $001d
+UnknownScript_0x1a5b72:
+	jumpstd numberdeclinedm
 	end
-; 0x1a5b76
 
-UnknownScript_0x1a5b76: ; 0x1a5b76
-	jumpstd $001e
+UnknownScript_0x1a5b76:
+	jumpstd phonefullm
 	end
-; 0x1a5b7a
 
-UnknownScript_0x1a5b7a: ; 0x1a5b7a
-	jumpstd $0020
+UnknownScript_0x1a5b7a:
+	jumpstd giftm
 	end
-; 0x1a5b7e
 
-UnknownScript_0x1a5b7e: ; 0x1a5b7e
-	jumpstd $0021
+UnknownScript_0x1a5b7e:
+	jumpstd packfullm
 	end
-; 0x1a5b82
 
-TrainerPokefanfRuth: ; 0x1a5b82
-	; bit/flag number
-	dw $4da
+TrainerPokefanfRuth:
+	trainer EVENT_BEAT_POKEFANF_RUTH, POKEFANF, RUTH, PokefanfRuthSeenText, PokefanfRuthBeatenText, 0, PokefanfRuthScript
 
-	; trainer group && trainer id
-	db POKEFANF, RUTH
-
-	; text when seen
-	dw PokefanfRuthSeenText
-
-	; text when trainer beaten
-	dw PokefanfRuthBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw PokefanfRuthScript
-; 0x1a5b8e
-
-PokefanfRuthScript: ; 0x1a5b8e
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a5db2
+PokefanfRuthScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a5db2
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a5b96
 
-TrainerSailorEugene: ; 0x1a5b96
-	; bit/flag number
-	dw $575
+TrainerSailorEugene:
+	trainer EVENT_BEAT_SAILOR_EUGENE, SAILOR, EUGENE, SailorEugeneSeenText, SailorEugeneBeatenText, 0, SailorEugeneScript
 
-	; trainer group && trainer id
-	db SAILOR, EUGENE
-
-	; text when seen
-	dw SailorEugeneSeenText
-
-	; text when trainer beaten
-	dw SailorEugeneBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SailorEugeneScript
-; 0x1a5ba2
-
-SailorEugeneScript: ; 0x1a5ba2
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a5c4d
+SailorEugeneScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a5c4d
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a5baa
 
-TrainerPsychicNorman: ; 0x1a5baa
-	; bit/flag number
-	dw $43f
+TrainerPsychicNorman:
+	trainer EVENT_BEAT_PSYCHIC_NORMAN, PSYCHIC_T, NORMAN, PsychicNormanSeenText, PsychicNormanBeatenText, 0, PsychicNormanScript
 
-	; trainer group && trainer id
-	db PSYCHIC_T, NORMAN
-
-	; text when seen
-	dw PsychicNormanSeenText
-
-	; text when trainer beaten
-	dw PsychicNormanBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw PsychicNormanScript
-; 0x1a5bb6
-
-PsychicNormanScript: ; 0x1a5bb6
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a5e57
+PsychicNormanScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a5e57
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a5bbe
 
-PokefanFScript_0x1a5bbe: ; 0x1a5bbe
+PokefanFScript_0x1a5bbe:
 	faceplayer
-	loadfont
-	checktime $4
+	opentext
+	checknite
 	iffalse UnknownScript_0x1a5be5
-	checkevent $05c2
+	checkevent EVENT_BEAT_POKEFANF_JAIME
 	iftrue UnknownScript_0x1a5bdf
-	2writetext UnknownText_0x1a5ee8
+	writetext UnknownText_0x1a5ee8
+	waitbutton
 	closetext
-	loadmovesprites
-	winlosstext UnknownText_0x1a5f17, $0000
+	winlosstext UnknownText_0x1a5f17, 0
 	loadtrainer POKEFANF, JAIME
 	startbattle
-	returnafterbattle
-	setevent $05c2
-	loadmovesprites
-	end
-; 0x1a5bdf
-
-UnknownScript_0x1a5bdf: ; 0x1a5bdf
-	2writetext UnknownText_0x1a5f31
+	reloadmapafterbattle
+	setevent EVENT_BEAT_POKEFANF_JAIME
 	closetext
-	loadmovesprites
 	end
-; 0x1a5be5
 
-UnknownScript_0x1a5be5: ; 0x1a5be5
-	2writetext UnknownText_0x1a5ec4
+UnknownScript_0x1a5bdf:
+	writetext UnknownText_0x1a5f31
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a5beb
 
-MapRoute39Signpost2Script: ; 0x1a5beb
-	jumptext UnknownText_0x1a5fe3
-; 0x1a5bee
+UnknownScript_0x1a5be5:
+	writetext UnknownText_0x1a5ec4
+	waitbutton
+	closetext
+	end
 
-MapRoute39Signpost1Script: ; 0x1a5bee
-	jumptext UnknownText_0x1a600a
-; 0x1a5bf1
+Route39Sign:
+	jumptext Route39SignText
 
-MapRoute39Signpost0Script: ; 0x1a5bf1
-	jumptext UnknownText_0x1a6036
-; 0x1a5bf4
+MoomooFarmSign:
+	jumptext MoomooFarmSignText
 
-FruitTreeScript_0x1a5bf4: ; 0x1a5bf4
-	fruittree $f
-; 0x1a5bf6
+Route39TrainerTips:
+	jumptext Route39TrainerTipsText
 
-MapRoute39SignpostItem3: ; 0x1a5bf6
-	dw $00aa
-	db NUGGET
-	
-; 0x1a5bf9
+FruitTreeScript_0x1a5bf4:
+	fruittree FRUITTREE_ROUTE_39
 
-UnknownText_0x1a5bf9: ; 0x1a5bf9
+Route39HiddenNugget:
+	dwb EVENT_ROUTE_39_HIDDEN_NUGGET, NUGGET
+
+
+Route39MiltankText:
 	text "MILTANK: Mooo!"
 	done
-; 0x1a5c09
 
-SailorEugeneSeenText: ; 0x1a5c09
+SailorEugeneSeenText:
 	text "I just got back to"
 	line "OLIVINE."
 
 	para "So how about a"
 	line "#MON battle?"
 	done
-; 0x1a5c42
 
-SailorEugeneBeatenText: ; 0x1a5c42
+SailorEugeneBeatenText:
 	text "Awaaargh!"
 	done
-; 0x1a5c4d
 
-UnknownText_0x1a5c4d: ; 0x1a5c4d
+UnknownText_0x1a5c4d:
 	text "My #MON were"
 	line "caught and raised"
 	cont "overseas."
@@ -294,22 +208,19 @@ UnknownText_0x1a5c4d: ; 0x1a5c4d
 	line "ions on those long"
 	cont "voyages."
 	done
-; 0x1a5ca5
 
-PokefanmDerek1SeenText: ; 0x1a5ca5
+PokefanmDerek1SeenText:
 	text "This is a good"
 	line "time to brag about"
 	cont "my PIKACHU!"
 	done
-; 0x1a5cd4
 
-PokefanmDerek1BeatenText: ; 0x1a5cd4
+PokefanmDerek1BeatenText:
 	text "I had no time to"
 	line "show off PIKACHU…"
 	done
-; 0x1a5cf8
 
-UnknownText_0x1a5cf8: ; 0x1a5cf8
+UnknownText_0x1a5cf8:
 	text "I'm not listening"
 	line "to your bragging!"
 
@@ -319,9 +230,8 @@ UnknownText_0x1a5cf8: ; 0x1a5cf8
 	para "listening to other"
 	line "people brag!"
 	done
-; 0x1a5d5b
 
-PokefanfRuthSeenText: ; 0x1a5d5b
+PokefanfRuthSeenText:
 	text "Such darling"
 	line "#MON."
 
@@ -329,43 +239,37 @@ PokefanfRuthSeenText: ; 0x1a5d5b
 	line "#MON together"
 	cont "at the same time."
 	done
-; 0x1a5d9d
 
-PokefanfRuthBeatenText: ; 0x1a5d9d
+PokefanfRuthBeatenText:
 	text "I don't mind"
 	line "losing."
 	done
-; 0x1a5db2
 
-UnknownText_0x1a5db2: ; 0x1a5db2
+UnknownText_0x1a5db2:
 	text "Do you know about"
 	line "baby #MON?"
 
 	para "I bet they're just"
 	line "adorable!"
 	done
-; 0x1a5dec
 
-UnknownText_0x1a5dec: ; 0x1a5dec
+UnknownText_0x1a5dec:
 	text "PIKACHU is it!"
 	line "Don't you agree?"
 	done
-; 0x1a5e0c
 
-PsychicNormanSeenText: ; 0x1a5e0c
+PsychicNormanSeenText:
 	text "Let me see what"
 	line "your #MON are"
 	cont "capable of."
 	done
-; 0x1a5e37
 
-PsychicNormanBeatenText: ; 0x1a5e37
+PsychicNormanBeatenText:
 	text "Ooh, your #MON"
 	line "have potential."
 	done
-; 0x1a5e57
 
-UnknownText_0x1a5e57: ; 0x1a5e57
+UnknownText_0x1a5e57:
 	text "You know how #-"
 	line "MON have different"
 	cont "abilities?"
@@ -375,29 +279,25 @@ UnknownText_0x1a5e57: ; 0x1a5e57
 	cont "one has different"
 	cont "potential."
 	done
-; 0x1a5ec4
 
-UnknownText_0x1a5ec4: ; 0x1a5ec4
+UnknownText_0x1a5ec4:
 	text "Ufufufu… I hope it"
 	line "gets dark soon."
 	done
-; 0x1a5ee8
 
-UnknownText_0x1a5ee8: ; 0x1a5ee8
+UnknownText_0x1a5ee8:
 	text "You came at just"
 	line "the right time."
 
 	para "Let's battle."
 	done
-; 0x1a5f17
 
-UnknownText_0x1a5f17: ; 0x1a5f17
+UnknownText_0x1a5f17:
 	text "Oh, how disap-"
 	line "pointing…"
 	done
-; 0x1a5f31
 
-UnknownText_0x1a5f31: ; 0x1a5f31
+UnknownText_0x1a5f31:
 	text "I met my MEOWTH at"
 	line "night, right here"
 	cont "on ROUTE 39."
@@ -414,25 +314,22 @@ UnknownText_0x1a5f31: ; 0x1a5f31
 	para "training here than"
 	line "anywhere else."
 	done
-; 0x1a5fe3
 
-UnknownText_0x1a5fe3: ; 0x1a5fe3
+Route39SignText:
 	text "ROUTE 39"
 
 	para "OLIVINE CITY -"
 	line "ECRUTEAK CITY"
 	done
-; 0x1a600a
 
-UnknownText_0x1a600a: ; 0x1a600a
+MoomooFarmSignText:
 	text "MOOMOO FARM"
 
 	para "Enjoy Our Fresh"
 	line "and Tasty Milk"
 	done
-; 0x1a6036
 
-UnknownText_0x1a6036: ; 0x1a6036
+Route39TrainerTipsText:
 	text "TRAINER TIPS"
 
 	para "Use HEADBUTT on"
@@ -446,38 +343,35 @@ UnknownText_0x1a6036: ; 0x1a6036
 	para "Use HEADBUTT on"
 	line "any tree you see!"
 	done
-; 0x1a60ba
 
-Route39_MapEventHeader: ; 0x1a60ba
+Route39_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $3, $1, 1, GROUP_ROUTE_39_BARN, MAP_ROUTE_39_BARN
-	warp_def $3, $5, 1, GROUP_ROUTE_39_FARMHOUSE, MAP_ROUTE_39_FARMHOUSE
+	warp_def $3, $1, 1, ROUTE_39_BARN
+	warp_def $3, $5, 1, ROUTE_39_FARMHOUSE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 4
-	signpost 31, 5, $0, MapRoute39Signpost0Script
-	signpost 5, 9, $0, MapRoute39Signpost1Script
-	signpost 7, 15, $0, MapRoute39Signpost2Script
-	signpost 13, 5, $7, MapRoute39SignpostItem3
+	signpost 31, 5, SIGNPOST_READ, Route39TrainerTips
+	signpost 5, 9, SIGNPOST_READ, MoomooFarmSign
+	signpost 7, 15, SIGNPOST_READ, Route39Sign
+	signpost 13, 5, SIGNPOST_ITEM, Route39HiddenNugget
 
-	; people-events
+.PersonEvents:
 	db 10
-	person_event SPRITE_SAILOR, 33, 17, $8, $0, 255, 255, $92, 5, TrainerSailorEugene, $ffff
-	person_event SPRITE_POKEFAN_M, 26, 14, $7, $0, 255, 255, $82, 4, TrainerPokefanmDerek1, $ffff
-	person_event SPRITE_POKEFAN_F, 23, 15, $9, $0, 255, 255, $82, 4, TrainerPokefanfRuth, $ffff
-	person_event SPRITE_TAUROS, 16, 7, $16, $0, 255, 255, $0, 0, TaurosScript_0x1a5af5, $ffff
-	person_event SPRITE_TAUROS, 15, 10, $16, $0, 255, 255, $0, 0, TaurosScript_0x1a5af5, $ffff
-	person_event SPRITE_TAUROS, 19, 8, $16, $0, 255, 255, $0, 0, TaurosScript_0x1a5af5, $ffff
-	person_event SPRITE_TAUROS, 17, 12, $16, $0, 255, 255, $0, 0, TaurosScript_0x1a5af5, $ffff
-	person_event SPRITE_STANDING_YOUNGSTER, 11, 17, $a, $0, 255, 255, $92, 1, TrainerPsychicNorman, $ffff
-	person_event SPRITE_FRUIT_TREE, 7, 13, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x1a5bf4, $ffff
-	person_event SPRITE_POKEFAN_F, 26, 8, $6, $0, 255, 255, $80, 0, PokefanFScript_0x1a5bbe, $ffff
-; 0x1a6160
-
+	person_event SPRITE_SAILOR, 29, 13, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 5, TrainerSailorEugene, -1
+	person_event SPRITE_POKEFAN_M, 22, 10, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 4, TrainerPokefanmDerek1, -1
+	person_event SPRITE_POKEFAN_F, 19, 11, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 4, TrainerPokefanfRuth, -1
+	person_event SPRITE_TAUROS, 12, 3, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, Route39Miltank, -1
+	person_event SPRITE_TAUROS, 11, 6, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, Route39Miltank, -1
+	person_event SPRITE_TAUROS, 15, 4, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, Route39Miltank, -1
+	person_event SPRITE_TAUROS, 13, 8, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, Route39Miltank, -1
+	person_event SPRITE_STANDING_YOUNGSTER, 7, 13, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 1, TrainerPsychicNorman, -1
+	person_event SPRITE_FRUIT_TREE, 3, 9, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FruitTreeScript_0x1a5bf4, -1
+	person_event SPRITE_POKEFAN_F, 22, 4, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, PokefanFScript_0x1a5bbe, -1

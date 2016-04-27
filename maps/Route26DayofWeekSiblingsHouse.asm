@@ -1,35 +1,35 @@
-Route26DayofWeekSiblingsHouse_MapScriptHeader: ; 0x7b1e2
-	; trigger count
+const_value set 2
+	const ROUTE26DAYOFWEEKSIBLINGSHOUSE_POKEDEX
+
+Route26DayofWeekSiblingsHouse_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x7b1e4
 
-PokedexScript_0x7b1e4: ; 0x7b1e4
-	loadfont
-	2writetext UnknownText_0x7b1f9
+PokedexScript_0x7b1e4:
+	opentext
+	writetext UnknownText_0x7b1f9
 	yesorno
 	iffalse UnknownText_0x7b1f7
-	2writetext UnknownText_0x7b222
+	writetext UnknownText_0x7b222
 	yesorno
 	iffalse UnknownText_0x7b1f7
-	2writetext UnknownText_0x7b2b9
+	writetext UnknownText_0x7b2b9
+	waitbutton
+UnknownText_0x7b1f7:
 	closetext
-UnknownText_0x7b1f7: ; 0x7b1f7
-	loadmovesprites
 	end
-; 0x7b1f9
 
-UnknownText_0x7b1f9: ; 0x7b1f9
+UnknownText_0x7b1f9:
 	text "There's something"
 	line "written here."
 
 	para "Read it?"
 	done
-; 0x7b222
 
-UnknownText_0x7b222: ; 0x7b222
+UnknownText_0x7b222:
 	text "To my brothers and"
 	line "sisters:"
 
@@ -46,9 +46,8 @@ UnknownText_0x7b222: ; 0x7b222
 
 	para "Keep reading?"
 	done
-; 0x7b2b9
 
-UnknownText_0x7b2b9: ; 0x7b2b9
+UnknownText_0x7b2b9:
 	text "Monday, MONICA"
 	line "ROUTE 40"
 
@@ -70,25 +69,22 @@ UnknownText_0x7b2b9: ; 0x7b2b9
 	para "Sunday, SUNNY"
 	line "ROUTE 37"
 	done
-; 0x7b375
 
-Route26DayofWeekSiblingsHouse_MapEventHeader: ; 0x7b375
+Route26DayofWeekSiblingsHouse_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 3, GROUP_ROUTE_26, MAP_ROUTE_26
-	warp_def $7, $3, 3, GROUP_ROUTE_26, MAP_ROUTE_26
+	warp_def $7, $2, 3, ROUTE_26
+	warp_def $7, $3, 3, ROUTE_26
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_POKEDEX, 7, 7, $1, $0, 255, 255, $0, 0, PokedexScript_0x7b1e4, $ffff
-; 0x7b392
-
+	person_event SPRITE_POKEDEX, 3, 3, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, PokedexScript_0x7b1e4, -1

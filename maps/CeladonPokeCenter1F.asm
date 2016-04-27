@@ -1,81 +1,78 @@
-CeladonPokeCenter1F_MapScriptHeader: ; 0x71e20
-	; trigger count
+const_value set 2
+	const CELADONPOKECENTER1F_NURSE
+	const CELADONPOKECENTER1F_GENTLEMAN
+	const CELADONPOKECENTER1F_PHARMACIST
+	const CELADONPOKECENTER1F_COOLTRAINER_F
+	const CELADONPOKECENTER1F_EUSINE
+
+CeladonPokeCenter1F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x71e22
 
-NurseScript_0x71e22: ; 0x71e22
-	jumpstd $0000
-; 0x71e25
+NurseScript_0x71e22:
+	jumpstd pokecenternurse
 
-GentlemanScript_0x71e25: ; 0x71e25
-	jumpstd $0033
-; 0x71e28
+GentlemanScript_0x71e25:
+	jumpstd happinesschecknpc
 
-CooltrainerFScript_0x71e28: ; 0x71e28
+CooltrainerFScript_0x71e28:
 	jumptextfaceplayer UnknownText_0x71e70
-; 0x71e2b
 
-PharmacistScript_0x71e2b: ; 0x71e2b
+PharmacistScript_0x71e2b:
 	jumptextfaceplayer UnknownText_0x71ec1
-; 0x71e2e
 
-SuperNerdScript_0x71e2e: ; 0x71e2e
+CeladonEusine:
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x71f22
-	keeptextopen
+	opentext
+	writetext CeladonEusineText1
+	buttonsound
 	writebyte SUICUNE
-	special $0097
-	iffalse UnknownScript_0x71e46
-	special $0096
-	iftrue UnknownScript_0x71e48
-	2writetext UnknownText_0x7201a
-	closetext
-UnknownScript_0x71e46: ; 0x71e46
-	loadmovesprites
-	end
-; 0x71e48
-
-UnknownScript_0x71e48: ; 0x71e48
-	2writetext UnknownText_0x71f65
-	closetext
-	loadmovesprites
-	checkcode $9
-	if_equal $1, UnknownScript_0x71e5a
-	applymovement $6, MovementData_0x71e6b
-	2jump UnknownScript_0x71e5e
-; 0x71e5a
-
-UnknownScript_0x71e5a: ; 0x71e5a
-	applymovement $6, MovementData_0x71e65
-UnknownScript_0x71e5e: ; 0x71e5e
-	disappear $6
-	playsound SFX_EXIT_BUILDING
+	special SpecialMonCheck
+	iffalse .NoSuicune
+	special SpecialBeastsCheck
+	iftrue .HoOh
+	writetext NoBeastsText
 	waitbutton
+.NoSuicune:
+	closetext
 	end
-; 0x71e65
 
-MovementData_0x71e65: ; 0x71e65
+.HoOh:
+	writetext EusineLeavesCeladonText
+	waitbutton
+	closetext
+	checkcode VAR_FACING
+	if_equal $1, .Location1
+	applymovement CELADONPOKECENTER1F_EUSINE, .Movement1
+	jump .Continue
+
+.Location1:
+	applymovement CELADONPOKECENTER1F_EUSINE, .Movement2
+.Continue:
+	disappear CELADONPOKECENTER1F_EUSINE
+	playsound SFX_EXIT_BUILDING
+	waitsfx
+	end
+
+.Movement2:
 	step_left
 	step_down
 	step_down
 	step_down
 	step_down
 	step_end
-; 0x71e6b
 
-MovementData_0x71e6b: ; 0x71e6b
+.Movement1:
 	step_down
 	step_down
 	step_down
 	step_down
 	step_end
-; 0x71e70
 
-UnknownText_0x71e70: ; 0x71e70
+UnknownText_0x71e70:
 	text "ERIKA is a master"
 	line "of grass #MON."
 
@@ -83,9 +80,8 @@ UnknownText_0x71e70: ; 0x71e70
 	line "pay if you don't"
 	cont "watch yourself."
 	done
-; 0x71ec1
 
-UnknownText_0x71ec1: ; 0x71ec1
+UnknownText_0x71ec1:
 	text "TEAM ROCKET's"
 	line "hideout is in the"
 
@@ -95,9 +91,8 @@ UnknownText_0x71ec1: ; 0x71ec1
 	para "Oh, wait. That was"
 	line "three years ago."
 	done
-; 0x71f22
 
-UnknownText_0x71f22: ; 0x71f22
+CeladonEusineText1:
 	text "EUSINE: Hi!"
 
 	para "I'm back visiting"
@@ -106,10 +101,9 @@ UnknownText_0x71f22: ; 0x71f22
 	para "It's been quite a"
 	line "while."
 	done
-; 0x71f65
 
-UnknownText_0x71f65: ; 0x71f65
-	text $52, ", have you"
+EusineLeavesCeladonText:
+	text "<PLAYER>, have you"
 	line "heard?"
 
 	para "There have been"
@@ -126,13 +120,12 @@ UnknownText_0x71f65: ; 0x71f65
 	line "ECRUTEAK."
 
 	para "I'll be seeing"
-	line "you, ", $52, "!"
+	line "you, <PLAYER>!"
 	done
-; 0x7201a
 
-UnknownText_0x7201a: ; 0x7201a
+NoBeastsText:
 	text "Oh, by the way,"
-	line $52, "."
+	line "<PLAYER>."
 
 	para "Have you caught"
 	line "the legendary"
@@ -149,32 +142,29 @@ UnknownText_0x7201a: ; 0x7201a
 	cont "you'll inform me."
 
 	para "I'm counting on"
-	line "you, ", $52, "!"
+	line "you, <PLAYER>!"
 	done
-; 0x720b8
 
-CeladonPokeCenter1F_MapEventHeader: ; 0x720b8
+CeladonPokeCenter1F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 3
-	warp_def $7, $3, 5, GROUP_CELADON_CITY, MAP_CELADON_CITY
-	warp_def $7, $4, 5, GROUP_CELADON_CITY, MAP_CELADON_CITY
-	warp_def $7, $0, 1, GROUP_POKECENTER_2F, MAP_POKECENTER_2F
+	warp_def $7, $3, 5, CELADON_CITY
+	warp_def $7, $4, 5, CELADON_CITY
+	warp_def $7, $0, 1, POKECENTER_2F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 5
-	person_event SPRITE_NURSE, 5, 7, $6, $0, 255, 255, $0, 0, NurseScript_0x71e22, $ffff
-	person_event SPRITE_GENTLEMAN, 9, 5, $5, $1, 255, 255, $0, 0, GentlemanScript_0x71e25, $ffff
-	person_event SPRITE_PHARMACIST, 7, 4, $6, $0, 255, 255, $80, 0, PharmacistScript_0x71e2b, $ffff
-	person_event SPRITE_COOLTRAINER_F, 10, 12, $5, $1, 255, 255, $a0, 0, CooltrainerFScript_0x71e28, $ffff
-	person_event SPRITE_SUPER_NERD, 7, 8, $6, $0, 255, 255, $90, 0, SuperNerdScript_0x71e2e, $07b7
-; 0x7210e
-
+	person_event SPRITE_NURSE, 1, 3, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, NurseScript_0x71e22, -1
+	person_event SPRITE_GENTLEMAN, 5, 1, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, 0, PERSONTYPE_SCRIPT, 0, GentlemanScript_0x71e25, -1
+	person_event SPRITE_PHARMACIST, 3, 0, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, PharmacistScript_0x71e2b, -1
+	person_event SPRITE_COOLTRAINER_F, 6, 8, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, CooltrainerFScript_0x71e28, -1
+	person_event SPRITE_SUPER_NERD, 3, 4, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, CeladonEusine, EVENT_SET_WHEN_FOUGHT_HO_OH

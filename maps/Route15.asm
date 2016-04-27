@@ -1,214 +1,109 @@
-Route15_MapScriptHeader: ; 0x1aa567
-	; trigger count
+const_value set 2
+	const ROUTE15_YOUNGSTER1
+	const ROUTE15_YOUNGSTER2
+	const ROUTE15_YOUNGSTER3
+	const ROUTE15_YOUNGSTER4
+	const ROUTE15_TEACHER1
+	const ROUTE15_TEACHER2
+	const ROUTE15_POKE_BALL
+
+Route15_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1aa569
 
-TrainerTeacherColette: ; 0x1aa569
-	; bit/flag number
-	dw $5b5
+TrainerTeacherColette:
+	trainer EVENT_BEAT_TEACHER_COLETTE, TEACHER, COLETTE, TeacherColetteSeenText, TeacherColetteBeatenText, 0, TeacherColetteScript
 
-	; trainer group && trainer id
-	db TEACHER, COLETTE
-
-	; text when seen
-	dw TeacherColetteSeenText
-
-	; text when trainer beaten
-	dw TeacherColetteBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw TeacherColetteScript
-; 0x1aa575
-
-TeacherColetteScript: ; 0x1aa575
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1aa60d
+TeacherColetteScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1aa60d
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1aa57d
 
-TrainerTeacherHillary: ; 0x1aa57d
-	; bit/flag number
-	dw $5b6
+TrainerTeacherHillary:
+	trainer EVENT_BEAT_TEACHER_HILLARY, TEACHER, HILLARY, TeacherHillarySeenText, TeacherHillaryBeatenText, 0, TeacherHillaryScript
 
-	; trainer group && trainer id
-	db TEACHER, HILLARY
-
-	; text when seen
-	dw TeacherHillarySeenText
-
-	; text when trainer beaten
-	dw TeacherHillaryBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw TeacherHillaryScript
-; 0x1aa589
-
-TeacherHillaryScript: ; 0x1aa589
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1aa6ca
+TeacherHillaryScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1aa6ca
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1aa591
 
-TrainerSchoolboyKipp: ; 0x1aa591
-	; bit/flag number
-	dw $46d
+TrainerSchoolboyKipp:
+	trainer EVENT_BEAT_SCHOOLBOY_KIP, SCHOOLBOY, KIPP, SchoolboyKippSeenText, SchoolboyKippBeatenText, 0, SchoolboyKippScript
 
-	; trainer group && trainer id
-	db SCHOOLBOY, KIPP
-
-	; text when seen
-	dw SchoolboyKippSeenText
-
-	; text when trainer beaten
-	dw SchoolboyKippBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SchoolboyKippScript
-; 0x1aa59d
-
-SchoolboyKippScript: ; 0x1aa59d
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1aa740
+SchoolboyKippScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1aa740
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1aa5a5
 
-TrainerSchoolboyTommy: ; 0x1aa5a5
-	; bit/flag number
-	dw $471
+TrainerSchoolboyTommy:
+	trainer EVENT_BEAT_SCHOOLBOY_TOMMY, SCHOOLBOY, TOMMY, SchoolboyTommySeenText, SchoolboyTommyBeatenText, 0, SchoolboyTommyScript
 
-	; trainer group && trainer id
-	db SCHOOLBOY, TOMMY
-
-	; text when seen
-	dw SchoolboyTommySeenText
-
-	; text when trainer beaten
-	dw SchoolboyTommyBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SchoolboyTommyScript
-; 0x1aa5b1
-
-SchoolboyTommyScript: ; 0x1aa5b1
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1aa7bc
+SchoolboyTommyScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1aa7bc
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1aa5b9
 
-TrainerSchoolboyJohnny: ; 0x1aa5b9
-	; bit/flag number
-	dw $46f
+TrainerSchoolboyJohnny:
+	trainer EVENT_BEAT_SCHOOLBOY_JOHNNY, SCHOOLBOY, JOHNNY, SchoolboyJohnnySeenText, SchoolboyJohnnyBeatenText, 0, SchoolboyJohnnyScript
 
-	; trainer group && trainer id
-	db SCHOOLBOY, JOHNNY
-
-	; text when seen
-	dw SchoolboyJohnnySeenText
-
-	; text when trainer beaten
-	dw SchoolboyJohnnyBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SchoolboyJohnnyScript
-; 0x1aa5c5
-
-SchoolboyJohnnyScript: ; 0x1aa5c5
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1aa84a
+SchoolboyJohnnyScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1aa84a
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1aa5cd
 
-TrainerSchoolboyBilly: ; 0x1aa5cd
-	; bit/flag number
-	dw $474
+TrainerSchoolboyBilly:
+	trainer EVENT_BEAT_SCHOOLBOY_BILLY, SCHOOLBOY, BILLY, SchoolboyBillySeenText, SchoolboyBillyBeatenText, 0, SchoolboyBillyScript
 
-	; trainer group && trainer id
-	db SCHOOLBOY, BILLY
-
-	; text when seen
-	dw SchoolboyBillySeenText
-
-	; text when trainer beaten
-	dw SchoolboyBillyBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SchoolboyBillyScript
-; 0x1aa5d9
-
-SchoolboyBillyScript: ; 0x1aa5d9
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1aa8b0
+SchoolboyBillyScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1aa8b0
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1aa5e1
 
-MapRoute15Signpost0Script: ; 0x1aa5e1
-	jumptext UnknownText_0x1aa8e3
-; 0x1aa5e4
+Route15Sign:
+	jumptext Route15SignText
 
-ItemFragment_0x1aa5e4: ; 0x1aa5e4
-	db PP_UP, 1
-; 0x1aa5e6
+Route15PPUp:
+	itemball PP_UP
 
-TeacherColetteSeenText: ; 0x1aa5e6
+TeacherColetteSeenText:
 	text "Have you forgotten"
 	line "anything?"
 	done
-; 0x1aa604
 
-TeacherColetteBeatenText: ; 0x1aa604
+TeacherColetteBeatenText:
 	text "Kyaaah!"
 	done
-; 0x1aa60d
 
-UnknownText_0x1aa60d: ; 0x1aa60d
+UnknownText_0x1aa60d:
 	text "Before I became a"
 	line "teacher, I used to"
 
 	para "forget a lot of"
 	line "things."
 	done
-; 0x1aa64b
 
-TeacherHillarySeenText: ; 0x1aa64b
+TeacherHillarySeenText:
 	text "On sunny days, I"
 	line "think that the"
 
@@ -218,134 +113,116 @@ TeacherHillarySeenText: ; 0x1aa64b
 	para "schoolyard than"
 	line "studying in class."
 	done
-; 0x1aa6b3
 
-TeacherHillaryBeatenText: ; 0x1aa6b3
+TeacherHillaryBeatenText:
 	text "I didn't want to"
 	line "lose…"
 	done
-; 0x1aa6ca
 
-UnknownText_0x1aa6ca: ; 0x1aa6ca
+UnknownText_0x1aa6ca:
 	text "Studying is impor-"
 	line "tant, but exercise"
 	cont "is just as vital."
 	done
-; 0x1aa703
 
-SchoolboyKippSeenText: ; 0x1aa703
+SchoolboyKippSeenText:
 	text "Hang on. I have to"
 	line "phone my mom."
 	done
-; 0x1aa725
 
-SchoolboyKippBeatenText: ; 0x1aa725
+SchoolboyKippBeatenText:
 	text "Sorry, Mom!"
 	line "I was beaten!"
 	done
-; 0x1aa740
 
-UnknownText_0x1aa740: ; 0x1aa740
+UnknownText_0x1aa740:
 	text "My mom worries so"
 	line "much about me, I"
 
 	para "have to phone her"
 	line "all the time."
 	done
-; 0x1aa784
 
-SchoolboyTommySeenText: ; 0x1aa784
+SchoolboyTommySeenText:
 	text "Let's battle."
 	line "I won't lose!"
 	done
-; 0x1aa79f
 
-SchoolboyTommyBeatenText: ; 0x1aa79f
+SchoolboyTommyBeatenText:
 	text "I forgot to do my"
 	line "homework!"
 	done
-; 0x1aa7bc
 
-UnknownText_0x1aa7bc: ; 0x1aa7bc
+UnknownText_0x1aa7bc:
 	text "Sayonara! I just"
 	line "learned that in my"
 	cont "Japanese class."
 	done
-; 0x1aa7f1
 
-SchoolboyJohnnySeenText: ; 0x1aa7f1
+SchoolboyJohnnySeenText:
 	text "We're on a field"
 	line "trip to LAVENDER"
 
 	para "RADIO TOWER for"
 	line "social studies."
 	done
-; 0x1aa833
 
-SchoolboyJohnnyBeatenText: ; 0x1aa833
+SchoolboyJohnnyBeatenText:
 	text "You're wickedly"
 	line "tough!"
 	done
-; 0x1aa84a
 
-UnknownText_0x1aa84a: ; 0x1aa84a
+UnknownText_0x1aa84a:
 	text "I'm tired of walk-"
 	line "ing. I need to"
 	cont "take a break."
 	done
-; 0x1aa87a
 
-SchoolboyBillySeenText: ; 0x1aa87a
+SchoolboyBillySeenText:
 	text "My favorite class"
 	line "is gym!"
 	done
-; 0x1aa895
 
-SchoolboyBillyBeatenText: ; 0x1aa895
+SchoolboyBillyBeatenText:
 	text "Oh, no!"
 	line "How could I lose?"
 	done
-; 0x1aa8b0
 
-UnknownText_0x1aa8b0: ; 0x1aa8b0
+UnknownText_0x1aa8b0:
 	text "If #MON were a"
 	line "subject at school,"
 	cont "I'd be the best!"
 	done
-; 0x1aa8e3
 
-UnknownText_0x1aa8e3: ; 0x1aa8e3
+Route15SignText:
 	text "ROUTE 15"
 
 	para "FUCHSIA CITY -"
 	line "LAVENDER TOWN"
 	done
-; 0x1aa90a
 
-Route15_MapEventHeader: ; 0x1aa90a
+Route15_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $4, $2, 3, GROUP_ROUTE_15_FUCHSIA_GATE, MAP_ROUTE_15_FUCHSIA_GATE
-	warp_def $5, $2, 4, GROUP_ROUTE_15_FUCHSIA_GATE, MAP_ROUTE_15_FUCHSIA_GATE
+	warp_def $4, $2, 3, ROUTE_15_FUCHSIA_GATE
+	warp_def $5, $2, 4, ROUTE_15_FUCHSIA_GATE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 1
-	signpost 9, 19, $0, MapRoute15Signpost0Script
+	signpost 9, 19, SIGNPOST_READ, Route15Sign
 
-	; people-events
+.PersonEvents:
 	db 7
-	person_event SPRITE_YOUNGSTER, 14, 14, $9, $0, 255, 255, $92, 4, TrainerSchoolboyKipp, $ffff
-	person_event SPRITE_YOUNGSTER, 17, 19, $7, $0, 255, 255, $92, 3, TrainerSchoolboyTommy, $ffff
-	person_event SPRITE_YOUNGSTER, 14, 37, $6, $0, 255, 255, $92, 3, TrainerSchoolboyJohnny, $ffff
-	person_event SPRITE_YOUNGSTER, 14, 31, $6, $0, 255, 255, $92, 3, TrainerSchoolboyBilly, $ffff
-	person_event SPRITE_TEACHER, 16, 34, $7, $0, 255, 255, $82, 4, TrainerTeacherColette, $ffff
-	person_event SPRITE_TEACHER, 14, 24, $a, $0, 255, 255, $82, 3, TrainerTeacherHillary, $ffff
-	person_event SPRITE_POKE_BALL, 9, 16, $1, $0, 255, 255, $1, 0, ItemFragment_0x1aa5e4, $078a
-; 0x1aa97a
-
+	person_event SPRITE_YOUNGSTER, 10, 10, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 4, TrainerSchoolboyKipp, -1
+	person_event SPRITE_YOUNGSTER, 13, 15, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 3, TrainerSchoolboyTommy, -1
+	person_event SPRITE_YOUNGSTER, 10, 33, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 3, TrainerSchoolboyJohnny, -1
+	person_event SPRITE_YOUNGSTER, 10, 27, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 3, TrainerSchoolboyBilly, -1
+	person_event SPRITE_TEACHER, 12, 30, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 4, TrainerTeacherColette, -1
+	person_event SPRITE_TEACHER, 10, 20, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 3, TrainerTeacherHillary, -1
+	person_event SPRITE_POKE_BALL, 5, 12, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, Route15PPUp, EVENT_ROUTE_15_PP_UP

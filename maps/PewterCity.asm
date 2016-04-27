@@ -1,94 +1,84 @@
-PewterCity_MapScriptHeader: ; 0x18c000
-	; trigger count
+const_value set 2
+	const PEWTERCITY_COOLTRAINER_F
+	const PEWTERCITY_BUG_CATCHER
+	const PEWTERCITY_GRAMPS
+	const PEWTERCITY_FRUIT_TREE1
+	const PEWTERCITY_FRUIT_TREE2
+
+PewterCity_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 1
 
 	; callbacks
+	dbw MAPCALLBACK_NEWMAP, .FlyPoint
 
-	dbw 5, UnknownScript_0x18c005
-; 0x18c005
-
-UnknownScript_0x18c005: ; 0x18c005
-	setflag $0037
+.FlyPoint:
+	setflag ENGINE_FLYPOINT_PEWTER
 	return
-; 0x18c009
 
-CooltrainerFScript_0x18c009: ; 0x18c009
+CooltrainerFScript_0x18c009:
 	jumptextfaceplayer UnknownText_0x18c042
-; 0x18c00c
 
-BugCatcherScript_0x18c00c: ; 0x18c00c
+BugCatcherScript_0x18c00c:
 	jumptextfaceplayer UnknownText_0x18c080
-; 0x18c00f
 
-GrampsScript_0x18c00f: ; 0x18c00f
+GrampsScript_0x18c00f:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_SILVER_WING
 	iftrue UnknownScript_0x18c023
-	2writetext UnknownText_0x18c0c6
-	keeptextopen
-	verbosegiveitem SILVER_WING, 1
+	writetext UnknownText_0x18c0c6
+	buttonsound
+	verbosegiveitem SILVER_WING
 	setevent EVENT_GOT_SILVER_WING
-	loadmovesprites
-	end
-; 0x18c023
-
-UnknownScript_0x18c023: ; 0x18c023
-	2writetext UnknownText_0x18c1aa
 	closetext
-	loadmovesprites
 	end
-; 0x18c029
 
-MapPewterCitySignpost0Script: ; 0x18c029
-	jumptext UnknownText_0x18c1ff
-; 0x18c02c
+UnknownScript_0x18c023:
+	writetext UnknownText_0x18c1aa
+	waitbutton
+	closetext
+	end
 
-MapPewterCitySignpost1Script: ; 0x18c02c
-	jumptext UnknownText_0x18c21e
-; 0x18c02f
+PewterCitySign:
+	jumptext PewterCitySignText
 
-MapPewterCitySignpost2Script: ; 0x18c02f
-	jumptext UnknownText_0x18c25e
-; 0x18c032
+PewterGymSign:
+	jumptext PewterGymSignText
 
-MapPewterCitySignpost3Script: ; 0x18c032
-	jumptext UnknownText_0x18c2a9
-; 0x18c035
+PewterMuseumSign:
+	jumptext PewterMuseumSignText
 
-MapPewterCitySignpost4Script: ; 0x18c035
-	jumptext UnknownText_0x18c2dc
-; 0x18c038
+PewterCityMtMoonGiftShopSign:
+	jumptext PewterCityMtMoonGiftShopSignText
 
-MapPewterCitySignpost5Script: ; 0x18c038
-	jumpstd $0010
-; 0x18c03b
+PewterCityWelcomeSign:
+	jumptext PewterCityWelcomeSignText
 
-MapPewterCitySignpost6Script: ; 0x18c03b
-	jumpstd $0011
-; 0x18c03e
+PewterCityPokeCenterSign:
+	jumpstd pokecentersign
 
-FruitTreeScript_0x18c03e: ; 0x18c03e
-	fruittree $1c
-; 0x18c040
+PewterCityMartSign:
+	jumpstd martsign
 
-FruitTreeScript_0x18c040: ; 0x18c040
-	fruittree $1d
-; 0x18c042
+FruitTreeScript_0x18c03e:
+	fruittree FRUITTREE_PEWTER_CITY_1
 
-UnknownText_0x18c042: ; 0x18c042
+FruitTreeScript_0x18c040:
+	fruittree FRUITTREE_PEWTER_CITY_2
+
+UnknownText_0x18c042:
 	text "Have you visited"
 	line "PEWTER GYM?"
 
 	para "The LEADER uses"
 	line "rock-type #MON."
 	done
-; 0x18c080
 
-UnknownText_0x18c080: ; 0x18c080
+UnknownText_0x18c080:
 	text "At night, CLEFAIRY"
 	line "come out to play"
 	cont "at MT.MOON."
@@ -96,9 +86,8 @@ UnknownText_0x18c080: ; 0x18c080
 	para "But not every"
 	line "night."
 	done
-; 0x18c0c6
 
-UnknownText_0x18c0c6: ; 0x18c0c6
+UnknownText_0x18c0c6:
 	text "Ah, you came all"
 	line "the way out here"
 	cont "from JOHTO?"
@@ -119,9 +108,8 @@ UnknownText_0x18c0c6: ; 0x18c0c6
 	line "to have this item"
 	cont "I found in JOHTO."
 	done
-; 0x18c1aa
 
-UnknownText_0x18c1aa: ; 0x18c1aa
+UnknownText_0x18c1aa:
 	text "Going to new, un-"
 	line "known places and"
 	cont "seeing new people…"
@@ -129,15 +117,13 @@ UnknownText_0x18c1aa: ; 0x18c1aa
 	para "Those are the joys"
 	line "of travel."
 	done
-; 0x18c1ff
 
-UnknownText_0x18c1ff: ; 0x18c1ff
+PewterCitySignText:
 	text "PEWTER CITY"
 	line "A Stone Gray City"
 	done
-; 0x18c21e
 
-UnknownText_0x18c21e: ; 0x18c21e
+PewterGymSignText:
 	text "PEWTER CITY"
 	line "#MON GYM"
 	cont "LEADER: BROCK"
@@ -145,9 +131,8 @@ UnknownText_0x18c21e: ; 0x18c21e
 	para "The Rock Solid"
 	line "#MON Trainer"
 	done
-; 0x18c25e
 
-UnknownText_0x18c25e: ; 0x18c25e
+PewterMuseumSignText:
 	text "There's a notice"
 	line "here…"
 
@@ -155,54 +140,49 @@ UnknownText_0x18c25e: ; 0x18c25e
 	line "SCIENCE is closed"
 	cont "for renovations…"
 	done
-; 0x18c2a9
 
-UnknownText_0x18c2a9: ; 0x18c2a9
+PewterCityMtMoonGiftShopSignText:
 	text "There's a notice"
 	line "here…"
 
 	para "MT.MOON GIFT SHOP"
 	line "NOW OPEN!"
 	done
-; 0x18c2dc
 
-UnknownText_0x18c2dc: ; 0x18c2dc
+PewterCityWelcomeSignText:
 	text "WELCOME TO"
 	line "PEWTER CITY!"
 	done
-; 0x18c2f5
 
-PewterCity_MapEventHeader: ; 0x18c2f5
+PewterCity_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 5
-	warp_def $d, $1d, 1, GROUP_PEWTER_NIDORAN_SPEECH_HOUSE, MAP_PEWTER_NIDORAN_SPEECH_HOUSE
-	warp_def $11, $10, 1, GROUP_PEWTER_GYM, MAP_PEWTER_GYM
-	warp_def $11, $17, 2, GROUP_PEWTER_MART, MAP_PEWTER_MART
-	warp_def $19, $d, 1, GROUP_PEWTER_POKECENTER_1F, MAP_PEWTER_POKECENTER_1F
-	warp_def $1d, $7, 1, GROUP_PEWTER_SNOOZE_SPEECH_HOUSE, MAP_PEWTER_SNOOZE_SPEECH_HOUSE
+	warp_def $d, $1d, 1, PEWTER_NIDORAN_SPEECH_HOUSE
+	warp_def $11, $10, 1, PEWTER_GYM
+	warp_def $11, $17, 2, PEWTER_MART
+	warp_def $19, $d, 1, PEWTER_POKECENTER_1F
+	warp_def $1d, $7, 1, PEWTER_SNOOZE_SPEECH_HOUSE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 7
-	signpost 23, 25, $0, MapPewterCitySignpost0Script
-	signpost 17, 11, $0, MapPewterCitySignpost1Script
-	signpost 9, 15, $0, MapPewterCitySignpost2Script
-	signpost 19, 33, $0, MapPewterCitySignpost3Script
-	signpost 29, 19, $0, MapPewterCitySignpost4Script
-	signpost 25, 14, $0, MapPewterCitySignpost5Script
-	signpost 17, 24, $0, MapPewterCitySignpost6Script
+	signpost 23, 25, SIGNPOST_READ, PewterCitySign
+	signpost 17, 11, SIGNPOST_READ, PewterGymSign
+	signpost 9, 15, SIGNPOST_READ, PewterMuseumSign
+	signpost 19, 33, SIGNPOST_READ, PewterCityMtMoonGiftShopSign
+	signpost 29, 19, SIGNPOST_READ, PewterCityWelcomeSign
+	signpost 25, 14, SIGNPOST_READ, PewterCityPokeCenterSign
+	signpost 17, 24, SIGNPOST_READ, PewterCityMartSign
 
-	; people-events
+.PersonEvents:
 	db 5
-	person_event SPRITE_COOLTRAINER_F, 15, 23, $2, $22, 255, 255, $a0, 0, CooltrainerFScript_0x18c009, $ffff
-	person_event SPRITE_BUG_CATCHER, 33, 18, $2, $22, 255, 255, $80, 0, BugCatcherScript_0x18c00c, $ffff
-	person_event SPRITE_GRAMPS, 21, 33, $5, $2, 255, 255, $90, 0, GrampsScript_0x18c00f, $ffff
-	person_event SPRITE_FRUIT_TREE, 7, 36, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x18c03e, $ffff
-	person_event SPRITE_FRUIT_TREE, 7, 34, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x18c040, $ffff
-; 0x18c378
-
+	person_event SPRITE_COOLTRAINER_F, 11, 19, SPRITEMOVEDATA_WANDER, 2, 2, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, CooltrainerFScript_0x18c009, -1
+	person_event SPRITE_BUG_CATCHER, 29, 14, SPRITEMOVEDATA_WANDER, 2, 2, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, BugCatcherScript_0x18c00c, -1
+	person_event SPRITE_GRAMPS, 17, 29, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 2, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, GrampsScript_0x18c00f, -1
+	person_event SPRITE_FRUIT_TREE, 3, 32, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FruitTreeScript_0x18c03e, -1
+	person_event SPRITE_FRUIT_TREE, 3, 30, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FruitTreeScript_0x18c040, -1

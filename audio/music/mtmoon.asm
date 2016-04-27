@@ -1,8 +1,8 @@
 Music_MtMoon: ; edb29
-	dbw $c0, Music_MtMoon_Ch1
-	dbw $01, Music_MtMoon_Ch2
-	dbw $02, Music_MtMoon_Ch3
-	dbw $03, Music_MtMoon_Ch4
+	musicheader 4, 1, Music_MtMoon_Ch1
+	musicheader 1, 2, Music_MtMoon_Ch2
+	musicheader 1, 3, Music_MtMoon_Ch3
+	musicheader 1, 4, Music_MtMoon_Ch4
 ; edb35
 
 Music_MtMoon_Ch1: ; edb35
@@ -141,5 +141,3 @@ Music_MtMoon_branch_edbc3: ; edbc3
 	note A#, 8
 	loopchannel 0, Music_MtMoon_branch_edbc3
 ; edbd8
-
-

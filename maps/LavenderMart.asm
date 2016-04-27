@@ -1,27 +1,28 @@
-LavenderMart_MapScriptHeader: ; 0x7eb1a
-	; trigger count
+const_value set 2
+	const LAVENDERMART_CLERK
+	const LAVENDERMART_POKEFAN_M
+	const LAVENDERMART_ROCKER
+
+LavenderMart_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x7eb1c
 
-ClerkScript_0x7eb1c: ; 0x7eb1c
-	loadfont
-	pokemart $0, $0015
-	loadmovesprites
+ClerkScript_0x7eb1c:
+	opentext
+	pokemart MARTTYPE_STANDARD, MART_LAVENDER
+	closetext
 	end
-; 0x7eb23
 
-PokefanMScript_0x7eb23: ; 0x7eb23
+PokefanMScript_0x7eb23:
 	jumptextfaceplayer UnknownText_0x7eb29
-; 0x7eb26
 
-RockerScript_0x7eb26: ; 0x7eb26
+RockerScript_0x7eb26:
 	jumptextfaceplayer UnknownText_0x7ebac
-; 0x7eb29
 
-UnknownText_0x7eb29: ; 0x7eb29
+UnknownText_0x7eb29:
 	text "REPEL is a neces-"
 	line "sity if you are"
 
@@ -34,9 +35,8 @@ UnknownText_0x7eb29: ; 0x7eb29
 	para "haven't made it to"
 	line "all the caves."
 	done
-; 0x7ebac
 
-UnknownText_0x7ebac: ; 0x7ebac
+UnknownText_0x7ebac:
 	text "I heard about a"
 	line "craftsman who"
 
@@ -46,27 +46,24 @@ UnknownText_0x7ebac: ; 0x7ebac
 	para "of AZALEA. I wish"
 	line "I had some."
 	done
-; 0x7ec0e
 
-LavenderMart_MapEventHeader: ; 0x7ec0e
+LavenderMart_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 5, GROUP_LAVENDER_TOWN, MAP_LAVENDER_TOWN
-	warp_def $7, $3, 5, GROUP_LAVENDER_TOWN, MAP_LAVENDER_TOWN
+	warp_def $7, $2, 5, LAVENDER_TOWN
+	warp_def $7, $3, 5, LAVENDER_TOWN
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_CLERK, 7, 5, $9, $0, 255, 255, $0, 0, ClerkScript_0x7eb1c, $ffff
-	person_event SPRITE_POKEFAN_M, 10, 10, $5, $2, 255, 255, $80, 0, PokefanMScript_0x7eb23, $ffff
-	person_event SPRITE_ROCKER, 6, 13, $3, $0, 255, 255, $0, 0, RockerScript_0x7eb26, $ffff
-; 0x7ec45
-
+	person_event SPRITE_CLERK, 3, 1, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, ClerkScript_0x7eb1c, -1
+	person_event SPRITE_POKEFAN_M, 6, 6, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 2, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, PokefanMScript_0x7eb23, -1
+	person_event SPRITE_ROCKER, 2, 9, SPRITEMOVEDATA_SPINRANDOM_SLOW, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, RockerScript_0x7eb26, -1

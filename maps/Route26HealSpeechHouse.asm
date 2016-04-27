@@ -1,46 +1,45 @@
-Route26HealSpeechHouse_MapScriptHeader: ; 0x7b123
-	; trigger count
+const_value set 2
+	const ROUTE26HEALSPEECHHOUSE_TEACHER
+
+Route26HealSpeechHouse_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x7b125
 
-TeacherScript_0x7b125: ; 0x7b125
+TeacherScript_0x7b125:
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x7b14d
+	opentext
+	writetext UnknownText_0x7b14d
+	waitbutton
 	closetext
-	loadmovesprites
-	special $0030
-	special $0033
-	special $009d
+	special Special_FadeBlackQuickly
+	special Special_ReloadSpritesNoPalettes
+	special Mobile_HealParty
 	playmusic MUSIC_HEAL
-	special $001b
+	special HealParty
 	pause 60
-	special $0032
-	special $003d
-	loadfont
-	2writetext UnknownText_0x7b18b
+	special Special_FadeInQuickly
+	special RestartMapMusic
+	opentext
+	writetext UnknownText_0x7b18b
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7b14a
 
-MapRoute26HealSpeechHouseSignpost1Script: ; 0x7b14a
-	jumpstd $0002
-; 0x7b14d
+Route26HealHouseBookshelf:
+	jumpstd picturebookshelf
 
-UnknownText_0x7b14d: ; 0x7b14d
+UnknownText_0x7b14d:
 	text "Your #MON look"
 	line "a little tired."
 
 	para "You should rest"
 	line "them a while."
 	done
-; 0x7b18b
 
-UnknownText_0x7b18b: ; 0x7b18b
+UnknownText_0x7b18b:
 	text "There!"
 
 	para "Your #MON are"
@@ -48,27 +47,24 @@ UnknownText_0x7b18b: ; 0x7b18b
 
 	para "Keep at it!"
 	done
-; 0x7b1bb
 
-Route26HealSpeechHouse_MapEventHeader: ; 0x7b1bb
+Route26HealSpeechHouse_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 2, GROUP_ROUTE_26, MAP_ROUTE_26
-	warp_def $7, $3, 2, GROUP_ROUTE_26, MAP_ROUTE_26
+	warp_def $7, $2, 2, ROUTE_26
+	warp_def $7, $3, 2, ROUTE_26
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 1, 0, $0, MapRoute26HealSpeechHouseSignpost1Script
-	signpost 1, 1, $0, MapRoute26HealSpeechHouseSignpost1Script
+	signpost 1, 0, SIGNPOST_READ, Route26HealHouseBookshelf
+	signpost 1, 1, SIGNPOST_READ, Route26HealHouseBookshelf
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_TEACHER, 7, 6, $6, $0, 255, 255, $90, 0, TeacherScript_0x7b125, $ffff
-; 0x7b1e2
-
+	person_event SPRITE_TEACHER, 3, 2, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, TeacherScript_0x7b125, -1

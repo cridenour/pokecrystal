@@ -1,7 +1,7 @@
 Music_KantoGymBattle: ; ec720
-	dbw $80, Music_KantoGymBattle_Ch1
-	dbw $01, Music_KantoGymBattle_Ch2
-	dbw $02, Music_KantoGymBattle_Ch3
+	musicheader 3, 1, Music_KantoGymBattle_Ch1
+	musicheader 1, 2, Music_KantoGymBattle_Ch2
+	musicheader 1, 3, Music_KantoGymBattle_Ch3
 ; ec729
 
 Music_KantoGymBattle_Ch1: ; ec729
@@ -614,5 +614,3 @@ Music_KantoGymBattle_branch_ec9e5: ; ec9e5
 	note F_, 2
 	loopchannel 0, Music_KantoGymBattle_branch_ec965
 ; ec9fa
-
-

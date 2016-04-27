@@ -1,81 +1,61 @@
-MountMortar2FInside_MapScriptHeader: ; 0x7e0c8
-	; trigger count
+const_value set 2
+	const MOUNTMORTAR2FINSIDE_POKE_BALL1
+	const MOUNTMORTAR2FINSIDE_POKE_BALL2
+	const MOUNTMORTAR2FINSIDE_POKE_BALL3
+	const MOUNTMORTAR2FINSIDE_POKE_BALL4
+	const MOUNTMORTAR2FINSIDE_POKE_BALL5
+	const MOUNTMORTAR2FINSIDE_POKE_BALL6
+	const MOUNTMORTAR2FINSIDE_SUPER_NERD
+
+MountMortar2FInside_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x7e0ca
 
-TrainerSupernerdHugh: ; 0x7e0ca
-	; bit/flag number
-	dw $5c5
+TrainerSupernerdHugh:
+	trainer EVENT_BEAT_SUPER_NERD_HUGH, SUPER_NERD, HUGH, SupernerdHughSeenText, SupernerdHughBeatenText, 0, SupernerdHughScript
 
-	; trainer group && trainer id
-	db SUPER_NERD, HUGH
-
-	; text when seen
-	dw SupernerdHughSeenText
-
-	; text when trainer beaten
-	dw SupernerdHughBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SupernerdHughScript
-; 0x7e0d6
-
-SupernerdHughScript: ; 0x7e0d6
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x7e10e
+SupernerdHughScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x7e10e
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x7e0de
 
-ItemFragment_0x7e0de: ; 0x7e0de
-	db MAX_POTION, 1
-; 0x7e0e0
+MountMortar2FInsideMaxPotion:
+	itemball MAX_POTION
 
-ItemFragment_0x7e0e0: ; 0x7e0e0
-	db RARE_CANDY, 1
-; 0x7e0e2
+MountMortar2FInsideRareCandy:
+	itemball RARE_CANDY
 
-ItemFragment_0x7e0e2: ; 0x7e0e2
-	db TM_40, 1
-; 0x7e0e4
+MountMortar2FInsideTMDefenseCurl:
+	itemball TM_DEFENSE_CURL
 
-ItemFragment_0x7e0e4: ; 0x7e0e4
-	db DRAGON_SCALE, 1
-; 0x7e0e6
+MountMortar2FInsideDragonScale:
+	itemball DRAGON_SCALE
 
-ItemFragment_0x7e0e6: ; 0x7e0e6
-	db ELIXER, 1
-; 0x7e0e8
+MountMortar2FInsideElixer:
+	itemball ELIXER
 
-ItemFragment_0x7e0e8: ; 0x7e0e8
-	db ESCAPE_ROPE, 1
-; 0x7e0ea
+MountMortar2FInsideEscapeRope:
+	itemball ESCAPE_ROPE
 
-MapMountMortar2FInsideSignpostItem0: ; 0x7e0ea
-	dw $0092
-	db FULL_RESTORE
-	
-; 0x7e0ed
+MountMortar2FInsideHiddenFullRestore:
+	dwb EVENT_MOUNT_MORTAR_2F_INSIDE_HIDDEN_FULL_RESTORE, FULL_RESTORE
 
-SupernerdHughSeenText: ; 0x7e0ed
+
+SupernerdHughSeenText:
 	text "Yo! MARKUS!"
 	done
-; 0x7e0fa
 
-SupernerdHughBeatenText: ; 0x7e0fa
+SupernerdHughBeatenText:
 	text "Sorry, my mistake."
 	done
-; 0x7e10e
 
-UnknownText_0x7e10e: ; 0x7e10e
+UnknownText_0x7e10e:
 	text "I'm investigating"
 	line "MT.MORTAR, but my"
 	cont "pal's gone AWOL."
@@ -86,32 +66,29 @@ UnknownText_0x7e10e: ; 0x7e10e
 	para "SLOWPOKE that can"
 	line "use STRENGTH?"
 	done
-; 0x7e184
 
-MountMortar2FInside_MapEventHeader: ; 0x7e184
+MountMortar2FInside_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $21, $11, 4, GROUP_MOUNT_MORTAR_1F_OUTSIDE, MAP_MOUNT_MORTAR_1F_OUTSIDE
-	warp_def $5, $3, 6, GROUP_MOUNT_MORTAR_1F_INSIDE, MAP_MOUNT_MORTAR_1F_INSIDE
+	warp_def $21, $11, 4, MOUNT_MORTAR_1F_OUTSIDE
+	warp_def $5, $3, 6, MOUNT_MORTAR_1F_INSIDE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 1
-	signpost 8, 24, $7, MapMountMortar2FInsideSignpostItem0
+	signpost 8, 24, SIGNPOST_ITEM, MountMortar2FInsideHiddenFullRestore
 
-	; people-events
+.PersonEvents:
 	db 7
-	person_event SPRITE_POKE_BALL, 26, 32, $1, $0, 255, 255, $1, 0, ItemFragment_0x7e0de, $0680
-	person_event SPRITE_POKE_BALL, 37, 6, $1, $0, 255, 255, $1, 0, ItemFragment_0x7e0e0, $0681
-	person_event SPRITE_POKE_BALL, 21, 23, $1, $0, 255, 255, $1, 0, ItemFragment_0x7e0e2, $0682
-	person_event SPRITE_POKE_BALL, 9, 20, $1, $0, 255, 255, $1, 0, ItemFragment_0x7e0e4, $0683
-	person_event SPRITE_POKE_BALL, 15, 13, $1, $0, 255, 255, $1, 0, ItemFragment_0x7e0e6, $0684
-	person_event SPRITE_POKE_BALL, 9, 32, $1, $0, 255, 255, $1, 0, ItemFragment_0x7e0e8, $0685
-	person_event SPRITE_SUPER_NERD, 30, 17, $a, $0, 255, 255, $b2, 2, TrainerSupernerdHugh, $ffff
-; 0x7e1f4
-
+	person_event SPRITE_POKE_BALL, 22, 28, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, MountMortar2FInsideMaxPotion, EVENT_MOUNT_MORTAR_2F_INSIDE_MAX_POTION
+	person_event SPRITE_POKE_BALL, 33, 2, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, MountMortar2FInsideRareCandy, EVENT_MOUNT_MORTAR_2F_INSIDE_RARE_CANDY
+	person_event SPRITE_POKE_BALL, 17, 19, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, MountMortar2FInsideTMDefenseCurl, EVENT_MOUNT_MORTAR_2F_INSIDE_TM_DEFENSE_CURL
+	person_event SPRITE_POKE_BALL, 5, 16, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, MountMortar2FInsideDragonScale, EVENT_MOUNT_MORTAR_2F_INSIDE_DRAGON_SCALE
+	person_event SPRITE_POKE_BALL, 11, 9, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, MountMortar2FInsideElixer, EVENT_MOUNT_MORTAR_2F_INSIDE_ELIXER
+	person_event SPRITE_POKE_BALL, 5, 28, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, MountMortar2FInsideEscapeRope, EVENT_MOUNT_MORTAR_2F_INSIDE_ESCAPE_ROPE
+	person_event SPRITE_SUPER_NERD, 26, 13, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 2, TrainerSupernerdHugh, -1

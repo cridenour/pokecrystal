@@ -1,29 +1,29 @@
-Function1b1e:: ; 1b1e
-	ld [$d003], a
+InitMovementBuffer:: ; 1b1e
+	ld [wMovementBufferPerson], a
 	xor a
-	ld [DefaultFlypoint], a
-	ld a, $0
-	ld [$d004], a
-	ld a, $7
-	ld [StartFlypoint], a
-	ld a, $d0
-	ld [EndFlypoint], a
+	ld [wMovementBufferCount], a
+	ld a, $0 ; useless
+	ld [wd004], a
+	ld a, MovementBuffer % $100
+	ld [wd005], a
+	ld a, MovementBuffer / $100
+	ld [wd006], a
 	ret
 ; 1b35
 
-Function1b35:: ; 1b35
-	ld a, [DefaultFlypoint]
+DecrementMovementBufferCount:: ; 1b35
+	ld a, [wMovementBufferCount]
 	and a
 	ret z
 	dec a
-	ld [DefaultFlypoint], a
+	ld [wMovementBufferCount], a
 	ret
 ; 1b3f
 
-Function1b3f:: ; 1b3f
+AppendToMovementBuffer:: ; 1b3f
 	push hl
 	push de
-	ld hl, DefaultFlypoint
+	ld hl, wMovementBufferCount
 	ld e, [hl]
 	inc [hl]
 	ld d, 0
@@ -35,47 +35,50 @@ Function1b3f:: ; 1b3f
 	ret
 ; 1b50
 
-Function1b50:: ; 1b50
+AppendToMovementBufferNTimes:: ; 1b50
 	push af
 	ld a, c
 	and a
-	jr nz, .asm_1b57
+	jr nz, .okay
 	pop af
 	ret
 
-.asm_1b57
+.okay
 	pop af
-.asm_1b58
-	call Function1b3f
+.loop
+	call AppendToMovementBuffer
 	dec c
-	jr nz, .asm_1b58
+	jr nz, .loop
 	ret
 ; 1b5f
 
-Function1b5f:: ; 1b5f
+ComputePathToWalkToPlayer:: ; 1b5f
 	push af
+; compare x coords, load left/right into h, and x distance into d
 	ld a, b
 	sub d
-	ld h, $2
-	jr nc, .asm_1b6a
+	ld h, LEFT
+	jr nc, .got_x_distance
 	dec a
 	cpl
-	ld h, $3
+	ld h, RIGHT
 
-.asm_1b6a
+.got_x_distance
 	ld d, a
+; compare y coords, load up/down into l, and y distance into e
 	ld a, c
 	sub e
-	ld l, $1
-	jr nc, .asm_1b75
+	ld l, UP
+	jr nc, .got_y_distance
 	dec a
 	cpl
-	ld l, $0
+	ld l, DOWN
 
-.asm_1b75
+.got_y_distance
 	ld e, a
+; if the x distance is less than the y distance, swap h and l, and swap d and e
 	cp d
-	jr nc, .asm_1b7f
+	jr nc, .done
 	ld a, h
 	ld h, l
 	ld l, a
@@ -83,31 +86,34 @@ Function1b5f:: ; 1b5f
 	ld d, e
 	ld e, a
 
-.asm_1b7f
+.done
 	pop af
 	ld b, a
+; Add movement in the longer direction first...
 	ld a, h
-	call Function1b92
+	call .GetMovementData
 	ld c, d
-	call Function1b50
+	call AppendToMovementBufferNTimes
+; ... then add the shorter direction.
 	ld a, l
-	call Function1b92
+	call .GetMovementData
 	ld c, e
-	call Function1b50
+	call AppendToMovementBufferNTimes
 	ret
 ; 1b92
 
-Function1b92:: ; 1b92
+.GetMovementData: ; 1b92
 	push de
 	push hl
 	ld l, b
 	ld h, 0
+rept 2
 	add hl, hl
-	add hl, hl
+endr
 	ld e, a
 	ld d, 0
 	add hl, de
-	ld de, .data_1ba5
+	ld de, .MovementData
 	add hl, de
 	ld a, [hl]
 	pop hl
@@ -115,53 +121,65 @@ Function1b92:: ; 1b92
 	ret
 ; 1ba5
 
-.data_1ba5
-	db 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19
+.MovementData:
+	slow_step_down
+	slow_step_up
+	slow_step_left
+	slow_step_right
+	step_down
+	step_up
+	step_left
+	step_right
+	big_step_down
+	big_step_up
+	big_step_left
+	big_step_right
 ; 1bb1
 
-Function1bb1:: ; 1bb1
+SetMenuAttributes:: ; 1bb1
 	push hl
 	push bc
-	ld hl, $cfa1
+	ld hl, w2DMenuCursorInitY
 	ld b, $8
-.asm_1bb8
+.loop
 	ld a, [de]
 	inc de
 	ld [hli], a
 	dec b
-	jr nz, .asm_1bb8
+	jr nz, .loop
 	ld a, $1
+rept 2
 	ld [hli], a
-	ld [hli], a
+endr
 	xor a
+rept 3
 	ld [hli], a
-	ld [hli], a
-	ld [hli], a
+endr
 	pop bc
 	pop hl
 	ret
 ; 1bc9
 
-Function1bc9:: ; 1bc9
-	callab Function241a8
-	call Function1bdd
+StaticMenuJoypad:: ; 1bc9
+	callab _StaticMenuJoypad
+	call GetMenuJoypad
 	ret
 ; 1bd3
 
-Function1bd3:: ; 1bd3
-	callab Function241ab
-	call Function1bdd
+ScrollingMenuJoypad:: ; 1bd3
+	callab _ScrollingMenuJoypad
+	call GetMenuJoypad
 	ret
 ; 1bdd
 
-Function1bdd:: ; 1bdd
+GetMenuJoypad:: ; 1bdd
 	push bc
 	push af
-	ld a, [$ffa9]
-	and $f0
+	ld a, [hJoyLast]
+	and D_PAD
 	ld b, a
 	ld a, [hJoyPressed]
-	and $f
+	and BUTTONS
 	or b
 	ld b, a
 	pop af
@@ -170,52 +188,21 @@ Function1bdd:: ; 1bdd
 	ret
 ; 1bee
 
-Function1bee:: ; 1bee
-	ld hl, $cfac
+PlaceHollowCursor:: ; 1bee
+	ld hl, wCursorCurrentTile
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ld [hl], $ec
+	ld [hl], "▷"
 	ret
 ; 1bf7
 
-Function1bf7:: ; 1bf7
-	ld hl, $cfac
+HideCursor:: ; 1bf7
+	ld hl, wCursorCurrentTile
 	ld a, [hli]
 	ld h, [hl]
 	ld l, a
-	ld [hl], $7f
+	ld [hl], " "
 	ret
 ; 1c00
-
-Function1c00:: ; 1c00
-	callab Function24374
-	ret
-; 1c07
-
-Function1c07:: ; 0x1c07
-	push af
-	callab Function243e8
-	pop af
-	ret
-
-Function1c10:: ; 0x1c10
-	callab Function2446d
-	ret
-
-Function1c17:: ; 0x1c17
-	push af
-	call Function1c07
-	call Function321c
-	call Function1ad2
-	pop af
-	ret
-
-Function1c23:: ; 0x1c23
-	call Function1cfd
-	call Function1c30
-	call Function1d19
-	call Function1c30
-	ret
-; 0x1c30
 

@@ -1,357 +1,281 @@
-Route30_MapScriptHeader: ; 0x1a1671
-	; trigger count
+const_value set 2
+	const ROUTE30_YOUNGSTER1
+	const ROUTE30_YOUNGSTER2
+	const ROUTE30_YOUNGSTER3
+	const ROUTE30_BUG_CATCHER
+	const ROUTE30_YOUNGSTER4
+	const ROUTE30_MONSTER1
+	const ROUTE30_MONSTER2
+	const ROUTE30_FRUIT_TREE1
+	const ROUTE30_FRUIT_TREE2
+	const ROUTE30_COOLTRAINER_F
+	const ROUTE30_POKE_BALL
+
+Route30_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1a1673
 
-YoungsterScript_0x1a1673: ; 0x1a1673
-	waitbutton
+YoungsterJoey_ImportantBattleScript:
+	waitsfx
 	playmusic MUSIC_JOHTO_TRAINER_BATTLE
-	loadfont
-	2writetext UnknownText_0x1a1806
+	opentext
+	writetext Text_UseTackle
 	pause 30
-	loadmovesprites
-	playsound SFX_TACKLE
-	applymovement $8, MovementData_0x1a17fe
-	loadfont
-	faceplayer
-	2writetext UnknownText_0x1a181c
 	closetext
-	spriteface $2, $1
-	loadmovesprites
 	playsound SFX_TACKLE
-	applymovement $7, MovementData_0x1a1802
-	special $003d
+	applymovement ROUTE30_MONSTER2, Route30_JoeysRattataAttacksMovement
+	opentext
+	faceplayer
+	writetext Text_ThisIsABigBattle
+	waitbutton
+	spriteface ROUTE30_YOUNGSTER1, UP
+	closetext
+	playsound SFX_TACKLE
+	applymovement ROUTE30_MONSTER1, Route30_MikeysRattataAttacksMovement
+	special RestartMapMusic
 	end
-; 0x1a169a
 
-TrainerYoungsterJoey1: ; 0x1a169a
-	; bit/flag number
-	dw $5a9
+TrainerYoungsterJoey:
+	trainer EVENT_BEAT_YOUNGSTER_JOEY, YOUNGSTER, JOEY1, YoungsterJoey1SeenText, YoungsterJoey1BeatenText, 0, .Script
 
-	; trainer group && trainer id
-	db YOUNGSTER, JOEY1
+.Script:
+	writecode VAR_CALLERID, PHONE_YOUNGSTER_JOEY
+	end_if_just_battled
+	opentext
+	checkflag ENGINE_JOEY
+	iftrue .Rematch
+	checkcellnum PHONE_YOUNGSTER_JOEY
+	iftrue .NumberAccepted
+	checkevent EVENT_JOEY_ASKED_FOR_PHONE_NUMBER
+	iftrue .AskAgain
+	writetext YoungsterJoey1AfterText
+	buttonsound
+	setevent EVENT_JOEY_ASKED_FOR_PHONE_NUMBER
+	scall .AskNumber1
+	jump .RequestNumber
 
-	; text when seen
-	dw YoungsterJoey1SeenText
-
-	; text when trainer beaten
-	dw YoungsterJoey1BeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw YoungsterJoey1Script
-; 0x1a16a6
-
-YoungsterJoey1Script: ; 0x1a16a6
-	writecode $17, $f
-	talkaftercancel
-	loadfont
-	checkflag $006b
-	iftrue UnknownScript_0x1a16e0
-	checkcellnum $f
-	iftrue UnknownScript_0x1a178f
-	checkevent $0273
-	iftrue UnknownScript_0x1a16c9
-	2writetext UnknownText_0x1a18c2
-	keeptextopen
-	setevent $0273
-	2call UnknownScript_0x1a1783
-	2jump UnknownScript_0x1a16cc
-; 0x1a16c9
-
-UnknownScript_0x1a16c9: ; 0x1a16c9
-	2call UnknownScript_0x1a1787
-UnknownScript_0x1a16cc: ; 0x1a16cc
-	askforphonenumber $f
-	if_equal $1, UnknownScript_0x1a1797
-	if_equal $2, UnknownScript_0x1a1793
+.AskAgain:
+	scall .AskNumber2
+.RequestNumber:
+	askforphonenumber PHONE_YOUNGSTER_JOEY
+	if_equal $1, .PhoneFull
+	if_equal $2, .NumberDeclined
 	trainertotext YOUNGSTER, JOEY1, $0
-	2call UnknownScript_0x1a178b
-	2jump UnknownScript_0x1a178f
-; 0x1a16e0
+	scall .RegisteredNumber
+	jump .NumberAccepted
 
-UnknownScript_0x1a16e0: ; 0x1a16e0
-	2call UnknownScript_0x1a179b
-	winlosstext YoungsterJoey1BeatenText, $0000
-	copybytetovar $d9f9
-	if_equal $4, UnknownScript_0x1a16ff
-	if_equal $3, UnknownScript_0x1a1705
-	if_equal $2, UnknownScript_0x1a170b
-	if_equal $1, UnknownScript_0x1a1711
-	if_equal $0, UnknownScript_0x1a1717
-UnknownScript_0x1a16ff: ; 0x1a16ff
-	checkevent $0044
-	iftrue UnknownScript_0x1a174b
-UnknownScript_0x1a1705: ; 0x1a1705
+.Rematch:
+	scall .RematchStd
+	winlosstext YoungsterJoey1BeatenText, 0
+	copybytetovar wJoeyFightCount
+	if_equal 4, .Fight4
+	if_equal 3, .Fight3
+	if_equal 2, .Fight2
+	if_equal 1, .Fight1
+	if_equal 0, .LoadFight0
+.Fight4:
+	checkevent EVENT_BEAT_ELITE_FOUR
+	iftrue .LoadFight4
+.Fight3:
 	checkevent EVENT_CLEARED_RADIO_TOWER
-	iftrue UnknownScript_0x1a173e
-UnknownScript_0x1a170b: ; 0x1a170b
-	checkflag $0047
-	iftrue UnknownScript_0x1a1731
-UnknownScript_0x1a1711: ; 0x1a1711
-	checkflag $0046
-	iftrue UnknownScript_0x1a1724
-UnknownScript_0x1a1717: ; 0x1a717
+	iftrue .LoadFight3
+.Fight2:
+	checkflag ENGINE_FLYPOINT_OLIVINE
+	iftrue .LoadFight2
+.Fight1:
+	checkflag ENGINE_FLYPOINT_GOLDENROD
+	iftrue .LoadFight1
+.LoadFight0:
 	loadtrainer YOUNGSTER, JOEY1
 	startbattle
-	returnafterbattle
-	loadvar $d9f9, $1
-	clearflag $006b
+	reloadmapafterbattle
+	loadvar wJoeyFightCount, 1
+	clearflag ENGINE_JOEY
 	end
-; 0x1a1724
 
-UnknownScript_0x1a1724: ; 0x1a1724
+.LoadFight1:
 	loadtrainer YOUNGSTER, JOEY2
 	startbattle
-	returnafterbattle
-	loadvar $d9f9, $2
-	clearflag $006b
+	reloadmapafterbattle
+	loadvar wJoeyFightCount, 2
+	clearflag ENGINE_JOEY
 	end
-; 0x1a1731
 
-UnknownScript_0x1a1731: ; 0x1a1731
+.LoadFight2:
 	loadtrainer YOUNGSTER, JOEY3
 	startbattle
-	returnafterbattle
-	loadvar $d9f9, $3
-	clearflag $006b
+	reloadmapafterbattle
+	loadvar wJoeyFightCount, 3
+	clearflag ENGINE_JOEY
 	end
-; 0x1a173e
 
-UnknownScript_0x1a173e: ; 0x1a173e
+.LoadFight3:
 	loadtrainer YOUNGSTER, JOEY4
 	startbattle
-	returnafterbattle
-	loadvar $d9f9, $4
-	clearflag $006b
+	reloadmapafterbattle
+	loadvar wJoeyFightCount, 4
+	clearflag ENGINE_JOEY
 	end
-; 0x1a174b
 
-UnknownScript_0x1a174b: ; 0x1a174b
+.LoadFight4:
 	loadtrainer YOUNGSTER, JOEY5
 	startbattle
-	returnafterbattle
-	clearflag $006b
+	reloadmapafterbattle
+	clearflag ENGINE_JOEY
 	checkevent EVENT_JOEY_HP_UP
-	iftrue UnknownScript_0x1a176f
-	checkevent $0266
-	iftrue UnknownScript_0x1a176e
-	2call UnknownScript_0x1a17a6
-	verbosegiveitem HP_UP, 1
-	iffalse UnknownScript_0x1a179f
-	setevent $0266
-	2jump UnknownScript_0x1a178f
-; 0x1a176e
+	iftrue .GiveHPUp
+	checkevent EVENT_GOT_HP_UP_FROM_JOEY
+	iftrue .done
+	scall .RematchGift
+	verbosegiveitem HP_UP
+	iffalse .PackFull
+	setevent EVENT_GOT_HP_UP_FROM_JOEY
+	jump .NumberAccepted
 
-UnknownScript_0x1a176e: ; 0x1a176e
+.done
 	end
-; 0x1a176f
 
-UnknownScript_0x1a176f: ; 0x1a176f
-	loadfont
-	2writetext UnknownText_0x1a1bc0
-	closetext
-	verbosegiveitem HP_UP, 1
-	iffalse UnknownScript_0x1a179f
+.GiveHPUp:
+	opentext
+	writetext YoungsterJoeyText_GiveHPUpAfterBattle
+	waitbutton
+	verbosegiveitem HP_UP
+	iffalse .PackFull
 	clearevent EVENT_JOEY_HP_UP
-	setevent $0266
-	2jump UnknownScript_0x1a178f
-; 0x1a1783
+	setevent EVENT_GOT_HP_UP_FROM_JOEY
+	jump .NumberAccepted
 
-UnknownScript_0x1a1783: ; 0x1a1783
-	jumpstd $0019
+.AskNumber1:
+	jumpstd asknumber1m
 	end
-; 0x1a1787
 
-UnknownScript_0x1a1787: ; 0x1a1787
-	jumpstd $001a
+.AskNumber2:
+	jumpstd asknumber2m
 	end
-; 0x1a178b
 
-UnknownScript_0x1a178b: ; 0x1a178b
-	jumpstd $001b
+.RegisteredNumber:
+	jumpstd registerednumberm
 	end
-; 0x1a178f
 
-UnknownScript_0x1a178f: ; 0x1a178f
-	jumpstd $001c
+.NumberAccepted:
+	jumpstd numberacceptedm
 	end
-; 0x1a1793
 
-UnknownScript_0x1a1793: ; 0x1a1793
-	jumpstd $001d
+.NumberDeclined:
+	jumpstd numberdeclinedm
 	end
-; 0x1a1797
 
-UnknownScript_0x1a1797: ; 0x1a1797
-	jumpstd $001e
+.PhoneFull:
+	jumpstd phonefullm
 	end
-; 0x1a179b
 
-UnknownScript_0x1a179b: ; 0x1a179b
-	jumpstd $001f
+.RematchStd:
+	jumpstd rematchm
 	end
-; 0x1a179f
 
-UnknownScript_0x1a179f: ; 0x1a179f
+.PackFull:
 	setevent EVENT_JOEY_HP_UP
-	jumpstd $0021
+	jumpstd packfullm
 	end
-; 0x1a17a6
 
-UnknownScript_0x1a17a6: ; 0x1a17a6
-	jumpstd $0022
+.RematchGift:
+	jumpstd rematchgiftm
 	end
-; 0x1a17aa
 
-TrainerYoungsterMikey: ; 0x1a17aa
-	; bit/flag number
-	dw $5aa
+TrainerYoungsterMikey:
+	trainer EVENT_BEAT_YOUNGSTER_MIKEY, YOUNGSTER, MIKEY, YoungsterMikeySeenText, YoungsterMikeyBeatenText, 0, .Script
 
-	; trainer group && trainer id
-	db YOUNGSTER, MIKEY
-
-	; text when seen
-	dw YoungsterMikeySeenText
-
-	; text when trainer beaten
-	dw YoungsterMikeyBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw YoungsterMikeyScript
-; 0x1a17b6
-
-YoungsterMikeyScript: ; 0x1a17b6
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a197d
+.Script:
+	end_if_just_battled
+	opentext
+	writetext YoungsterMikeyAfterText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a17be
 
-TrainerBug_catcherDon: ; 0x1a17be
-	; bit/flag number
-	dw $538
+TrainerBug_catcherDon:
+	trainer EVENT_BEAT_BUG_CATCHER_DON, BUG_CATCHER, DON, Bug_catcherDonSeenText, Bug_catcherDonBeatenText, 0, .Script
 
-	; trainer group && trainer id
-	db BUG_CATCHER, DON
-
-	; text when seen
-	dw Bug_catcherDonSeenText
-
-	; text when trainer beaten
-	dw Bug_catcherDonBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw Bug_catcherDonScript
-; 0x1a17ca
-
-Bug_catcherDonScript: ; 0x1a17ca
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a1a1c
+.Script:
+	end_if_just_battled
+	opentext
+	writetext Bug_catcherDonAfterText
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a17d2
 
-YoungsterScript_0x1a17d2: ; 0x1a17d2
+Route30YoungsterScript:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GAVE_MYSTERY_EGG_TO_ELM
-	iftrue UnknownScript_0x1a17e0
-	2writetext UnknownText_0x1a1a6a
+	iftrue .CompletedEggQuest
+	writetext Route30YoungsterText_DirectionsToMrPokemonsHouse
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a17e0
 
-UnknownScript_0x1a17e0: ; 0x1a17e0
-	2writetext UnknownText_0x1a1a94
+.CompletedEggQuest:
+	writetext Route30YoungsterText_EveryoneIsBattling
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a17e6
 
-CooltrainerFScript_0x1a17e6: ; 0x1a17e6
-	jumptextfaceplayer UnknownText_0x1a1ac4
-; 0x1a17e9
+Route30CooltrainerFScript:
+	jumptextfaceplayer Route30CooltrainerFText
 
-MapRoute30Signpost0Script: ; 0x1a17e9
-	jumptext UnknownText_0x1a1b0b
-; 0x1a17ec
+Route30Sign:
+	jumptext Route30SignText
 
-MapRoute30Signpost1Script: ; 0x1a17ec
-	jumptext UnknownText_0x1a1b34
-; 0x1a17ef
+MrPokemonsHouseDirectionsSign:
+	jumptext MrPokemonsHouseDirectionsSignText
 
-MapRoute30Signpost2Script: ; 0x1a17ef
-	jumptext UnknownText_0x1a1b55
-; 0x1a17f2
+MrPokemonsHouseSign:
+	jumptext MrPokemonsHouseSignText
 
-MapRoute30Signpost3Script: ; 0x1a17f2
-	jumptext UnknownText_0x1a1b66
-; 0x1a17f5
+Route30TrainerTips:
+	jumptext Route30TrainerTipsText
 
-ItemFragment_0x1a17f5: ; 0x1a17f5
-	db ANTIDOTE, 1
-; 0x1a17f7
+Route30Antidote:
+	itemball ANTIDOTE
 
-FruitTreeScript_0x1a17f7: ; 0x1a17f7
-	fruittree $2
-; 0x1a17f9
+Route30FruitTree1:
+	fruittree FRUITTREE_ROUTE_30_1
 
-FruitTreeScript_0x1a17f9: ; 0x1a17f9
-	fruittree $5
-; 0x1a17fb
+Route30FruitTree2:
+	fruittree FRUITTREE_ROUTE_30_2
 
-MapRoute30SignpostItem4: ; 0x1a17fb
-	dw $00a4
-	db POTION
-	
-; 0x1a17fe
+Route30HiddenPotion:
+	dwb EVENT_ROUTE_30_HIDDEN_POTION, POTION
 
-MovementData_0x1a17fe: ; 0x1a17fe
+
+Route30_JoeysRattataAttacksMovement:
 	fix_facing
 	big_step_up
 	big_step_down
 	step_end
-; 0x1a1802
 
-MovementData_0x1a1802: ; 0x1a1802
+Route30_MikeysRattataAttacksMovement:
 	fix_facing
 	big_step_down
 	big_step_up
 	step_end
-; 0x1a1806
 
-UnknownText_0x1a1806: ; 0x1a1806
+Text_UseTackle:
 	text "Go, RATTATA!"
 
 	para "TACKLE!"
 	done
-; 0x1a181c
 
-UnknownText_0x1a181c: ; 0x1a181c
+Text_ThisIsABigBattle:
 	text "What? This is a"
 	line "big battle!"
 	cont "Leave me alone!"
 	done
-; 0x1a1849
 
-YoungsterJoey1SeenText: ; 0x1a1849
+YoungsterJoey1SeenText:
 	text "I just lost, so"
 	line "I'm trying to find"
 	cont "more #MON."
@@ -360,15 +284,13 @@ YoungsterJoey1SeenText: ; 0x1a1849
 	line "weak! Come on,"
 	cont "let's battle!"
 	done
-; 0x1a18a2
 
-YoungsterJoey1BeatenText: ; 0x1a18a2
+YoungsterJoey1BeatenText:
 	text "Ack! I lost again!"
 	line "Doggone it!"
 	done
-; 0x1a18c2
 
-UnknownText_0x1a18c2: ; 0x1a18c2
+YoungsterJoey1AfterText:
 	text "Do I have to have"
 	line "more #MON in"
 
@@ -379,24 +301,21 @@ UnknownText_0x1a18c2: ; 0x1a18c2
 	line "with this one no"
 	cont "matter what!"
 	done
-; 0x1a1928
 
-YoungsterMikeySeenText: ; 0x1a1928
+YoungsterMikeySeenText:
 	text "You're a #MON"
 	line "trainer, right?"
 
 	para "Then you have to"
 	line "battle!"
 	done
-; 0x1a195f
 
-YoungsterMikeyBeatenText: ; 0x1a195f
+YoungsterMikeyBeatenText:
 	text "That's strange."
 	line "I won before."
 	done
-; 0x1a197d
 
-UnknownText_0x1a197d: ; 0x1a197d
+YoungsterMikeyAfterText:
 	text "Becoming a good"
 	line "trainer is really"
 	cont "tough."
@@ -405,22 +324,19 @@ UnknownText_0x1a197d: ; 0x1a197d
 	line "tle other people"
 	cont "to get better."
 	done
-; 0x1a19d8
 
-Bug_catcherDonSeenText: ; 0x1a19d8
+Bug_catcherDonSeenText:
 	text "Instead of a bug"
 	line "#MON, I found"
 	cont "a trainer!"
 	done
-; 0x1a1a03
 
-Bug_catcherDonBeatenText: ; 0x1a1a03
+Bug_catcherDonBeatenText:
 	text "Argh! You're too"
 	line "strong!"
 	done
-; 0x1a1a1c
 
-UnknownText_0x1a1a1c: ; 0x1a1a1c
+Bug_catcherDonAfterText:
 	text "I ran out of #"
 	line "BALLS while I was"
 	cont "catching #MON."
@@ -428,51 +344,44 @@ UnknownText_0x1a1a1c: ; 0x1a1a1c
 	para "I should've bought"
 	line "some more…"
 	done
-; 0x1a1a6a
 
-UnknownText_0x1a1a6a: ; 0x1a1a6a
+Route30YoungsterText_DirectionsToMrPokemonsHouse:
 	text "MR.#MON's"
 	line "house? It's a bit"
 	cont "farther ahead."
 	done
-; 0x1a1a94
 
-UnknownText_0x1a1a94: ; 0x1a1a94
+Route30YoungsterText_EveryoneIsBattling:
 	text "Everyone's having"
 	line "fun battling!"
 	cont "You should too!"
 	done
-; 0x1a1ac4
 
-UnknownText_0x1a1ac4: ; 0x1a1ac4
+Route30CooltrainerFText:
 	text "I'm not a trainer."
 
 	para "But if you look"
 	line "one in the eyes,"
 	cont "prepare to battle."
 	done
-; 0x1a1b0b
 
-UnknownText_0x1a1b0b: ; 0x1a1b0b
+Route30SignText:
 	text "ROUTE 30"
 
 	para "VIOLET CITY -"
 	line "CHERRYGROVE CITY"
 	done
-; 0x1a1b34
 
-UnknownText_0x1a1b34: ; 0x1a1b34
+MrPokemonsHouseDirectionsSignText:
 	text "MR.#MON'S HOUSE"
 	line "STRAIGHT AHEAD!"
 	done
-; 0x1a1b55
 
-UnknownText_0x1a1b55: ; 0x1a1b55
+MrPokemonsHouseSignText:
 	text "MR.#MON'S HOUSE"
 	done
-; 0x1a1b66
 
-UnknownText_0x1a1b66: ; 0x1a1b66
+Route30TrainerTipsText:
 	text "TRAINER TIPS"
 
 	para "No stealing other"
@@ -482,9 +391,8 @@ UnknownText_0x1a1b66: ; 0x1a1b66
 	line "be thrown only at"
 	cont "wild #MON!"
 	done
-; 0x1a1bc0
 
-UnknownText_0x1a1bc0: ; 0x1a1bc0
+YoungsterJoeyText_GiveHPUpAfterBattle:
 	text "I lost again…"
 	line "Gee, you're tough!"
 
@@ -498,40 +406,37 @@ UnknownText_0x1a1bc0: ; 0x1a1bc0
 	para "I'm going to get"
 	line "tougher too."
 	done
-; 0x1a1c54
 
-Route30_MapEventHeader: ; 0x1a1c54
+Route30_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $27, $7, 1, GROUP_ROUTE_30_BERRY_SPEECH_HOUSE, MAP_ROUTE_30_BERRY_SPEECH_HOUSE
-	warp_def $5, $11, 1, GROUP_MR_POKEMONS_HOUSE, MAP_MR_POKEMONS_HOUSE
+	warp_def $27, $7, 1, ROUTE_30_BERRY_SPEECH_HOUSE
+	warp_def $5, $11, 1, MR_POKEMONS_HOUSE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 5
-	signpost 43, 9, $0, MapRoute30Signpost0Script
-	signpost 29, 13, $0, MapRoute30Signpost1Script
-	signpost 5, 15, $0, MapRoute30Signpost2Script
-	signpost 21, 3, $0, MapRoute30Signpost3Script
-	signpost 9, 14, $7, MapRoute30SignpostItem4
+	signpost 43, 9, SIGNPOST_READ, Route30Sign
+	signpost 29, 13, SIGNPOST_READ, MrPokemonsHouseDirectionsSign
+	signpost 5, 15, SIGNPOST_READ, MrPokemonsHouseSign
+	signpost 21, 3, SIGNPOST_READ, Route30TrainerTips
+	signpost 9, 14, SIGNPOST_ITEM, Route30HiddenPotion
 
-	; people-events
+.PersonEvents:
 	db 11
-	person_event SPRITE_YOUNGSTER, 30, 9, $7, $0, 255, 255, $90, 0, YoungsterScript_0x1a1673, $0714
-	person_event SPRITE_YOUNGSTER, 32, 6, $9, $0, 255, 255, $92, 3, TrainerYoungsterJoey1, $0715
-	person_event SPRITE_YOUNGSTER, 27, 9, $6, $0, 255, 255, $92, 1, TrainerYoungsterMikey, $ffff
-	person_event SPRITE_BUG_CATCHER, 11, 5, $6, $0, 255, 255, $b2, 3, TrainerBug_catcherDon, $ffff
-	person_event SPRITE_YOUNGSTER, 34, 11, $5, $1, 255, 255, $80, 0, YoungsterScript_0x1a17d2, $ffff
-	person_event SPRITE_MONSTER, 28, 9, $6, $0, 255, 255, $80, 0, ObjectEvent, $0714
-	person_event SPRITE_MONSTER, 29, 9, $7, $0, 255, 255, $90, 0, ObjectEvent, $0714
-	person_event SPRITE_FRUIT_TREE, 43, 9, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x1a17f7, $ffff
-	person_event SPRITE_FRUIT_TREE, 9, 15, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x1a17f9, $ffff
-	person_event SPRITE_COOLTRAINER_F, 17, 6, $6, $0, 255, 255, $0, 0, CooltrainerFScript_0x1a17e6, $ffff
-	person_event SPRITE_POKE_BALL, 39, 12, $1, $0, 255, 255, $1, 0, ItemFragment_0x1a17f5, $07b8
-; 0x1a1d0c
-
+	person_event SPRITE_YOUNGSTER, 26, 5, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, YoungsterJoey_ImportantBattleScript, EVENT_ROUTE_30_BATTLE
+	person_event SPRITE_YOUNGSTER, 28, 2, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 3, TrainerYoungsterJoey, EVENT_ROUTE_30_YOUNGSTER_JOEY
+	person_event SPRITE_YOUNGSTER, 23, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 1, TrainerYoungsterMikey, -1
+	person_event SPRITE_BUG_CATCHER, 7, 1, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 3, TrainerBug_catcherDon, -1
+	person_event SPRITE_YOUNGSTER, 30, 7, SPRITEMOVEDATA_WALK_LEFT_RIGHT, 0, 1, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, Route30YoungsterScript, -1
+	person_event SPRITE_MONSTER, 24, 5, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, ObjectEvent, EVENT_ROUTE_30_BATTLE
+	person_event SPRITE_MONSTER, 25, 5, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_SCRIPT, 0, ObjectEvent, EVENT_ROUTE_30_BATTLE
+	person_event SPRITE_FRUIT_TREE, 39, 5, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, Route30FruitTree1, -1
+	person_event SPRITE_FRUIT_TREE, 5, 11, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, Route30FruitTree2, -1
+	person_event SPRITE_COOLTRAINER_F, 13, 2, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, Route30CooltrainerFScript, -1
+	person_event SPRITE_POKE_BALL, 35, 8, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, Route30Antidote, EVENT_ROUTE_30_ANTIDOTE

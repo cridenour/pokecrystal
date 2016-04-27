@@ -1,202 +1,130 @@
-Route2_MapScriptHeader: ; 0x1ac2ba
-	; trigger count
+const_value set 2
+	const ROUTE2_BUG_CATCHER1
+	const ROUTE2_BUG_CATCHER2
+	const ROUTE2_BUG_CATCHER3
+	const ROUTE2_POKE_BALL1
+	const ROUTE2_POKE_BALL2
+	const ROUTE2_POKE_BALL3
+	const ROUTE2_POKE_BALL4
+	const ROUTE2_FRUIT_TREE
+
+Route2_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1ac2bc
 
-TrainerBug_catcherRob: ; 0x1ac2bc
-	; bit/flag number
-	dw $539
+TrainerBug_catcherRob:
+	trainer EVENT_BEAT_BUG_CATCHER_ROB, BUG_CATCHER, ROB, Bug_catcherRobSeenText, Bug_catcherRobBeatenText, 0, Bug_catcherRobScript
 
-	; trainer group && trainer id
-	db BUG_CATCHER, ROB
-
-	; text when seen
-	dw Bug_catcherRobSeenText
-
-	; text when trainer beaten
-	dw Bug_catcherRobBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw Bug_catcherRobScript
-; 0x1ac2c8
-
-Bug_catcherRobScript: ; 0x1ac2c8
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1ac34d
+Bug_catcherRobScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1ac34d
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1ac2d0
 
-TrainerBug_catcherEd: ; 0x1ac2d0
-	; bit/flag number
-	dw $53a
+TrainerBug_catcherEd:
+	trainer EVENT_BEAT_BUG_CATCHER_ED, BUG_CATCHER, ED, Bug_catcherEdSeenText, Bug_catcherEdBeatenText, 0, Bug_catcherEdScript
 
-	; trainer group && trainer id
-	db BUG_CATCHER, ED
-
-	; text when seen
-	dw Bug_catcherEdSeenText
-
-	; text when trainer beaten
-	dw Bug_catcherEdBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw Bug_catcherEdScript
-; 0x1ac2dc
-
-Bug_catcherEdScript: ; 0x1ac2dc
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1ac3cf
+Bug_catcherEdScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1ac3cf
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1ac2e4
 
-TrainerBug_catcherDoug: ; 0x1ac2e4
-	; bit/flag number
-	dw $543
+TrainerBug_catcherDoug:
+	trainer EVENT_BEAT_BUG_CATCHER_DOUG, BUG_CATCHER, DOUG, Bug_catcherDougSeenText, Bug_catcherDougBeatenText, 0, Bug_catcherDougScript
 
-	; trainer group && trainer id
-	db BUG_CATCHER, DOUG
-
-	; text when seen
-	dw Bug_catcherDougSeenText
-
-	; text when trainer beaten
-	dw Bug_catcherDougBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw Bug_catcherDougScript
-; 0x1ac2f0
-
-Bug_catcherDougScript: ; 0x1ac2f0
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1ac423
+Bug_catcherDougScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1ac423
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1ac2f8
 
-MapRoute2Signpost0Script: ; 0x1ac2f8
-	jumptext UnknownText_0x1ac47a
-; 0x1ac2fb
+Route2Sign:
+	jumptext Route2SignText
 
-MapRoute2Signpost1Script: ; 0x1ac2fb
+MapRoute2Signpost1Script:
 	jumptext UnknownText_0x1ac49f
-; 0x1ac2fe
 
-ItemFragment_0x1ac2fe: ; 0x1ac2fe
-	db DIRE_HIT, 1
-; 0x1ac300
+Route2DireHit:
+	itemball DIRE_HIT
 
-ItemFragment_0x1ac300: ; 0x1ac300
-	db MAX_POTION, 1
-; 0x1ac302
+Route2MaxPotion:
+	itemball MAX_POTION
 
-ItemFragment_0x1ac302: ; 0x1ac302
-	db CARBOS, 1
-; 0x1ac304
+Route2Carbos:
+	itemball CARBOS
 
-ItemFragment_0x1ac304: ; 0x1ac304
-	db ELIXER, 1
-; 0x1ac306
+Route2Elixer:
+	itemball ELIXER
 
-FruitTreeScript_0x1ac306: ; 0x1ac306
-	fruittree $19
-; 0x1ac308
+FruitTreeScript_0x1ac306:
+	fruittree FRUITTREE_ROUTE_2
 
-MapRoute2SignpostItem2: ; 0x1ac308
-	dw $00ed
-	db MAX_ETHER
-	
-; 0x1ac30b
+Route2HiddenMaxEther:
+	dwb EVENT_ROUTE_2_HIDDEN_MAX_ETHER, MAX_ETHER
 
-MapRoute2SignpostItem3: ; 0x1ac30b
-	dw $00ee
-	db FULL_HEAL
-	
-; 0x1ac30e
+Route2HiddenFullHeal:
+	dwb EVENT_ROUTE_2_HIDDEN_FULL_HEAL, FULL_HEAL
 
-MapRoute2SignpostItem4: ; 0x1ac30e
-	dw $00ef
-	db FULL_RESTORE
-	
-; 0x1ac311
+Route2HiddenFullRestore:
+	dwb EVENT_ROUTE_2_HIDDEN_FULL_RESTORE, FULL_RESTORE
 
-MapRoute2SignpostItem5: ; 0x1ac311
-	dw $00f0
-	db REVIVE
-	
-; 0x1ac314
+Route2HiddenRevive:
+	dwb EVENT_ROUTE_2_HIDDEN_REVIVE, REVIVE
 
-Bug_catcherRobSeenText: ; 0x1ac314
+Bug_catcherRobSeenText:
 	text "My bug #MON are"
 	line "tough. Prepare to"
 	cont "lose!"
 	done
-; 0x1ac33d
 
-Bug_catcherRobBeatenText: ; 0x1ac33d
+Bug_catcherRobBeatenText:
 	text "I was whipped…"
 	done
-; 0x1ac34d
 
-UnknownText_0x1ac34d: ; 0x1ac34d
+UnknownText_0x1ac34d:
 	text "I'm going to look"
 	line "for stronger bug"
 	cont "#MON."
 	done
-; 0x1ac376
 
-Bug_catcherEdSeenText: ; 0x1ac376
+Bug_catcherEdSeenText:
 	text "If you walk in"
 	line "tall grass wearing"
 
 	para "shorts, do you get"
 	line "nicks and cuts?"
 	done
-; 0x1ac3bc
 
-Bug_catcherEdBeatenText: ; 0x1ac3bc
+Bug_catcherEdBeatenText:
 	text "Ouch, ouch, ouch!"
 	done
-; 0x1ac3cf
 
-UnknownText_0x1ac3cf: ; 0x1ac3cf
+UnknownText_0x1ac3cf:
 	text "They'll really"
 	line "sting when you"
 	cont "take a bath."
 	done
-; 0x1ac3fa
 
-Bug_catcherDougSeenText: ; 0x1ac3fa
+Bug_catcherDougSeenText:
 	text "Why don't girls"
 	line "like bug #MON?"
 	done
-; 0x1ac419
 
-Bug_catcherDougBeatenText: ; 0x1ac419
+Bug_catcherDougBeatenText:
 	text "No good!"
 	done
-; 0x1ac423
 
-UnknownText_0x1ac423: ; 0x1ac423
+UnknownText_0x1ac423:
 	text "Bug #MON squish"
 	line "like plush toys"
 
@@ -206,54 +134,49 @@ UnknownText_0x1ac423: ; 0x1ac423
 	para "I love how they"
 	line "feel!"
 	done
-; 0x1ac47a
 
-UnknownText_0x1ac47a: ; 0x1ac47a
+Route2SignText:
 	text "ROUTE 2"
 
 	para "VIRIDIAN CITY -"
 	line "PEWTER CITY"
 	done
-; 0x1ac49f
 
-UnknownText_0x1ac49f: ; 0x1ac49f
+UnknownText_0x1ac49f:
 	text "DIGLETT'S CAVE"
 	done
-; 0x1ac4af
 
-Route2_MapEventHeader: ; 0x1ac4af
+Route2_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 5
-	warp_def $f, $f, 1, GROUP_ROUTE_2_NUGGET_SPEECH_HOUSE, MAP_ROUTE_2_NUGGET_SPEECH_HOUSE
-	warp_def $1f, $f, 3, GROUP_ROUTE_2_GATE, MAP_ROUTE_2_GATE
-	warp_def $1b, $10, 1, GROUP_ROUTE_2_GATE, MAP_ROUTE_2_GATE
-	warp_def $1b, $11, 2, GROUP_ROUTE_2_GATE, MAP_ROUTE_2_GATE
-	warp_def $7, $c, 3, GROUP_DIGLETTS_CAVE, MAP_DIGLETTS_CAVE
+	warp_def $f, $f, 1, ROUTE_2_NUGGET_SPEECH_HOUSE
+	warp_def $1f, $f, 3, ROUTE_2_GATE
+	warp_def $1b, $10, 1, ROUTE_2_GATE
+	warp_def $1b, $11, 2, ROUTE_2_GATE
+	warp_def $7, $c, 3, DIGLETTS_CAVE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 6
-	signpost 51, 7, $0, MapRoute2Signpost0Script
-	signpost 9, 11, $0, MapRoute2Signpost1Script
-	signpost 23, 7, $7, MapRoute2SignpostItem2
-	signpost 14, 4, $7, MapRoute2SignpostItem3
-	signpost 27, 4, $7, MapRoute2SignpostItem4
-	signpost 30, 11, $7, MapRoute2SignpostItem5
+	signpost 51, 7, SIGNPOST_READ, Route2Sign
+	signpost 9, 11, SIGNPOST_READ, MapRoute2Signpost1Script
+	signpost 23, 7, SIGNPOST_ITEM, Route2HiddenMaxEther
+	signpost 14, 4, SIGNPOST_ITEM, Route2HiddenFullHeal
+	signpost 27, 4, SIGNPOST_ITEM, Route2HiddenFullRestore
+	signpost 30, 11, SIGNPOST_ITEM, Route2HiddenRevive
 
-	; people-events
+.PersonEvents:
 	db 8
-	person_event SPRITE_BUG_CATCHER, 49, 14, $8, $0, 255, 255, $b2, 5, TrainerBug_catcherRob, $ffff
-	person_event SPRITE_BUG_CATCHER, 8, 10, $1f, $0, 255, 255, $b2, 3, TrainerBug_catcherEd, $ffff
-	person_event SPRITE_BUG_CATCHER, 44, 4, $9, $0, 255, 255, $b2, 3, TrainerBug_catcherDoug, $ffff
-	person_event SPRITE_POKE_BALL, 33, 4, $1, $0, 255, 255, $1, 0, ItemFragment_0x1ac2fe, $0783
-	person_event SPRITE_POKE_BALL, 27, 6, $1, $0, 255, 255, $1, 0, ItemFragment_0x1ac300, $0784
-	person_event SPRITE_POKE_BALL, 6, 23, $1, $0, 255, 255, $1, 0, ItemFragment_0x1ac302, $0785
-	person_event SPRITE_POKE_BALL, 54, 18, $1, $0, 255, 255, $1, 0, ItemFragment_0x1ac304, $0786
-	person_event SPRITE_FRUIT_TREE, 18, 14, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x1ac306, $ffff
-; 0x1ac554
-
+	person_event SPRITE_BUG_CATCHER, 45, 10, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 5, TrainerBug_catcherRob, -1
+	person_event SPRITE_BUG_CATCHER, 4, 6, SPRITEMOVEDATA_SPINCLOCKWISE, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 3, TrainerBug_catcherEd, -1
+	person_event SPRITE_BUG_CATCHER, 40, 0, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_TRAINER, 3, TrainerBug_catcherDoug, -1
+	person_event SPRITE_POKE_BALL, 29, 0, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, Route2DireHit, EVENT_ROUTE_2_DIRE_HIT
+	person_event SPRITE_POKE_BALL, 23, 2, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, Route2MaxPotion, EVENT_ROUTE_2_MAX_POTION
+	person_event SPRITE_POKE_BALL, 2, 19, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, Route2Carbos, EVENT_ROUTE_2_CARBOS
+	person_event SPRITE_POKE_BALL, 50, 14, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, Route2Elixer, EVENT_ROUTE_2_ELIXER
+	person_event SPRITE_FRUIT_TREE, 14, 10, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FruitTreeScript_0x1ac306, -1

@@ -1,111 +1,72 @@
-SproutTower2F_MapScriptHeader: ; 0x18477a
-	; trigger count
+const_value set 2
+	const SPROUTTOWER2F_SAGE1
+	const SPROUTTOWER2F_SAGE2
+	const SPROUTTOWER2F_POKE_BALL
+
+SproutTower2F_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x18477c
 
-TrainerSageNico: ; 0x18477c
-	; bit/flag number
-	dw $412
+TrainerSageNico:
+	trainer EVENT_BEAT_SAGE_NICO, SAGE, NICO, SageNicoSeenText, SageNicoBeatenText, 0, SageNicoScript
 
-	; trainer group && trainer id
-	db SAGE, NICO
-
-	; text when seen
-	dw SageNicoSeenText
-
-	; text when trainer beaten
-	dw SageNicoBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SageNicoScript
-; 0x184788
-
-SageNicoScript: ; 0x184788
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1847ff
+SageNicoScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1847ff
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x184790
 
-TrainerSageEdmond: ; 0x184790
-	; bit/flag number
-	dw $417
+TrainerSageEdmond:
+	trainer EVENT_BEAT_SAGE_EDMOND, SAGE, EDMOND, SageEdmondSeenText, SageEdmondBeatenText, 0, SageEdmondScript
 
-	; trainer group && trainer id
-	db SAGE, EDMOND
-
-	; text when seen
-	dw SageEdmondSeenText
-
-	; text when trainer beaten
-	dw SageEdmondBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw SageEdmondScript
-; 0x18479c
-
-SageEdmondScript: ; 0x18479c
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x18486f
+SageEdmondScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x18486f
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1847a4
 
-MapSproutTower2FSignpost0Script: ; 0x1847a4
+MapSproutTower2FSignpost0Script:
 	jumptext UnknownText_0x1848c8
-; 0x1847a7
 
-ItemFragment_0x1847a7: ; 0x1847a7
-	db X_ACCURACY, 1
-; 0x1847a9
+SproutTower2FXAccuracy:
+	itemball X_ACCURACY
 
-SageNicoSeenText: ; 0x1847a9
+SageNicoSeenText:
 	text "However hard we"
 	line "battle, the TOWER"
 	cont "will stand strong."
 	done
-; 0x1847df
 
-SageNicoBeatenText: ; 0x1847df
+SageNicoBeatenText:
 	text "I fought hard but"
 	line "I'm too weak."
 	done
-; 0x1847ff
 
-UnknownText_0x1847ff: ; 0x1847ff
+UnknownText_0x1847ff:
 	text "The flexible pil-"
 	line "lar protects the"
 
 	para "TOWER, even from"
 	line "earthquakes."
 	done
-; 0x184841
 
-SageEdmondSeenText: ; 0x184841
+SageEdmondSeenText:
 	text "…Sway like leaves"
 	line "in the wind…"
 	done
-; 0x184861
 
-SageEdmondBeatenText: ; 0x184861
+SageEdmondBeatenText:
 	text "Oh, I'm weak!"
 	done
-; 0x18486f
 
-UnknownText_0x18486f: ; 0x18486f
+UnknownText_0x18486f:
 	text "I tried to copy"
 	line "BELLSPROUT's"
 
@@ -115,38 +76,34 @@ UnknownText_0x18486f: ; 0x18486f
 	para "But I didn't train"
 	line "well enough."
 	done
-; 0x1848c8
 
-UnknownText_0x1848c8: ; 0x1848c8
+UnknownText_0x1848c8:
 	text "A #MON statue…"
 
 	para "It looks very"
 	line "distinguished."
 	done
-; 0x1848f5
 
-SproutTower2F_MapEventHeader: ; 0x1848f5
+SproutTower2F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 4
-	warp_def $4, $6, 3, GROUP_SPROUT_TOWER_1F, MAP_SPROUT_TOWER_1F
-	warp_def $6, $2, 4, GROUP_SPROUT_TOWER_1F, MAP_SPROUT_TOWER_1F
-	warp_def $3, $11, 5, GROUP_SPROUT_TOWER_1F, MAP_SPROUT_TOWER_1F
-	warp_def $e, $a, 1, GROUP_SPROUT_TOWER_3F, MAP_SPROUT_TOWER_3F
+	warp_def $4, $6, 3, SPROUT_TOWER_1F
+	warp_def $6, $2, 4, SPROUT_TOWER_1F
+	warp_def $3, $11, 5, SPROUT_TOWER_1F
+	warp_def $e, $a, 1, SPROUT_TOWER_3F
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 1
-	signpost 15, 12, $0, MapSproutTower2FSignpost0Script
+	signpost 15, 12, SIGNPOST_READ, MapSproutTower2FSignpost0Script
 
-	; people-events
+.PersonEvents:
 	db 3
-	person_event SPRITE_SAGE, 7, 16, $a, $0, 255, 255, $92, 4, TrainerSageNico, $ffff
-	person_event SPRITE_SAGE, 18, 13, $8, $0, 255, 255, $92, 5, TrainerSageEdmond, $ffff
-	person_event SPRITE_POKE_BALL, 5, 7, $1, $0, 255, 255, $1, 0, ItemFragment_0x1847a7, $0648
-; 0x18493b
-
+	person_event SPRITE_SAGE, 3, 12, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 4, TrainerSageNico, -1
+	person_event SPRITE_SAGE, 14, 9, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 5, TrainerSageEdmond, -1
+	person_event SPRITE_POKE_BALL, 1, 3, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, SproutTower2FXAccuracy, EVENT_SPROUT_TOWER2F_X_ACCURACY

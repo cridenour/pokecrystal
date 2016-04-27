@@ -1,84 +1,82 @@
-TrainerHouseB1F_MapScriptHeader: ; 0x9b384
-	; trigger count
+const_value set 2
+	const TRAINERHOUSEB1F_RECEPTIONIST
+	const TRAINERHOUSEB1F_CHRIS
+
+TrainerHouseB1F_MapScriptHeader:
+.MapTriggers:
 	db 1
 
 	; triggers
-	dw UnknownScript_0x9b38a, $0000
+	dw Trigger0, 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x9b38a
 
-UnknownScript_0x9b38a: ; 0x9b38a
+Trigger0:
 	end
-; 0x9b38b
 
-UnknownScript_0x9b38b: ; 0x9b38b
-	spriteface $0, $1
-	loadfont
-	checkflag $0057
-	iftrue UnknownScript_0x9b3f7
-	2writetext UnknownText_0x9b420
-	keeptextopen
-	special $0067
-	iffalse UnknownScript_0x9b3a6
+TrainerHouseReceptionistScript:
+	spriteface PLAYER, UP
+	opentext
+	checkflag ENGINE_FOUGHT_IN_TRAINER_HALL_TODAY
+	iftrue .FoughtTooManyTimes
+	writetext TrainerHouseB1FIntroText
+	buttonsound
+	special SpecialTrainerHouse
+	iffalse .GetCal3Name
 	trainertotext CAL, CAL2, $0
-	2jump UnknownScript_0x9b3aa
-; 0x9b3a6
+	jump .GotName
 
-UnknownScript_0x9b3a6: ; 0x9b3a6
+.GetCal3Name:
 	trainertotext CAL, CAL3, $0
-UnknownScript_0x9b3aa: ; 0x9b3aa
-	2writetext UnknownText_0x9b46a
-	keeptextopen
-	2writetext UnknownText_0x9b487
+.GotName:
+	writetext TrainerHouseB1FYourOpponentIsText
+	buttonsound
+	writetext TrainerHouseB1FAskWantToBattleText
 	yesorno
-	iffalse UnknownScript_0x9b3ed
-	setflag $0057
-	2writetext UnknownText_0x9b4a2
+	iffalse .Declined
+	setflag ENGINE_FOUGHT_IN_TRAINER_HALL_TODAY
+	writetext TrainerHouseB1FGoRightInText
+	waitbutton
 	closetext
-	loadmovesprites
-	applymovement $0, MovementData_0x9b401
-	loadfont
-	2writetext UnknownText_0x9b587
+	applymovement PLAYER, Movement_EnterTrainerHouseBattleRoom
+	opentext
+	writetext TrainerHouseB1FCalBeforeText
+	waitbutton
 	closetext
-	loadmovesprites
-	special $0067
-	iffalse UnknownScript_0x9b3dc
-	winlosstext UnknownText_0x9b578, $0000
-	setlasttalked $3
+	special SpecialTrainerHouse
+	iffalse .NoSpecialBattle
+	winlosstext TrainerHouseB1FCalBeatenText, 0
+	setlasttalked TRAINERHOUSEB1F_CHRIS
 	loadtrainer CAL, CAL2
 	startbattle
-	returnafterbattle
-	iffalse UnknownScript_0x9b3e8
-UnknownScript_0x9b3dc: ; 0x9b3dc
-	winlosstext UnknownText_0x9b578, $0000
-	setlasttalked $3
+	reloadmapafterbattle
+	iffalse .End
+.NoSpecialBattle:
+	winlosstext TrainerHouseB1FCalBeatenText, 0
+	setlasttalked TRAINERHOUSEB1F_CHRIS
 	loadtrainer CAL, CAL3
 	startbattle
-	returnafterbattle
-UnknownScript_0x9b3e8: ; 0x9b3e8
-	applymovement $0, MovementData_0x9b40f
+	reloadmapafterbattle
+.End:
+	applymovement PLAYER, Movement_ExitTrainerHouseBattleRoom
 	end
-; 0x9b3ed
 
-UnknownScript_0x9b3ed: ; 0x9b3ed
-	2writetext UnknownText_0x9b4d6
+.Declined:
+	writetext TrainerHouseB1FPleaseComeAgainText
+	waitbutton
 	closetext
-	loadmovesprites
-	applymovement $0, MovementData_0x9b41d
+	applymovement PLAYER, Movement_TrainerHouseTurnBack
 	end
-; 0x9b3f7
 
-UnknownScript_0x9b3f7: ; 0x9b3f7
-	2writetext UnknownText_0x9b51d
+.FoughtTooManyTimes:
+	writetext TrainerHouseB1FSecondChallengeDeniedText
+	waitbutton
 	closetext
-	loadmovesprites
-	applymovement $0, MovementData_0x9b41d
+	applymovement PLAYER, Movement_TrainerHouseTurnBack
 	end
-; 0x9b401
 
-MovementData_0x9b401: ; 0x9b401
+Movement_EnterTrainerHouseBattleRoom:
 	step_left
 	step_left
 	step_left
@@ -93,9 +91,8 @@ MovementData_0x9b401: ; 0x9b401
 	step_left
 	turn_head_right
 	step_end
-; 0x9b40f
 
-MovementData_0x9b40f: ; 0x9b40f
+Movement_ExitTrainerHouseBattleRoom:
 	step_up
 	step_up
 	step_up
@@ -110,15 +107,13 @@ MovementData_0x9b40f: ; 0x9b40f
 	step_right
 	step_right
 	step_end
-; 0x9b41d
 
-MovementData_0x9b41d: ; 0x9b41d
+Movement_TrainerHouseTurnBack:
 	step_right
 	turn_head_left
 	step_end
-; 0x9b420
 
-UnknownText_0x9b420: ; 0x9b420
+TrainerHouseB1FIntroText:
 	text "Hi. Welcome to our"
 	line "TRAINING HALL."
 
@@ -126,40 +121,35 @@ UnknownText_0x9b420: ; 0x9b420
 	line "trainer once per"
 	cont "day."
 	done
-; 0x9b46a
 
-UnknownText_0x9b46a: ; 0x9b46a
-	text_from_ram $d099
+TrainerHouseB1FYourOpponentIsText:
+	text_from_ram StringBuffer3
 	text " is your"
 	line "opponent today."
 	done
-; 0x9b487
 
-UnknownText_0x9b487: ; 0x9b487
+TrainerHouseB1FAskWantToBattleText:
 	text "Would you like to"
 	line "battle?"
 	done
-; 0x9b4a2
 
-UnknownText_0x9b4a2: ; 0x9b4a2
+TrainerHouseB1FGoRightInText:
 	text "Please go right"
 	line "through."
 
 	para "You may begin"
 	line "right away."
 	done
-; 0x9b4d6
 
-UnknownText_0x9b4d6: ; 0x9b4d6
+TrainerHouseB1FPleaseComeAgainText:
 	text "Sorry. Only those"
 	line "trainers who will"
 
 	para "be battling are"
 	line "allowed to go in."
 	done
-; 0x9b51d
 
-UnknownText_0x9b51d: ; 0x9b51d
+TrainerHouseB1FSecondChallengeDeniedText:
 	text "I'm sorry."
 	line "This would be your"
 
@@ -169,39 +159,34 @@ UnknownText_0x9b51d: ; 0x9b51d
 	para "to enter just once"
 	line "a day."
 	done
-; 0x9b578
 
-UnknownText_0x9b578: ; 0x9b578
+TrainerHouseB1FCalBeatenText:
 	text "I lost…"
 	line "Darn…"
 	done
-; 0x9b587
 
-UnknownText_0x9b587: ; 0x9b587
+TrainerHouseB1FCalBeforeText:
 	text "I traveled out"
 	line "here just so I"
 	cont "could battle you."
 	done
-; 0x9b5b8
 
-TrainerHouseB1F_MapEventHeader: ; 0x9b5b8
+TrainerHouseB1F_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 1
-	warp_def $4, $9, 3, GROUP_TRAINER_HOUSE_1F, MAP_TRAINER_HOUSE_1F
+	warp_def $4, $9, 3, TRAINER_HOUSE_1F
 
-	; xy triggers
+.XYTriggers:
 	db 1
-	xy_trigger 0, $3, $7, $0, UnknownScript_0x9b38b, $0, $0
+	xy_trigger 0, $3, $7, $0, TrainerHouseReceptionistScript, $0, $0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_RECEPTIONIST, 5, 11, $6, $0, 255, 255, $a0, 0, ObjectEvent, $ffff
-	person_event SPRITE_CHRIS, 15, 10, $8, $0, 255, 255, $80, 0, ObjectEvent, $ffff
-; 0x9b5e5
-
+	person_event SPRITE_RECEPTIONIST, 1, 7, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, ObjectEvent, -1
+	person_event SPRITE_CHRIS, 11, 6, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, ObjectEvent, -1

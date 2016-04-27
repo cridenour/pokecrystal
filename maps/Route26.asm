@@ -1,398 +1,272 @@
-Route26_MapScriptHeader: ; 0x1a4d1d
-	; trigger count
+const_value set 2
+	const ROUTE26_COOLTRAINER_M1
+	const ROUTE26_COOLTRAINER_M2
+	const ROUTE26_COOLTRAINER_F1
+	const ROUTE26_COOLTRAINER_F2
+	const ROUTE26_YOUNGSTER
+	const ROUTE26_FISHER
+	const ROUTE26_FRUIT_TREE
+	const ROUTE26_POKE_BALL
+
+Route26_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1a4d1f
 
-TrainerCooltrainermJake: ; 0x1a4d1f
-	; bit/flag number
-	dw $550
+TrainerCooltrainermJake:
+	trainer EVENT_BEAT_COOLTRAINERM_JAKE, COOLTRAINERM, JAKE, CooltrainermJakeSeenText, CooltrainermJakeBeatenText, 0, CooltrainermJakeScript
 
-	; trainer group && trainer id
-	db COOLTRAINERM, JAKE
-
-	; text when seen
-	dw CooltrainermJakeSeenText
-
-	; text when trainer beaten
-	dw CooltrainermJakeBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw CooltrainermJakeScript
-; 0x1a4d2b
-
-CooltrainermJakeScript: ; 0x1a4d2b
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a4f08
+CooltrainermJakeScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a4f08
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a4d33
 
-TrainerCooltrainermGaven3: ; 0x1a4d33
-	; bit/flag number
-	dw $551
+TrainerCooltrainermGaven3:
+	trainer EVENT_BEAT_COOLTRAINERM_GAVEN, COOLTRAINERM, GAVEN3, CooltrainermGaven3SeenText, CooltrainermGaven3BeatenText, 0, CooltrainermGaven3Script
 
-	; trainer group && trainer id
-	db COOLTRAINERM, GAVEN3
-
-	; text when seen
-	dw CooltrainermGaven3SeenText
-
-	; text when trainer beaten
-	dw CooltrainermGaven3BeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw CooltrainermGaven3Script
-; 0x1a4d3f
-
-CooltrainermGaven3Script: ; 0x1a4d3f
-	writecode $17, $b
-	talkaftercancel
-	loadfont
-	checkflag $0067
+CooltrainermGaven3Script:
+	writecode VAR_CALLERID, PHONE_COOLTRAINERM_GAVEN
+	end_if_just_battled
+	opentext
+	checkflag ENGINE_GAVEN
 	iftrue UnknownScript_0x1a4d79
-	checkcellnum $b
+	checkcellnum PHONE_COOLTRAINERM_GAVEN
 	iftrue UnknownScript_0x1a4dcb
-	checkevent $026b
+	checkevent EVENT_GAVEN_ASKED_FOR_PHONE_NUMBER
 	iftrue UnknownScript_0x1a4d62
-	2writetext UnknownText_0x1a4fe4
-	keeptextopen
-	setevent $026b
-	2call UnknownScript_0x1a4dbf
-	2jump UnknownScript_0x1a4d65
-; 0x1a4d62
+	writetext UnknownText_0x1a4fe4
+	buttonsound
+	setevent EVENT_GAVEN_ASKED_FOR_PHONE_NUMBER
+	scall UnknownScript_0x1a4dbf
+	jump UnknownScript_0x1a4d65
 
-UnknownScript_0x1a4d62: ; 0x1a4d62
-	2call UnknownScript_0x1a4dc3
-UnknownScript_0x1a4d65: ; 0x1a4d65
-	askforphonenumber $b
+UnknownScript_0x1a4d62:
+	scall UnknownScript_0x1a4dc3
+UnknownScript_0x1a4d65:
+	askforphonenumber PHONE_COOLTRAINERM_GAVEN
 	if_equal $1, UnknownScript_0x1a4dd3
 	if_equal $2, UnknownScript_0x1a4dcf
 	trainertotext COOLTRAINERM, GAVEN3, $0
-	2call UnknownScript_0x1a4dc7
-	2jump UnknownScript_0x1a4dcb
-; 0x1a4d79
+	scall UnknownScript_0x1a4dc7
+	jump UnknownScript_0x1a4dcb
 
-UnknownScript_0x1a4d79: ; 0x1a4d79
-	2call UnknownScript_0x1a4dd7
-	winlosstext CooltrainermGaven3BeatenText, $0000
-	copybytetovar $d9f5
-	if_equal $2, UnknownScript_0x1a4d90
-	if_equal $1, UnknownScript_0x1a4d96
-	if_equal $0, UnknownScript_0x1a4d9c
-UnknownScript_0x1a4d90: ; 0x1a4d90
+UnknownScript_0x1a4d79:
+	scall UnknownScript_0x1a4dd7
+	winlosstext CooltrainermGaven3BeatenText, 0
+	copybytetovar wGavenFightCount
+	if_equal 2, .Fight2
+	if_equal 1, .Fight1
+	if_equal 0, .LoadFight0
+.Fight2:
 	checkevent EVENT_RESTORED_POWER_TO_KANTO
-	iftrue UnknownScript_0x1a4db6
-UnknownScript_0x1a4d96: ; 0x1a4d96
-	checkevent $0044
-	iftrue UnknownScript_0x1a4da9
-UnknownScript_0x1a4d9c: ; 0x1a4d9c
+	iftrue .LoadFight2
+.Fight1:
+	checkevent EVENT_BEAT_ELITE_FOUR
+	iftrue .LoadFight1
+.LoadFight0:
 	loadtrainer COOLTRAINERM, GAVEN3
 	startbattle
-	returnafterbattle
-	loadvar $d9f5, $1
-	clearflag $0067
+	reloadmapafterbattle
+	loadvar wGavenFightCount, 1
+	clearflag ENGINE_GAVEN
 	end
-; 0x1a4da9
 
-UnknownScript_0x1a4da9: ; 0x1a4da9
+.LoadFight1:
 	loadtrainer COOLTRAINERM, GAVEN1
 	startbattle
-	returnafterbattle
-	loadvar $d9f5, $2
-	clearflag $0067
+	reloadmapafterbattle
+	loadvar wGavenFightCount, 2
+	clearflag ENGINE_GAVEN
 	end
-; 0x1a4db6
 
-UnknownScript_0x1a4db6: ; 0x1a4db6
+.LoadFight2:
 	loadtrainer COOLTRAINERM, GAVEN2
 	startbattle
-	returnafterbattle
-	clearflag $0067
+	reloadmapafterbattle
+	clearflag ENGINE_GAVEN
 	end
-; 0x1a4dbf
 
-UnknownScript_0x1a4dbf: ; 0x1a4dbf
-	jumpstd $0019
+UnknownScript_0x1a4dbf:
+	jumpstd asknumber1m
 	end
-; 0x1a4dc3
 
-UnknownScript_0x1a4dc3: ; 0x1a4dc3
-	jumpstd $001a
+UnknownScript_0x1a4dc3:
+	jumpstd asknumber2m
 	end
-; 0x1a4dc7
 
-UnknownScript_0x1a4dc7: ; 0x1a4dc7
-	jumpstd $001b
+UnknownScript_0x1a4dc7:
+	jumpstd registerednumberm
 	end
-; 0x1a4dcb
 
-UnknownScript_0x1a4dcb: ; 0x1a4dcb
-	jumpstd $001c
+UnknownScript_0x1a4dcb:
+	jumpstd numberacceptedm
 	end
-; 0x1a4dcf
 
-UnknownScript_0x1a4dcf: ; 0x1a4dcf
-	jumpstd $001d
+UnknownScript_0x1a4dcf:
+	jumpstd numberdeclinedm
 	end
-; 0x1a4dd3
 
-UnknownScript_0x1a4dd3: ; 0x1a4dd3
-	jumpstd $001e
+UnknownScript_0x1a4dd3:
+	jumpstd phonefullm
 	end
-; 0x1a4dd7
 
-UnknownScript_0x1a4dd7: ; 0x1a4dd7
-	jumpstd $001f
+UnknownScript_0x1a4dd7:
+	jumpstd rematchm
 	end
-; 0x1a4ddb
 
-TrainerCooltrainerfJoyce: ; 0x1a4ddb
-	; bit/flag number
-	dw $562
+TrainerCooltrainerfJoyce:
+	trainer EVENT_BEAT_COOLTRAINERF_JOYCE, COOLTRAINERF, JOYCE, CooltrainerfJoyceSeenText, CooltrainerfJoyceBeatenText, 0, CooltrainerfJoyceScript
 
-	; trainer group && trainer id
-	db COOLTRAINERF, JOYCE
-
-	; text when seen
-	dw CooltrainerfJoyceSeenText
-
-	; text when trainer beaten
-	dw CooltrainerfJoyceBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw CooltrainerfJoyceScript
-; 0x1a4de7
-
-CooltrainerfJoyceScript: ; 0x1a4de7
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a50d7
+CooltrainerfJoyceScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a50d7
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a4def
 
-TrainerCooltrainerfBeth1: ; 0x1a4def
-	; bit/flag number
-	dw $563
+TrainerCooltrainerfBeth1:
+	trainer EVENT_BEAT_COOLTRAINERF_BETH, COOLTRAINERF, BETH1, CooltrainerfBeth1SeenText, CooltrainerfBeth1BeatenText, 0, CooltrainerfBeth1Script
 
-	; trainer group && trainer id
-	db COOLTRAINERF, BETH1
-
-	; text when seen
-	dw CooltrainerfBeth1SeenText
-
-	; text when trainer beaten
-	dw CooltrainerfBeth1BeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw CooltrainerfBeth1Script
-; 0x1a4dfb
-
-CooltrainerfBeth1Script: ; 0x1a4dfb
-	writecode $17, $c
-	talkaftercancel
-	loadfont
-	checkflag $0068
+CooltrainerfBeth1Script:
+	writecode VAR_CALLERID, PHONE_COOLTRAINERF_BETH
+	end_if_just_battled
+	opentext
+	checkflag ENGINE_BETH
 	iftrue UnknownScript_0x1a4e35
-	checkcellnum $c
+	checkcellnum PHONE_COOLTRAINERF_BETH
 	iftrue UnknownScript_0x1a4e87
-	checkevent $026d
+	checkevent EVENT_BETH_ASKED_FOR_PHONE_NUMBER
 	iftrue UnknownScript_0x1a4e1e
-	2writetext UnknownText_0x1a51d9
-	keeptextopen
-	setevent $026d
-	2call UnknownScript_0x1a4e7b
-	2jump UnknownScript_0x1a4e21
-; 0x1a4e1e
+	writetext UnknownText_0x1a51d9
+	buttonsound
+	setevent EVENT_BETH_ASKED_FOR_PHONE_NUMBER
+	scall UnknownScript_0x1a4e7b
+	jump UnknownScript_0x1a4e21
 
-UnknownScript_0x1a4e1e: ; 0x1a4e1e
-	2call UnknownScript_0x1a4e7f
-UnknownScript_0x1a4e21: ; 0x1a4e21
-	askforphonenumber $c
+UnknownScript_0x1a4e1e:
+	scall UnknownScript_0x1a4e7f
+UnknownScript_0x1a4e21:
+	askforphonenumber PHONE_COOLTRAINERF_BETH
 	if_equal $1, UnknownScript_0x1a4e8f
 	if_equal $2, UnknownScript_0x1a4e8b
 	trainertotext COOLTRAINERF, BETH1, $0
-	2call UnknownScript_0x1a4e83
-	2jump UnknownScript_0x1a4e87
-; 0x1a4e35
+	scall UnknownScript_0x1a4e83
+	jump UnknownScript_0x1a4e87
 
-UnknownScript_0x1a4e35: ; 0x1a4e35
-	2call UnknownScript_0x1a4e93
-	winlosstext CooltrainerfBeth1BeatenText, $0000
-	copybytetovar $d9f6
-	if_equal $2, UnknownScript_0x1a4e4c
-	if_equal $1, UnknownScript_0x1a4e52
-	if_equal $0, UnknownScript_0x1a4e58
-UnknownScript_0x1a4e4c: ; 0x1a4e4c
+UnknownScript_0x1a4e35:
+	scall UnknownScript_0x1a4e93
+	winlosstext CooltrainerfBeth1BeatenText, 0
+	copybytetovar wBethFightCount
+	if_equal 2, .Fight2
+	if_equal 1, .Fight1
+	if_equal 0, .LoadFight0
+.Fight2:
 	checkevent EVENT_RESTORED_POWER_TO_KANTO
-	iftrue UnknownScript_0x1a4e72
-UnknownScript_0x1a4e52: ; 0x1a4e52
-	checkevent $0044
-	iftrue UnknownScript_0x1a4e65
-UnknownScript_0x1a4e58: ; 0x1a4e58
+	iftrue .LoadFight2
+.Fight1:
+	checkevent EVENT_BEAT_ELITE_FOUR
+	iftrue .LoadFight1
+.LoadFight0:
 	loadtrainer COOLTRAINERF, BETH1
 	startbattle
-	returnafterbattle
-	loadvar $d9f6, $1
-	clearflag $0068
+	reloadmapafterbattle
+	loadvar wBethFightCount, 1
+	clearflag ENGINE_BETH
 	end
-; 0x1a4e65
 
-UnknownScript_0x1a4e65: ; 0x1a4e65
+.LoadFight1:
 	loadtrainer COOLTRAINERF, BETH2
 	startbattle
-	returnafterbattle
-	loadvar $d9f6, $2
-	clearflag $0068
+	reloadmapafterbattle
+	loadvar wBethFightCount, 2
+	clearflag ENGINE_BETH
 	end
-; 0x1a4e72
 
-UnknownScript_0x1a4e72: ; 0x1a4e72
+.LoadFight2:
 	loadtrainer COOLTRAINERF, BETH3
 	startbattle
-	returnafterbattle
-	clearflag $0068
+	reloadmapafterbattle
+	clearflag ENGINE_BETH
 	end
-; 0x1a4e7b
 
-UnknownScript_0x1a4e7b: ; 0x1a4e7b
-	jumpstd $0023
+UnknownScript_0x1a4e7b:
+	jumpstd asknumber1f
 	end
-; 0x1a4e7f
 
-UnknownScript_0x1a4e7f: ; 0x1a4e7f
-	jumpstd $0024
+UnknownScript_0x1a4e7f:
+	jumpstd asknumber2f
 	end
-; 0x1a4e83
 
-UnknownScript_0x1a4e83: ; 0x1a4e83
-	jumpstd $0025
+UnknownScript_0x1a4e83:
+	jumpstd registerednumberf
 	end
-; 0x1a4e87
 
-UnknownScript_0x1a4e87: ; 0x1a4e87
-	jumpstd $0026
+UnknownScript_0x1a4e87:
+	jumpstd numberacceptedf
 	end
-; 0x1a4e8b
 
-UnknownScript_0x1a4e8b: ; 0x1a4e8b
-	jumpstd $0027
+UnknownScript_0x1a4e8b:
+	jumpstd numberdeclinedf
 	end
-; 0x1a4e8f
 
-UnknownScript_0x1a4e8f: ; 0x1a4e8f
-	jumpstd $0028
+UnknownScript_0x1a4e8f:
+	jumpstd phonefullf
 	end
-; 0x1a4e93
 
-UnknownScript_0x1a4e93: ; 0x1a4e93
-	jumpstd $0029
+UnknownScript_0x1a4e93:
+	jumpstd rematchf
 	end
-; 0x1a4e97
 
-TrainerPsychicRichard: ; 0x1a4e97
-	; bit/flag number
-	dw $442
+TrainerPsychicRichard:
+	trainer EVENT_BEAT_PSYCHIC_RICHARD, PSYCHIC_T, RICHARD, PsychicRichardSeenText, PsychicRichardBeatenText, 0, PsychicRichardScript
 
-	; trainer group && trainer id
-	db PSYCHIC_T, RICHARD
-
-	; text when seen
-	dw PsychicRichardSeenText
-
-	; text when trainer beaten
-	dw PsychicRichardBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw PsychicRichardScript
-; 0x1a4ea3
-
-PsychicRichardScript: ; 0x1a4ea3
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a5278
+PsychicRichardScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a5278
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a4eab
 
-TrainerFisherScott: ; 0x1a4eab
-	; bit/flag number
-	dw $462
+TrainerFisherScott:
+	trainer EVENT_BEAT_FISHER_SCOTT, FISHER, SCOTT, FisherScottSeenText, FisherScottBeatenText, 0, FisherScottScript
 
-	; trainer group && trainer id
-	db FISHER, SCOTT
-
-	; text when seen
-	dw FisherScottSeenText
-
-	; text when trainer beaten
-	dw FisherScottBeatenText
-
-	; script when lost
-	dw $0000
-
-	; script when talk again
-	dw FisherScottScript
-; 0x1a4eb7
-
-FisherScottScript: ; 0x1a4eb7
-	talkaftercancel
-	loadfont
-	2writetext UnknownText_0x1a5326
+FisherScottScript:
+	end_if_just_battled
+	opentext
+	writetext UnknownText_0x1a5326
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1a4ebf
 
-MapRoute26Signpost0Script: ; 0x1a4ebf
-	jumptext UnknownText_0x1a5364
-; 0x1a4ec2
+Route26Sign:
+	jumptext Route26SignText
 
-FruitTreeScript_0x1a4ec2: ; 0x1a4ec2
-	fruittree $e
-; 0x1a4ec4
+FruitTreeScript_0x1a4ec2:
+	fruittree FRUITTREE_ROUTE_26
 
-ItemFragment_0x1a4ec4: ; 0x1a4ec4
-	db MAX_ELIXER, 1
-; 0x1a4ec6
+Route26MaxElixer:
+	itemball MAX_ELIXER
 
-CooltrainermJakeSeenText: ; 0x1a4ec6
+CooltrainermJakeSeenText:
 	text "I'm making my"
 	line "final preparations"
 
 	para "for the #MON"
 	line "LEAGUE."
 	done
-; 0x1a4efc
 
-CooltrainermJakeBeatenText: ; 0x1a4efc
+CooltrainermJakeBeatenText:
 	text "I blew it!"
 	done
-; 0x1a4f08
 
-UnknownText_0x1a4f08: ; 0x1a4f08
+UnknownText_0x1a4f08:
 	text "It's going to be"
 	line "tough to win at"
 	cont "the LEAGUE."
@@ -406,22 +280,19 @@ UnknownText_0x1a4f08: ; 0x1a4f08
 	para "FOUR are tougher"
 	line "than GYM LEADERS."
 	done
-; 0x1a4f97
 
-CooltrainermGaven3SeenText: ; 0x1a4f97
+CooltrainermGaven3SeenText:
 	text "By experiencing"
 	line "tough battles, you"
 	cont "gain power."
 	done
-; 0x1a4fc7
 
-CooltrainermGaven3BeatenText: ; 0x1a4fc7
+CooltrainermGaven3BeatenText:
 	text "Gaah! Life is even"
 	line "tougher!"
 	done
-; 0x1a4fe4
 
-UnknownText_0x1a4fe4: ; 0x1a4fe4
+UnknownText_0x1a4fe4:
 	text "To get to #MON"
 	line "LEAGUE, you have"
 
@@ -434,9 +305,8 @@ UnknownText_0x1a4fe4: ; 0x1a4fe4
 	para "Practically nobody"
 	line "goes there!"
 	done
-; 0x1a505c
 
-CooltrainerfJoyceSeenText: ; 0x1a505c
+CooltrainerfJoyceSeenText:
 	text "Since you've come"
 	line "this far, you must"
 	cont "be good."
@@ -445,15 +315,13 @@ CooltrainerfJoyceSeenText: ; 0x1a505c
 	line "this battle every-"
 	cont "thing I've got!"
 	done
-; 0x1a50bd
 
-CooltrainerfJoyceBeatenText: ; 0x1a50bd
+CooltrainerfJoyceBeatenText:
 	text "No! I don't"
 	line "believe this!"
 	done
-; 0x1a50d7
 
-UnknownText_0x1a50d7: ; 0x1a50d7
+UnknownText_0x1a50d7:
 	text "I've defeated"
 	line "eight GYM LEADERS,"
 
@@ -463,11 +331,10 @@ UnknownText_0x1a50d7: ; 0x1a50d7
 	para "I'll have to try"
 	line "harder next time."
 	done
-; 0x1a5136
 
-CooltrainerfBeth1SeenText: ; 0x1a5136
+CooltrainerfBeth1SeenText:
 	text "I lost to a train-"
-	line "er named ", $53, "."
+	line "er named <RIVAL>."
 
 	para "He was really"
 	line "strong, but…"
@@ -479,22 +346,19 @@ CooltrainerfBeth1SeenText: ; 0x1a5136
 	para "I felt sorry for"
 	line "his #MON."
 	done
-; 0x1a51bf
 
-CooltrainerfBeth1BeatenText: ; 0x1a51bf
+CooltrainerfBeth1BeatenText:
 	text "#MON aren't"
 	line "tools of war."
 	done
-; 0x1a51d9
 
-UnknownText_0x1a51d9: ; 0x1a51d9
+UnknownText_0x1a51d9:
 	text "#MON are in-"
 	line "valuable, lifelong"
 	cont "partners."
 	done
-; 0x1a5204
 
-PsychicRichardSeenText: ; 0x1a5204
+PsychicRichardSeenText:
 	text "Wow, look at all"
 	line "those BADGES!"
 	cont "I'm impressed."
@@ -505,14 +369,12 @@ PsychicRichardSeenText: ; 0x1a5204
 	para "collecting them,"
 	line "right?"
 	done
-; 0x1a526a
 
-PsychicRichardBeatenText: ; 0x1a526a
+PsychicRichardBeatenText:
 	text "Good battle!"
 	done
-; 0x1a5278
 
-UnknownText_0x1a5278: ; 0x1a5278
+UnknownText_0x1a5278:
 	text "People and #MON"
 	line "grow from their"
 	cont "experiences."
@@ -520,9 +382,8 @@ UnknownText_0x1a5278: ; 0x1a5278
 	para "Don't get lazy and"
 	line "complacent."
 	done
-; 0x1a52c4
 
-FisherScottSeenText: ; 0x1a52c4
+FisherScottSeenText:
 	text "I'm feeling great"
 	line "today!"
 
@@ -530,57 +391,51 @@ FisherScottSeenText: ; 0x1a52c4
 	line "could boot even"
 	cont "the LEAGUE CHAMP!"
 	done
-; 0x1a530d
 
-FisherScottBeatenText: ; 0x1a530d
+FisherScottBeatenText:
 	text "No! Not in this"
 	line "battle!"
 	done
-; 0x1a5326
 
-UnknownText_0x1a5326: ; 0x1a5326
+UnknownText_0x1a5326:
 	text "Just like in fish-"
 	line "ing, it's all over"
 
 	para "in #MON if you"
 	line "give up."
 	done
-; 0x1a5364
 
-UnknownText_0x1a5364: ; 0x1a5364
+Route26SignText:
 	text "ROUTE 26"
 
 	para "#MON LEAGUE"
 	line "RECEPTION GATE"
 	done
-; 0x1a5389
 
-Route26_MapEventHeader: ; 0x1a5389
+Route26_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 3
-	warp_def $5, $7, 3, GROUP_VICTORY_ROAD_GATE, MAP_VICTORY_ROAD_GATE
-	warp_def $39, $f, 1, GROUP_ROUTE_26_HEAL_SPEECH_HOUSE, MAP_ROUTE_26_HEAL_SPEECH_HOUSE
-	warp_def $47, $5, 1, GROUP_ROUTE_26_DAY_OF_WEEK_SIBLINGS_HOUSE, MAP_ROUTE_26_DAY_OF_WEEK_SIBLINGS_HOUSE
+	warp_def $5, $7, 3, VICTORY_ROAD_GATE
+	warp_def $39, $f, 1, ROUTE_26_HEAL_SPEECH_HOUSE
+	warp_def $47, $5, 1, ROUTE_26_DAY_OF_WEEK_SIBLINGS_HOUSE
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 1
-	signpost 6, 8, $0, MapRoute26Signpost0Script
+	signpost 6, 8, SIGNPOST_READ, Route26Sign
 
-	; people-events
+.PersonEvents:
 	db 8
-	person_event SPRITE_COOLTRAINER_M, 28, 18, $8, $0, 255, 255, $82, 2, TrainerCooltrainermJake, $ffff
-	person_event SPRITE_COOLTRAINER_M, 42, 13, $8, $0, 255, 255, $82, 3, TrainerCooltrainermGaven3, $ffff
-	person_event SPRITE_COOLTRAINER_F, 60, 14, $a, $0, 255, 255, $82, 3, TrainerCooltrainerfJoyce, $ffff
-	person_event SPRITE_COOLTRAINER_F, 12, 9, $9, $0, 255, 255, $82, 4, TrainerCooltrainerfBeth1, $ffff
-	person_event SPRITE_YOUNGSTER, 83, 17, $9, $0, 255, 255, $92, 2, TrainerPsychicRichard, $ffff
-	person_event SPRITE_FISHER, 96, 14, $6, $0, 255, 255, $a2, 3, TrainerFisherScott, $ffff
-	person_event SPRITE_FRUIT_TREE, 58, 18, $1, $0, 255, 255, $0, 0, FruitTreeScript_0x1a4ec2, $ffff
-	person_event SPRITE_POKE_BALL, 19, 13, $1, $0, 255, 255, $1, 0, ItemFragment_0x1a4ec4, $06aa
-; 0x1a540b
-
+	person_event SPRITE_COOLTRAINER_M, 24, 14, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 2, TrainerCooltrainermJake, -1
+	person_event SPRITE_COOLTRAINER_M, 38, 9, SPRITEMOVEDATA_STANDING_LEFT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 3, TrainerCooltrainermGaven3, -1
+	person_event SPRITE_COOLTRAINER_F, 56, 10, SPRITEMOVEDATA_SPINRANDOM_FAST, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 3, TrainerCooltrainerfJoyce, -1
+	person_event SPRITE_COOLTRAINER_F, 8, 5, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_TRAINER, 4, TrainerCooltrainerfBeth1, -1
+	person_event SPRITE_YOUNGSTER, 79, 13, SPRITEMOVEDATA_STANDING_RIGHT, 0, 0, -1, -1, (1 << 3) | PAL_OW_BLUE, PERSONTYPE_TRAINER, 2, TrainerPsychicRichard, -1
+	person_event SPRITE_FISHER, 92, 10, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_TRAINER, 3, TrainerFisherScott, -1
+	person_event SPRITE_FRUIT_TREE, 54, 14, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_SCRIPT, 0, FruitTreeScript_0x1a4ec2, -1
+	person_event SPRITE_POKE_BALL, 15, 9, SPRITEMOVEDATA_ITEM_TREE, 0, 0, -1, -1, 0, PERSONTYPE_ITEMBALL, 0, Route26MaxElixer, EVENT_ROUTE_26_MAX_ELIXER

@@ -45,8 +45,9 @@ HiddenPowerDamage: ; fbced
 
 ; Multiply by 5
 	ld b, a
+rept 2
 	add a
-	add a
+endr
 	add b
 
 ; Add Special & 3
@@ -74,8 +75,9 @@ HiddenPowerDamage: ; fbced
 	ld a, [hl]
 	and 3 << 4
 	swap a
+rept 2
 	add a
-	add a
+endr
 	or b
 
 ; Skip Normal
@@ -96,7 +98,7 @@ HiddenPowerDamage: ; fbced
 ; Overwrite the current move type.
 	push af
 	ld a, BATTLE_VARS_MOVE_TYPE
-	call _GetBattleVar
+	call GetBattleVarAddr
 	pop af
 	ld [hl], a
 
@@ -104,9 +106,8 @@ HiddenPowerDamage: ; fbced
 ; based on the new type, but keep base power.
 	ld a, d
 	push af
-	callba BattleCommand06 ; damagestats
+	callba BattleCommand_DamageStats ; damagestats
 	pop af
 	ld d, a
 	ret
 ; fbd54
-

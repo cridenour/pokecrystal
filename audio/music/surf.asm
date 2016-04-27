@@ -1,12 +1,10 @@
 Music_Surf: ; f518a
-	dbw $80, Music_Surf_Ch1
-	dbw $01, Music_Surf_Ch2
-	dbw $02, Music_Surf_Ch3
+	musicheader 3, 1, Music_Surf_Ch1
+	musicheader 1, 2, Music_Surf_Ch2
+	musicheader 1, 3, Music_Surf_Ch3
 ; f5193
 
-
-INCBIN "baserom.gbc", $f5193, $f5194 - $f5193
-
+	db $3
 
 Music_Surf_Ch1: ; f5194
 	tempo 108
@@ -735,5 +733,3 @@ Music_Surf_branch_f54c8: ; f54c8
 	note __, 3
 	endchannel
 ; f54e8
-
-

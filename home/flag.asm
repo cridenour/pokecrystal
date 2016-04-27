@@ -1,11 +1,11 @@
-Function2e50:: ; 2e50
+ResetMapBufferEventFlags:: ; 2e50
 	xor a
 	ld hl, EventFlags
 	ld [hli], a
 	ret
 ; 2e56
 
-Function2e56:: ; 2e56
+ResetBikeFlags:: ; 2e56
 	xor a
 	ld hl, BikeFlags
 	ld [hli], a
@@ -13,8 +13,8 @@ Function2e56:: ; 2e56
 	ret
 ; 2e5d
 
-Function2e5d:: ; 2e5d
-	ld a, [$d19a]
+ResetFlashIfOutOfCave:: ; 2e5d
+	ld a, [wPermission]
 	cp $2
 	jr z, .asm_2e69
 	cp $1
@@ -102,7 +102,7 @@ FlagAction:: ; 0x2e76
 ; 0x2ead
 
 
-Function2ead:: ; 2ead
+CheckReceivedDex:: ; 2ead
 	ld de, ENGINE_POKEDEX
 	ld b, CHECK_FLAG
 	callba EngineFlagAction
@@ -110,4 +110,3 @@ Function2ead:: ; 2ead
 	and a
 	ret
 ; 2ebb
-

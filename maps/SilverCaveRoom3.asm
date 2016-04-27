@@ -1,71 +1,69 @@
-SilverCaveRoom3_MapScriptHeader: ; 0x18c601
-	; trigger count
+const_value set 2
+	const SILVERCAVEROOM3_RED
+
+SilverCaveRoom3_MapScriptHeader:
+.MapTriggers:
 	db 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x18c603
 
-RedScript_0x18c603: ; 0x18c603
-	special $006a
+Red:
+	special Special_FadeOutMusic
 	faceplayer
-	loadfont
-	2writetext UnknownText_0x18c637
+	opentext
+	writetext .Text1
+	waitbutton
 	closetext
-	loadmovesprites
-	winlosstext UnknownText_0x18c63c, UnknownText_0x18c63c
+	winlosstext .Text2, .Text2
 	loadtrainer RED, 1
 	startbattle
-	reloadmapmusic
-	returnafterbattle
-	special $006a
-	loadfont
-	2writetext UnknownText_0x18c63f
+	dontrestartmapmusic
+	reloadmapafterbattle
+	special Special_FadeOutMusic
+	opentext
+	writetext .Text3
+	waitbutton
 	closetext
-	loadmovesprites
-	special $0030
-	special $0033
-	disappear $2
+	special Special_FadeBlackQuickly
+	special Special_ReloadSpritesNoPalettes
+	disappear SILVERCAVEROOM3_RED
 	pause 15
-	special $0032
+	special Special_FadeInQuickly
 	pause 30
-	special $001b
+	special HealParty
 	refreshscreen $0
 	credits
 	end
-; 0x18c637
 
-UnknownText_0x18c637: ; 0x18c637
-	db $0, $56, $4f
-	db $56, $57
-; 0x18c63c
+.Text1:
+	text $56
+	line $56
+	done
 
-UnknownText_0x18c63c: ; 0x18c63c
+.Text2:
 	text "…"
 	done
-; 0x18c63f
 
-UnknownText_0x18c63f: ; 0x18c63f
-	db $0, $56, $4f
-	db $56, $57
-; 0x18c644
+.Text3:
+	text $56
+	line $56
+	done
 
-SilverCaveRoom3_MapEventHeader: ; 0x18c644
+SilverCaveRoom3_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 1
-	warp_def $21, $9, 2, GROUP_SILVER_CAVE_ROOM_2, MAP_SILVER_CAVE_ROOM_2
+	warp_def $21, $9, 2, SILVER_CAVE_ROOM_2
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 0
 
-	; people-events
+.PersonEvents:
 	db 1
-	person_event SPRITE_RED, 14, 13, $7, $0, 255, 255, $80, 0, RedScript_0x18c603, $0762
-; 0x18c65c
-
+	person_event SPRITE_RED, 10, 9, SPRITEMOVEDATA_STANDING_UP, 0, 0, -1, -1, (1 << 3) | PAL_OW_RED, PERSONTYPE_SCRIPT, 0, Red, EVENT_RED_IN_MT_SILVER

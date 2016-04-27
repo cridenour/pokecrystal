@@ -1,54 +1,51 @@
-Route28FamousSpeechHouse_MapScriptHeader: ; 0x1ae651
-	; trigger count
+const_value set 2
+	const ROUTE28FAMOUSSPEECHHOUSE_CELEBRITY
+	const ROUTE28FAMOUSSPEECHHOUSE_FEAROW
+
+Route28FamousSpeechHouse_MapScriptHeader:
+.MapTriggers:
 	db 1
 
 	; triggers
-	dw UnknownScript_0x1ae657, $0000
+	dw .Trigger, 0
 
-	; callback count
+.MapCallbacks:
 	db 0
-; 0x1ae657
 
-UnknownScript_0x1ae657: ; 0x1ae657
+.Trigger:
 	end
-; 0x1ae658
 
-CooltrainerFScript_0x1ae658: ; 0x1ae658
+Celebrity:
 	faceplayer
-	loadfont
+	opentext
 	checkevent EVENT_GOT_TM47_STEEL_WING
-	iftrue UnknownScript_0x1ae66f
-	2writetext UnknownText_0x1ae682
-	keeptextopen
-	verbosegiveitem TM_47, 1
-	iffalse UnknownScript_0x1ae66d
+	iftrue .AlreadyGotItem
+	writetext CelebrityText1
+	buttonsound
+	verbosegiveitem TM_STEEL_WING
+	iffalse .Done
 	setevent EVENT_GOT_TM47_STEEL_WING
-UnknownScript_0x1ae66d: ; 0x1ae66d
-	loadmovesprites
-	end
-; 0x1ae66f
-
-UnknownScript_0x1ae66f: ; 0x1ae66f
-	2writetext UnknownText_0x1ae6f0
+.Done:
 	closetext
-	loadmovesprites
 	end
-; 0x1ae675
+.AlreadyGotItem:
+	writetext CelebrityText2
+	waitbutton
+	closetext
+	end
 
-MoltresScript_0x1ae675: ; 0x1ae675
-	loadfont
-	2writetext UnknownText_0x1ae752
+CelebritysFearow:
+	opentext
+	writetext CelebritysFearowText
 	cry FEAROW
+	waitbutton
 	closetext
-	loadmovesprites
 	end
-; 0x1ae67f
 
-MapRoute28FamousSpeechHouseSignpost1Script: ; 0x1ae67f
-	jumpstd $0003
-; 0x1ae682
+CelebrityHouseBookshelf:
+	jumpstd magazinebookshelf
 
-UnknownText_0x1ae682: ; 0x1ae682
+CelebrityText1:
 	text "Oh, dear."
 	line "You've found me."
 
@@ -59,9 +56,8 @@ UnknownText_0x1ae682: ; 0x1ae682
 	line "for keeping my"
 	cont "secret. Please?"
 	done
-; 0x1ae6f0
 
-UnknownText_0x1ae6f0: ; 0x1ae6f0
+CelebrityText2:
 	text "It's tough being a"
 	line "top celebrity."
 
@@ -71,34 +67,29 @@ UnknownText_0x1ae6f0: ; 0x1ae6f0
 	para "I just want to be"
 	line "left alone…"
 	done
-; 0x1ae752
 
-UnknownText_0x1ae752: ; 0x1ae752
+CelebritysFearowText:
 	text "FEAROW: Feero!"
 	done
-; 0x1ae762
 
-Route28FamousSpeechHouse_MapEventHeader: ; 0x1ae762
+Route28FamousSpeechHouse_MapEventHeader:
 	; filler
 	db 0, 0
 
-	; warps
+.Warps:
 	db 2
-	warp_def $7, $2, 1, GROUP_ROUTE_28, MAP_ROUTE_28
-	warp_def $7, $3, 1, GROUP_ROUTE_28, MAP_ROUTE_28
+	warp_def $7, $2, 1, ROUTE_28
+	warp_def $7, $3, 1, ROUTE_28
 
-	; xy triggers
+.XYTriggers:
 	db 0
 
-	; signposts
+.Signposts:
 	db 2
-	signpost 1, 0, $0, MapRoute28FamousSpeechHouseSignpost1Script
-	signpost 1, 1, $0, MapRoute28FamousSpeechHouseSignpost1Script
+	signpost 1, 0, SIGNPOST_READ, CelebrityHouseBookshelf
+	signpost 1, 1, SIGNPOST_READ, CelebrityHouseBookshelf
 
-	; people-events
+.PersonEvents:
 	db 2
-	person_event SPRITE_COOLTRAINER_F, 7, 6, $6, $0, 255, 255, $a0, 0, CooltrainerFScript_0x1ae658, $ffff
-	person_event SPRITE_MOLTRES, 9, 10, $16, $0, 255, 255, $b0, 0, MoltresScript_0x1ae675, $ffff
-; 0x1ae796
-
-
+	person_event SPRITE_COOLTRAINER_F, 3, 2, SPRITEMOVEDATA_STANDING_DOWN, 0, 0, -1, -1, (1 << 3) | PAL_OW_GREEN, PERSONTYPE_SCRIPT, 0, Celebrity, -1
+	person_event SPRITE_MOLTRES, 5, 6, SPRITEMOVEDATA_POKEMON, 0, 0, -1, -1, (1 << 3) | PAL_OW_BROWN, PERSONTYPE_SCRIPT, 0, CelebritysFearow, -1

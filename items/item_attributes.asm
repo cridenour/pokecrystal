@@ -1,2053 +1,778 @@
+item_attribute: MACRO
+; price, held effect, parameter, property, pocket, field menu, battle menu
+	dw \1
+	db \2, \3, \4, \5
+	dn \6, \7
+ENDM
+
 Item1Attributes:
 
 ; MASTER BALL
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db BALL
-	db $06 ; ball
+	item_attribute     0, 0,                 0,             CANT_SELECT, BALL,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 Item2Attributes:
 
 ; ULTRA BALL
-	dw 1200 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db BALL
-	db $06 ; ball
+	item_attribute  1200, 0,                 0,             CANT_SELECT, BALL,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; BRIGHTPOWDER
-	dw 10 ; price
-	db HELD_BRIGHTPOWDER ; effect
-	db 20 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute    10, HELD_BRIGHTPOWDER,   20,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; GREAT BALL
-	dw 600 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db BALL
-	db $06 ; ball
+	item_attribute   600, 0,                 0,             CANT_SELECT, BALL,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; # BALL
-	dw 200 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db BALL
-	db $06 ; ball
+	item_attribute   200, 0,                 0,             CANT_SELECT, BALL,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; BICYCLE
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_TOSS
-	db KEY_ITEM
-	db $60 ; overworld
+	item_attribute     0, 0,                 0,               CANT_TOSS, KEY_ITEM, ITEMMENU_CLOSE,   ITEMMENU_NOUSE
 
 ; MOON STONE
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $50 ; party menu
+	item_attribute     0, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; ANTIDOTE
-	dw 100 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   100, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; BURN HEAL
-	dw 250 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   250, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; ICE HEAL
-	dw 250 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   250, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; AWAKENING
-	dw 250 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   250, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; PARLYZ HEAL
-	dw 200 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   200, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; FULL RESTORE
-	dw 3000 ; price
-	db NONE ; effect
-	db 255 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute  3000, 0,                -1,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; MAX POTION
-	dw 2500 ; price
-	db NONE ; effect
-	db 255 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute  2500, 0,                -1,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; HYPER POTION
-	dw 1200 ; price
-	db NONE ; effect
-	db 200 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute  1200, 0,               200,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; SUPER POTION
-	dw 700 ; price
-	db NONE ; effect
-	db 50 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   700, 0,                50,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; POTION
-	dw 300 ; price
-	db NONE ; effect
-	db 20 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   300, 0,                20,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; ESCAPE ROPE
-	dw 550 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $60 ; overworld
+	item_attribute   550, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_CLOSE,   ITEMMENU_NOUSE
 
 ; REPEL
-	dw 350 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $40 ; current menu
+	item_attribute   350, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_CURRENT, ITEMMENU_NOUSE
 
 ; MAX ELIXER
-	dw 4500 ; price
-	db NONE ; effect
-	db 255 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute  4500, 0,                -1,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; FIRE STONE
-	dw 2100 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $50 ; party menu
+	item_attribute  2100, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; THUNDERSTONE
-	dw 2100 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $50 ; party menu
+	item_attribute  2100, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; WATER STONE
-	dw 2100 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $50 ; party menu
+	item_attribute  2100, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; HP UP
-	dw 9800 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $50 ; party menu
+	item_attribute  9800, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; PROTEIN
-	dw 9800 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $50 ; party menu
+	item_attribute  9800, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; IRON
-	dw 9800 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $50 ; party menu
+	item_attribute  9800, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; CARBOS
-	dw 9800 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $50 ; party menu
+	item_attribute  9800, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; LUCKY PUNCH
-	dw 10 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute    10, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; CALCIUM
-	dw 9800 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $50 ; party menu
+	item_attribute  9800, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; RARE CANDY
-	dw 4800 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $50 ; party menu
+	item_attribute  4800, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; X ACCURACY
-	dw 950 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $06 ; ball
+	item_attribute   950, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; LEAF STONE
-	dw 2100 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $50 ; party menu
+	item_attribute  2100, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; METAL POWDER
-	dw 10 ; price
-	db HELD_METAL_POWDER ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute    10, HELD_METAL_POWDER,   10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; NUGGET
-	dw 10000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute 10000, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; # DOLL
-	dw 1000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $06 ; ball
+	item_attribute  1000, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; FULL HEAL
-	dw 600 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   600, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; REVIVE
-	dw 1500 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute  1500, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; MAX REVIVE
-	dw 4000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute  4000, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; GUARD SPEC.
-	dw 700 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $06 ; ball
+	item_attribute   700, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; SUPER REPEL
-	dw 500 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $40 ; current menu
+	item_attribute   500, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_CURRENT, ITEMMENU_NOUSE
 
 ; MAX REPEL
-	dw 700 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $40 ; current menu
+	item_attribute   700, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_CURRENT, ITEMMENU_NOUSE
 
 ; DIRE HIT
-	dw 650 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $06 ; ball
+	item_attribute   650, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; FRESH WATER
-	dw 200 ; price
-	db NONE ; effect
-	db 50 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   200, 0,                50,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; SODA POP
-	dw 300 ; price
-	db NONE ; effect
-	db 60 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   300, 0,                60,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; LEMONADE
-	dw 350 ; price
-	db NONE ; effect
-	db 80 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   350, 0,                80,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; X ATTACK
-	dw 500 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $06 ; ball
+	item_attribute   500, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; X DEFEND
-	dw 550 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $06 ; ball
+	item_attribute   550, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; X SPEED
-	dw 350 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $06 ; ball
+	item_attribute   350, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; X SPECIAL
-	dw 350 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $06 ; ball
+	item_attribute   350, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; COIN CASE
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $40 ; current menu
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_CURRENT, ITEMMENU_NOUSE
 
 ; ITEMFINDER
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_TOSS
-	db KEY_ITEM
-	db $60 ; overworld
+	item_attribute     0, 0,                 0,               CANT_TOSS, KEY_ITEM, ITEMMENU_CLOSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; EXP.SHARE
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute  3000, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; OLD ROD
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_TOSS
-	db KEY_ITEM
-	db $60 ; overworld
+	item_attribute     0, 0,                 0,               CANT_TOSS, KEY_ITEM, ITEMMENU_CLOSE,   ITEMMENU_NOUSE
 
 ; GOOD ROD
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_TOSS
-	db KEY_ITEM
-	db $60 ; overworld
+	item_attribute     0, 0,                 0,               CANT_TOSS, KEY_ITEM, ITEMMENU_CLOSE,   ITEMMENU_NOUSE
 
 ; SILVER LEAF
-	dw 1000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute  1000, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; SUPER ROD
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_TOSS
-	db KEY_ITEM
-	db $60 ; overworld
+	item_attribute     0, 0,                 0,               CANT_TOSS, KEY_ITEM, ITEMMENU_CLOSE,   ITEMMENU_NOUSE
 
 ; PP UP
-	dw 9800 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $50 ; party menu
+	item_attribute  9800, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; ETHER
-	dw 1200 ; price
-	db NONE ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute  1200, 0,                10,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; MAX ETHER
-	dw 2000 ; price
-	db NONE ; effect
-	db 255 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute  2000, 0,                -1,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; ELIXER
-	dw 3000 ; price
-	db NONE ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute  3000, 0,                10,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; RED SCALE
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $00 ; can't use
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; SECRETPOTION
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $00 ; can't use
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; S.S.TICKET
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $00 ; can't use
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; MYSTERY EGG
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $00 ; can't use
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; CLEAR BELL
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $00 ; can't use
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; SILVER WING
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $00 ; can't use
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; MOOMOO MILK
-	dw 500 ; price
-	db NONE ; effect
-	db 100 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   500, 0,               100,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; QUICK CLAW
-	dw 100 ; price
-	db HELD_QUICK_CLAW ; effect
-	db 60 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_QUICK_CLAW,     60,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; PSNCUREBERRY
-	dw 10 ; price
-	db HELD_HEAL_POISON ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute    10, HELD_HEAL_POISON,     0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; GOLD LEAF
-	dw 1000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute  1000, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; SOFT SAND
-	dw 100 ; price
-	db HELD_GROUND_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_GROUND_BOOST,   10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; SHARP BEAK
-	dw 100 ; price
-	db HELD_FLYING_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_FLYING_BOOST,   10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; PRZCUREBERRY
-	dw 10 ; price
-	db HELD_HEAL_PARALYZE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute    10, HELD_HEAL_PARALYZE,   0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; BURNT BERRY
-	dw 10 ; price
-	db HELD_HEAL_FREEZE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute    10, HELD_HEAL_FREEZE,     0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; ICE BERRY
-	dw 10 ; price
-	db HELD_HEAL_BURN ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute    10, HELD_HEAL_BURN,       0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; POISON BARB
-	dw 100 ; price
-	db HELD_POISON_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_POISON_BOOST,   10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; KING'S ROCK
-	dw 100 ; price
-	db HELD_TRADE_EVOLVE ; effect
-	db 30 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_TRADE_EVOLVE,   30,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; BITTER BERRY
-	dw 10 ; price
-	db HELD_HEAL_CONFUSION ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $05 ; heal menu (battle only)
+	item_attribute    10, HELD_HEAL_CONFUSION,  0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_PARTY
 
 ; MINT BERRY
-	dw 10 ; price
-	db HELD_HEAL_SLEEP ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute    10, HELD_HEAL_SLEEP,      0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; RED APRICORN
-	dw 200 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TINYMUSHROOM
-	dw 500 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   500, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; BIG MUSHROOM
-	dw 5000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute  5000, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; SILVERPOWDER
-	dw 100 ; price
-	db HELD_BUG_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_BUG_BOOST,      10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; BLU APRICORN
-	dw 200 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; AMULET COIN
-	dw 100 ; price
-	db HELD_AMULET_COIN ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_AMULET_COIN,    10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; YLW APRICORN
-	dw 200 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; GRN APRICORN
-	dw 200 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; CLEANSE TAG
-	dw 200 ; price
-	db HELD_CLEANSE_TAG ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, HELD_CLEANSE_TAG,     0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; MYSTIC WATER
-	dw 100 ; price
-	db HELD_WATER_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_WATER_BOOST,    10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TWISTEDSPOON
-	dw 100 ; price
-	db HELD_PSYCHIC_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_PSYCHIC_BOOST,  10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; WHT APRICORN
-	dw 200 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; BLACKBELT
-	dw 100 ; price
-	db HELD_FIGHTING_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_FIGHTING_BOOST, 10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; BLK APRICORN
-	dw 200 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; PNK APRICORN
-	dw 200 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; BLACKGLASSES
-	dw 100 ; price
-	db HELD_DARK_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_DARK_BOOST,     10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; SLOWPOKETAIL
-	dw 9800 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute  9800, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; PINK BOW
-	dw 100 ; price
-	db HELD_NORMAL_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_NORMAL_BOOST,   10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; STICK
-	dw 200 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; SMOKE BALL
-	dw 200 ; price
-	db HELD_ESCAPE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, HELD_ESCAPE,          0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; NEVERMELTICE
-	dw 100 ; price
-	db HELD_ICE_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_ICE_BOOST,      10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; MAGNET
-	dw 100 ; price
-	db HELD_ELECTRIC_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_ELECTRIC_BOOST, 10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; MIRACLEBERRY
-	dw 10 ; price
-	db HELD_HEAL_STATUS ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute    10, HELD_HEAL_STATUS,     0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; PEARL
-	dw 1400 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute  1400, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; BIG PEARL
-	dw 7500 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute  7500, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; EVERSTONE
-	dw 200 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; SPELL TAG
-	dw 100 ; price
-	db HELD_GHOST_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_GHOST_BOOST,    10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; RAGECANDYBAR
-	dw 300 ; price
-	db NONE ; effect
-	db 20 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   300, 0,                20,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; GS BALL
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $00 ; can't use
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; BLUE CARD
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $40 ; current menu
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_CURRENT, ITEMMENU_NOUSE
 
 ; MIRACLE SEED
-	dw 100 ; price
-	db HELD_GRASS_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_GRASS_BOOST,    10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; THICK CLUB
-	dw 500 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   500, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; FOCUS BAND
-	dw 200 ; price
-	db HELD_FOCUS_BAND ; effect
-	db 30 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, HELD_FOCUS_BAND,     30,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; ENERGYPOWDER
-	dw 500 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   500, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; ENERGY ROOT
-	dw 800 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   800, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; HEAL POWDER
-	dw 450 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   450, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; REVIVAL HERB
-	dw 2800 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute  2800, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; HARD STONE
-	dw 100 ; price
-	db HELD_ROCK_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_ROCK_BOOST,     10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; LUCKY EGG
-	dw 200 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; CARD KEY
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $60 ; overworld
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_CLOSE,   ITEMMENU_NOUSE
 
 ; MACHINE PART
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $00 ; can't use
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; EGG TICKET
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $00 ; can't use
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; LOST ITEM
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $00 ; can't use
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; STARDUST
-	dw 2000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute  2000, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; STAR PIECE
-	dw 9800 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute  9800, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; BASEMENT KEY
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $60 ; overworld
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_CLOSE,   ITEMMENU_NOUSE
 
 ; PASS
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $00 ; can't use
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; CHARCOAL
-	dw 9800 ; price
-	db HELD_FIRE_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute  9800, HELD_FIRE_BOOST,     10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; BERRY JUICE
-	dw 100 ; price
-	db HELD_BERRY ; effect
-	db 20 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute   100, HELD_BERRY,          20,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; SCOPE LENS
-	dw 200 ; price
-	db HELD_CRITICAL_UP ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, HELD_CRITICAL_UP,     0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; METAL COAT
-	dw 100 ; price
-	db HELD_STEEL_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_STEEL_BOOST,    10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; DRAGON FANG
-	dw 100 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; LEFTOVERS
-	dw 200 ; price
-	db HELD_LEFTOVERS ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, HELD_LEFTOVERS,      10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; MYSTERYBERRY
-	dw 10 ; price
-	db HELD_RESTORE_PP ; effect
-	db 255 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute    10, HELD_RESTORE_PP,     -1,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; DRAGON SCALE
-	dw 2100 ; price
-	db HELD_DRAGON_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute  2100, HELD_DRAGON_BOOST,   10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; BERSERK GENE
-	dw 200 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   200, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; SACRED ASH
-	dw 200 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $60 ; overworld
+	item_attribute   200, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_CLOSE,   ITEMMENU_NOUSE
 
 ; HEAVY BALL
-	dw 150 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db BALL
-	db $06 ; ball
+	item_attribute   150, 0,                 0,             CANT_SELECT, BALL,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; FLOWER MAIL
-	dw 50 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute    50, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; LEVEL BALL
-	dw 150 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db BALL
-	db $06 ; ball
+	item_attribute   150, 0,                 0,             CANT_SELECT, BALL,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; LURE BALL
-	dw 150 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db BALL
-	db $06 ; ball
+	item_attribute   150, 0,                 0,             CANT_SELECT, BALL,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; FAST BALL
-	dw 150 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db BALL
-	db $06 ; ball
+	item_attribute   150, 0,                 0,             CANT_SELECT, BALL,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; LIGHT BALL
-	dw 100 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; FRIEND BALL
-	dw 150 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db BALL
-	db $06 ; ball
+	item_attribute   150, 0,                 0,             CANT_SELECT, BALL,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; MOON BALL
-	dw 150 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db BALL
-	db $06 ; ball
+	item_attribute   150, 0,                 0,             CANT_SELECT, BALL,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; LOVE BALL
-	dw 150 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db BALL
-	db $06 ; ball
+	item_attribute   150, 0,                 0,             CANT_SELECT, BALL,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; NORMAL BOX
-	dw 10 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $40 ; current menu
+	item_attribute    10, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_CURRENT, ITEMMENU_NOUSE
 
 ; GORGEOUS BOX
-	dw 10 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $40 ; current menu
+	item_attribute    10, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_CURRENT, ITEMMENU_NOUSE
 
 ; SUN STONE
-	dw 2100 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $50 ; party menu
+	item_attribute  2100, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; POLKADOT BOW
-	dw 100 ; price
-	db HELD_NORMAL_BOOST ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute   100, HELD_NORMAL_BOOST,   10,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; UP-GRADE
-	dw 2100 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute  2100, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; BERRY
-	dw 10 ; price
-	db HELD_BERRY ; effect
-	db 10 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute    10, HELD_BERRY,          10,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; GOLD BERRY
-	dw 10 ; price
-	db HELD_BERRY ; effect
-	db 30 ; param
-	db CANT_SELECT
-	db ITEM
-	db $55 ; heal menu
+	item_attribute    10, HELD_BERRY,          30,             CANT_SELECT, ITEM,     ITEMMENU_PARTY,   ITEMMENU_PARTY
 
 ; SQUIRTBOTTLE
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $60 ; overworld
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_CLOSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; PARK BALL
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db BALL
-	db $06 ; ball
+	item_attribute     0, 0,                 0,             CANT_SELECT, BALL,     ITEMMENU_NOUSE,   ITEMMENU_CLOSE
 
 ; RAINBOW WING
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db KEY_ITEM
-	db $00 ; can't use
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, KEY_ITEM, ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; BRICK PIECE
-	dw 50 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute    50, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; SURF MAIL
-	dw 50 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute    50, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; LITEBLUEMAIL
-	dw 50 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute    50, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; PORTRAITMAIL
-	dw 50 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute    50, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; LOVELY MAIL
-	dw 50 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute    50, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; EON MAIL
-	dw 50 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute    50, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; MORPH MAIL
-	dw 50 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute    50, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; BLUESKY MAIL
-	dw 50 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute    50, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; MUSIC MAIL
-	dw 50 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute    50, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; MIRAGE MAIL
-	dw 50 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db ITEM
-	db $00 ; can't use
+	item_attribute    50, 0,                 0,             CANT_SELECT, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TM01
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM02
-	dw 2000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  2000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM03
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM04
-	dw 2000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  2000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TM05
-	dw 1000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  1000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM06
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM07
-	dw 2000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  2000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM08
-	dw 1000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  1000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM09
-	dw 1000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  1000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM10
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM11
-	dw 2000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  2000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM12
-	dw 1000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  1000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM13
-	dw 1000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  1000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM14
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM15
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM16
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM17
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM18
-	dw 2000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  2000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM19
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM20
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM21
-	dw 1000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  1000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM22
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM23
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM24
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM25
-	dw 2000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  2000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM26
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM27
-	dw 1000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  1000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM28
-	dw 2000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  2000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TM29
-	dw 2000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  2000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM30
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM31
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM32
-	dw 2000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  2000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM33
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM34
-	dw 1000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  1000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM35
-	dw 1000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  1000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM36
-	dw 1000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  1000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM37
-	dw 2000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  2000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM38
-	dw 2000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  2000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM39
-	dw 2000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  2000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM40
-	dw 1000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  1000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM41
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM42
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM43
-	dw 1000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  1000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM44
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM45
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM46
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM47
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM48
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM49
-	dw 3000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  3000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TM50
-	dw 2000 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT
-	db TM_HM
-	db $50 ; party menu
+	item_attribute  2000, 0,                 0,             CANT_SELECT, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; HM01
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db TM_HM
-	db $50 ; party menu
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; HM02
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db TM_HM
-	db $50 ; party menu
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; HM03
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db TM_HM
-	db $50 ; party menu
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; HM04
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db TM_HM
-	db $50 ; party menu
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; HM05
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db TM_HM
-	db $50 ; party menu
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; HM06
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db TM_HM
-	db $50 ; party menu
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; HM07
-	dw 0 ; price
-	db NONE ; effect
-	db 0 ; param
-	db CANT_SELECT | CANT_TOSS
-	db TM_HM
-	db $50 ; party menu
+	item_attribute     0, 0,                 0, CANT_SELECT | CANT_TOSS, TM_HM,    ITEMMENU_PARTY,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; TERU-SAMA
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE
 
 ; ?
-	dw $9999 ; price
-	db NONE ; effect
-	db 0 ; param
-	db 0 ; can select + toss
-	db ITEM
-	db $00 ; can't use
-
-
+	item_attribute $9999, 0,                 0,                       0, ITEM,     ITEMMENU_NOUSE,   ITEMMENU_NOUSE

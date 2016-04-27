@@ -33,7 +33,7 @@ UpdateGameTimer:: ; 20ad
 
 
 ; Don't update if game logic is paused.
-	ld a, [$c2cd]
+	ld a, [wc2cd]
 	and a
 	ret nz
 
@@ -129,4 +129,3 @@ UpdateGameTimer:: ; 20ad
 	ld [GameTimeHours + 1], a
 	ret
 ; 210f
-

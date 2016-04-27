@@ -1,12 +1,13 @@
 ; Functions handling map objects.
 
-
 GetSpritePalette:: ; 17ff
 	push hl
 	push de
 	push bc
 	ld c, a
+
 	callba _GetSpritePalette
+
 	ld a, c
 	pop bc
 	pop de
@@ -14,55 +15,55 @@ GetSpritePalette:: ; 17ff
 	ret
 ; 180e
 
-
-Function180e:: ; 180e
+GetSpriteVTile:: ; 180e
 	push hl
 	push bc
-	ld hl, $d156
-	ld c, $1f
+	ld hl, UsedSprites + 2
+	ld c, SPRITE_GFX_LIST_CAPACITY - 1
 	ld b, a
-	ld a, [hConnectionStripLength]
-	cp $0
-	jr z, .asm_182b
+	ld a, [hMapObjectIndexBuffer]
+	cp 0
+	jr z, .nope
 	ld a, b
-.asm_181d
+.loop
 	cp [hl]
-	jr z, .asm_1830
+	jr z, .found
+rept 2
 	inc hl
-	inc hl
+endr
 	dec c
-	jr nz, .asm_181d
-	ld a, [$d155]
+	jr nz, .loop
+	ld a, [UsedSprites + 1]
 	scf
-	jr .asm_1833
+	jr .done
 
-.asm_182b
-	ld a, [$d155]
-	jr .asm_1833
+.nope
+	ld a, [UsedSprites + 1]
+	jr .done
 
-.asm_1830
+.found
 	inc hl
 	xor a
 	ld a, [hl]
 
-.asm_1833
+.done
 	pop bc
 	pop hl
 	ret
 ; 1836
 
-Function1836:: ; 1836
+DoesSpriteHaveFacings:: ; 1836
 	push de
 	push hl
 
 	ld b, a
 	ld a, [hROMBank]
 	push af
-	ld a, BANK(Function142a7)
+	ld a, BANK(_DoesSpriteHaveFacings)
 	rst Bankswitch
 
 	ld a, b
-	call Function142a7
+	call _DoesSpriteHaveFacings
 	ld c, a
 
 	pop de
@@ -74,24 +75,21 @@ Function1836:: ; 1836
 	ret
 ; 184a
 
-
-
-Function184a:: ; 184a
-	ld a, [StandingTile]
+GetPlayerStandingTile:: ; 184a
+	ld a, [PlayerStandingTile]
 	call GetTileCollision
 	ld b, a
 	ret
 ; 1852
 
-Function1852:: ; 1852
-	ld a, [StandingTile]
+CheckOnWater:: ; 1852
+	ld a, [PlayerStandingTile]
 	call GetTileCollision
 	sub 1
 	ret z
 	and a
 	ret
 ; 185d
-
 
 GetTileCollision:: ; 185d
 ; Get the collision type of tile a.
@@ -120,25 +118,24 @@ GetTileCollision:: ; 185d
 	ret
 ; 1875
 
-
-Function1875:: ; 1875
+CheckGrassTile:: ; 1875
 	ld d, a
 	and $f0
 	cp $10
-	jr z, .asm_1882
+	jr z, .ok_10
 	cp $20
-	jr z, .asm_1888
+	jr z, .ok_20
 	scf
 	ret
 
-.asm_1882
+.ok_10
 	ld a, d
 	and 7
 	ret z
 	scf
 	ret
-
-.asm_1888
+; For some reason, the above code is duplicated down here.
+.ok_20
 	ld a, d
 	and 7
 	ret z
@@ -146,7 +143,7 @@ Function1875:: ; 1875
 	ret
 ; 188e
 
-Function188e:: ; 188e
+CheckSuperTallGrassTile:: ; 188e
 	cp $14
 	ret z
 	cp $1c
@@ -208,7 +205,7 @@ CheckWaterfallTile:: ; 18bd
 ; 18c3
 
 CheckStandingOnEntrance:: ; 18c3
-	ld a, [StandingTile]
+	ld a, [PlayerStandingTile]
 	cp $71 ; door
 	ret z
 	cp $79
@@ -219,322 +216,312 @@ CheckStandingOnEntrance:: ; 18c3
 	ret
 ; 18d2
 
-
 GetMapObject:: ; 18d2
 ; Return the location of map object a in bc.
 	ld hl, MapObjects
-	ld bc, $10
+	ld bc, OBJECT_LENGTH
 	call AddNTimes
 	ld b, h
 	ld c, l
 	ret
 ; 18de
 
-
-Function18de:: ; 18de
-	ld [hConnectionStripLength], a
+CheckObjectVisibility:: ; 18de
+; Sets carry if the object is not visible on the screen.
+	ld [hMapObjectIndexBuffer], a
 	call GetMapObject
-	ld hl, $0000
+	ld hl, MAPOBJECT_OBJECT_STRUCT_ID
 	add hl, bc
 	ld a, [hl]
-	cp $ff
-	jr z, .asm_18f3
-	ld [hConnectedMapWidth], a
-	call Function1ae5
+	cp -1
+	jr z, .not_visible
+	ld [hObjectStructIndexBuffer], a
+	call GetObjectStruct
 	and a
 	ret
 
-.asm_18f3
+.not_visible
 	scf
 	ret
 ; 18f5
 
-Function18f5:: ; 18f5
-	ld hl, $0006
+CheckObjectTime:: ; 18f5
+	ld hl, MAPOBJECT_HOUR
 	add hl, bc
 	ld a, [hl]
-	cp $ff
-	jr nz, .asm_1921
-	ld hl, $0007
+	cp -1
+	jr nz, .check_hour
+	ld hl, MAPOBJECT_TIMEOFDAY
 	add hl, bc
 	ld a, [hl]
-	cp $ff
-	jr z, .asm_191c
-	ld hl, .data_191e
+	cp -1
+	jr z, .timeofday_always
+	ld hl, .TimeOfDayValues_191e
 	ld a, [TimeOfDay]
 	add l
 	ld l, a
-	jr nc, .asm_1912
+	jr nc, .ok
 	inc h
 
-.asm_1912
+.ok
 	ld a, [hl]
-	ld hl, $0007
+	ld hl, MAPOBJECT_TIMEOFDAY
 	add hl, bc
 	and [hl]
-	jr nz, .asm_191c
+	jr nz, .timeofday_always
 	scf
 	ret
 
-.asm_191c
+.timeofday_always
 	and a
 	ret
 
-.data_191e
-	db $1
-	db $2
-	db $4
+.TimeOfDayValues_191e:
+	db 1 << MORN ; 1
+	db 1 << DAY  ; 2
+	db 1 << NITE ; 4
 
-.asm_1921
-	ld hl, $0006
+.check_hour
+	ld hl, MAPOBJECT_HOUR
 	add hl, bc
 	ld d, [hl]
-	ld hl, $0007
+	ld hl, MAPOBJECT_TIMEOFDAY
 	add hl, bc
 	ld e, [hl]
 	ld hl, hHours
 	ld a, d
 	cp e
-	jr z, .asm_1949
-	jr c, .asm_193f
+	jr z, .yes
+	jr c, .check_timeofday
 	ld a, [hl]
 	cp d
-	jr nc, .asm_1949
+	jr nc, .yes
 	cp e
-	jr c, .asm_1949
-	jr z, .asm_1949
-	jr .asm_194b
+	jr c, .yes
+	jr z, .yes
+	jr .no
 
-.asm_193f
+.check_timeofday
 	ld a, e
 	cp [hl]
-	jr c, .asm_194b
+	jr c, .no
 	ld a, [hl]
 	cp d
-	jr nc, .asm_1949
-	jr .asm_194b
+	jr nc, .yes
+	jr .no
 
-.asm_1949
+.yes
 	and a
 	ret
 
-.asm_194b
+.no
 	scf
 	ret
 ; 194d
 
-Function194d:: ; 194d
-	ld [hConnectionStripLength], a
+; XXX
+	ld [hMapObjectIndexBuffer], a
 	call GetMapObject
-	call Function80e7
+	call CopyObjectStruct
 	ret
 ; 1956
 
-
-
-Function1956:: ; 1956
-	ld [hConnectionStripLength], a
-	call Function271e
-	ld a, [hConnectionStripLength]
+_CopyObjectStruct:: ; 1956
+	ld [hMapObjectIndexBuffer], a
+	call UnmaskObject
+	ld a, [hMapObjectIndexBuffer]
 	call GetMapObject
-	callba Function80e7
+	callba CopyObjectStruct
 	ret
 ; 1967
 
-Function1967:: ; 1967
-	ld [hConnectionStripLength], a
+ApplyDeletionToMapObject:: ; 1967
+	ld [hMapObjectIndexBuffer], a
 	call GetMapObject
-	ld hl, $0000
+	ld hl, MAPOBJECT_OBJECT_STRUCT_ID
 	add hl, bc
 	ld a, [hl]
-	cp $ff
-	ret z
-	ld [hl], $ff
+	cp -1
+	ret z ; already hidden
+	ld [hl], -1
 	push af
-	call Function1985
+	call .CheckStopFollow
 	pop af
-	call Function1ae5
-	callba Function4357
+	call GetObjectStruct
+	callba DeleteMapObject
 	ret
-; 1985
 
-Function1985:: ; 1985
-	ld hl, $d4cd
+.CheckStopFollow:
+	ld hl, wObjectFollow_Leader
 	cp [hl]
-	jr z, .asm_1990
-	ld hl, $d4ce
+	jr z, .ok
+	ld hl, wObjectFollow_Follower
 	cp [hl]
 	ret nz
-
-.asm_1990
-	callba Function581f
-	ld a, $ff
-	ld [$d4cd], a
-	ld [$d4ce], a
+.ok
+	callba StopFollow
+	ld a, -1
+	ld [wObjectFollow_Leader], a
+	ld [wObjectFollow_Follower], a
 	ret
 ; 199f
 
-Function199f:: ; 199f
-	call Function1967
-	call Function2712
+DeleteObjectStruct:: ; 199f
+	call ApplyDeletionToMapObject
+	call MaskObject
 	ret
 ; 19a6
 
-Function19a6:: ; 19a6
+CopyPlayerObjectTemplate:: ; 19a6
 	push hl
 	call GetMapObject
 	ld d, b
 	ld e, c
-	ld a, $ff
+	ld a, -1
 	ld [de], a
 	inc de
 	pop hl
-	ld bc, $000f
+	ld bc, OBJECT_LENGTH - 1
 	call CopyBytes
 	ret
 ; 19b8
 
-Function19b8:: ; 19b8
+; XXX
 	call GetMapObject
-	ld hl, $0000
+	ld hl, MAPOBJECT_OBJECT_STRUCT_ID
 	add hl, bc
 	ld a, [hl]
 	push af
-	ld [hl], $ff
+	ld [hl], -1
 	inc hl
-	ld bc, $000f
+	ld bc, OBJECT_LENGTH - 1
 	xor a
 	call ByteFill
 	pop af
-	cp $ff
+	cp -1
 	ret z
 	cp $d
 	ret nc
 	ld b, a
-	ld a, [$d4cd]
+	ld a, [wObjectFollow_Leader]
 	cp b
-	jr nz, .asm_19de
-	ld a, $ff
-	ld [$d4cd], a
+	jr nz, .ok
+	ld a, -1
+	ld [wObjectFollow_Leader], a
 
-.asm_19de
+.ok
 	ld a, b
-	call Function1ae5
-	callba Function4357
+	call GetObjectStruct
+	callba DeleteMapObject
 	ret
 ; 19e9
 
-
-
-Function19e9:: ; 19e9
-	ld [$c2e2], a
+LoadMovementDataPointer:: ; 19e9
+; Load the movement data pointer for person a.
+	ld [wMovementPerson], a
 	ld a, [hROMBank]
-	ld [$c2e3], a
+	ld [wMovementDataPointer], a
 	ld a, l
-	ld [$c2e4], a
+	ld [wMovementDataPointer + 1], a
 	ld a, h
-	ld [$c2e5], a
-	ld a, [$c2e2]
-	call Function18de
+	ld [wMovementDataPointer + 2], a
+	ld a, [wMovementPerson]
+	call CheckObjectVisibility
 	ret c
-	ld hl, $0003
+
+	ld hl, OBJECT_MOVEMENTTYPE
 	add hl, bc
-	ld [hl], $14
-	ld hl, $0009
+	ld [hl], SPRITEMOVEDATA_SCRIPTED
+
+	ld hl, OBJECT_STEP_TYPE
 	add hl, bc
-	ld [hl], $0
+	ld [hl], STEP_TYPE_00
+
 	ld hl, VramState
 	set 7, [hl]
 	and a
 	ret
 ; 1a13
 
-
-
-Function1a13:: ; 1a13
+FindFirstEmptyObjectStruct:: ; 1a13
+; Returns the index of the first empty object struct in A and its address in HL, then sets carry.
+; If all object structs are occupied, A = 0 and Z is set.
+; Preserves BC and DE.
 	push bc
 	push de
-	ld hl, $d4d6
-	ld de, $0028
-	ld c, $d
-.asm_1a1d
+	ld hl, ObjectStructs
+	ld de, OBJECT_STRUCT_LENGTH
+	ld c, NUM_OBJECT_STRUCTS
+.loop
 	ld a, [hl]
 	and a
-	jr z, .asm_1a28
+	jr z, .break
 	add hl, de
 	dec c
-	jr nz, .asm_1a1d
+	jr nz, .loop
 	xor a
-	jr .asm_1a2c
+	jr .done
 
-.asm_1a28
-	ld a, $d
+.break
+	ld a, NUM_OBJECT_STRUCTS
 	sub c
 	scf
 
-.asm_1a2c
+.done
 	pop de
 	pop bc
 	ret
 ; 1a2f
 
-
-
-Function1a2f:: ; 1a2f
-	ld hl, $0003
+GetSpriteMovementFunction:: ; 1a2f
+	ld hl, OBJECT_MOVEMENTTYPE
 	add hl, bc
 	ld a, [hl]
-	cp $25
-	jr c, .asm_1a39
+	cp NUM_SPRITEMOVEDATA
+	jr c, .ok
 	xor a
 
-.asm_1a39
-	ld hl, Data4273
+.ok
+	ld hl, SpriteMovementData
 	ld e, a
 	ld d, 0
-	add hl, de
-	add hl, de
-	add hl, de
-	add hl, de
-	add hl, de
-	add hl, de
+rept SPRITEMOVEDATA_FIELDS
+	add hl,de
+endr
 	ld a, [hl]
 	ret
 ; 1a47
 
-Function1a47:: ; 1a47
+GetInitialFacing:: ; 1a47
 	push bc
 	push de
 	ld e, a
 	ld d, 0
-	ld hl, Data4273 + 1
-	add hl, de
-	add hl, de
-	add hl, de
-	add hl, de
-	add hl, de
-	add hl, de
-	ld a, BANK(Data4273)
+	ld hl, SpriteMovementData + 1 ; init facing
+rept SPRITEMOVEDATA_FIELDS
+	add hl,de
+endr
+	ld a, BANK(SpriteMovementData)
 	call GetFarByte
+rept 2
 	add a
-	add a
+endr
 	and $c
 	pop de
 	pop bc
 	ret
 ; 1a61
 
-
-Function1a61:: ; 1a61
+CopySpriteMovementData:: ; 1a61
 	ld l, a
 	ld a, [hROMBank]
 	push af
-	ld a, BANK(Data4273)
+	ld a, BANK(SpriteMovementData)
 	rst Bankswitch
 	ld a, l
 	push bc
 
-	call Function1a71
+	call .CopyData
 
 	pop bc
 	pop af
@@ -543,68 +530,72 @@ Function1a61:: ; 1a61
 	ret
 ; 1a71
 
-Function1a71:: ; 1a71
-	ld hl, $0003
+.CopyData: ; 1a71
+	ld hl, OBJECT_MOVEMENTTYPE
 	add hl, de
 	ld [hl], a
+
 	push de
 	ld e, a
 	ld d, 0
-	ld hl, Data4273 + 1
+	ld hl, SpriteMovementData + 1 ; init facing
+rept SPRITEMOVEDATA_FIELDS
 	add hl, de
-	add hl, de
-	add hl, de
-	add hl, de
-	add hl, de
-	add hl, de
+endr
 	ld b, h
 	ld c, l
 	pop de
+
 	ld a, [bc]
 	inc bc
 	rlca
 	rlca
-	and $c
-	ld hl, $0008
+	and %00001100
+	ld hl, OBJECT_FACING
 	add hl, de
 	ld [hl], a
+
 	ld a, [bc]
 	inc bc
-	ld hl, $000b
+	ld hl, OBJECT_ACTION
 	add hl, de
 	ld [hl], a
+
 	ld a, [bc]
 	inc bc
-	ld hl, $0004
+	ld hl, OBJECT_FLAGS1
 	add hl, de
 	ld [hl], a
+
 	ld a, [bc]
 	inc bc
-	ld hl, $0005
+	ld hl, OBJECT_FLAGS2
 	add hl, de
 	ld [hl], a
+
 	ld a, [bc]
 	inc bc
-	ld hl, $0006
+	ld hl, OBJECT_PALETTE
 	add hl, de
 	ld [hl], a
 	ret
 ; 1aae
 
-Function1aae:: ; 1aae
+_GetMovementByte:: ; 1aae
+; Switch to the movement data bank
 	ld a, [hROMBank]
 	push af
 	ld a, [hli]
 	rst Bankswitch
-
+; Load the current script byte as given by OBJECT_MOVEMENT_BYTE_INDEX, and increment OBJECT_MOVEMENT_BYTE_INDEX
 	ld a, [hli]
 	ld d, [hl]
-	ld hl, $001b
+	ld hl, OBJECT_MOVEMENT_BYTE_INDEX
 	add hl, bc
 	add [hl]
 	ld e, a
 	ld a, d
-	adc $0
+	adc 0
 	ld d, a
 	inc [hl]
 	ld a, [de]
@@ -616,66 +607,64 @@ Function1aae:: ; 1aae
 	ret
 ; 1ac6
 
-Function1ac6:: ; 1ac6
+SetVramState_Bit0:: ; 1ac6
 	ld hl, VramState
 	set 0, [hl]
 	ret
 ; 1acc
 
-Function1acc:: ; 1acc
+ResetVramState_Bit0:: ; 1acc
 	ld hl, VramState
 	res 0, [hl]
 	ret
 ; 1ad2
 
-
-Function1ad2:: ; 1ad2
+UpdateSprites:: ; 1ad2
 	ld a, [VramState]
 	bit 0, a
 	ret z
+
 	callba Function55e0
-	callba Function5920
+	callba _UpdateSprites
 	ret
 ; 1ae5
 
-
-Function1ae5:: ; 1ae5
-	ld bc, $0028
-	ld hl, $d4d6
+GetObjectStruct:: ; 1ae5
+	ld bc, OBJECT_STRUCT_LENGTH
+	ld hl, ObjectStructs
 	call AddNTimes
 	ld b, h
 	ld c, l
 	ret
 ; 1af1
 
-Function1af1:: ; 1af1
-	ld hl, $0000
+GetObjectSprite:: ; 1af1
+	ld hl, OBJECT_SPRITE
 	add hl, bc
 	ld a, [hl]
 	and a
 	ret
 ; 1af8
 
-Function1af8:: ; 1af8
+SetSpriteDirection:: ; 1af8
+	; preserves other flags
 	push af
-	ld hl, $0008
+	ld hl, OBJECT_FACING
 	add hl, bc
 	ld a, [hl]
-	and $f3
+	and %11110011
 	ld e, a
 	pop af
-	and $c
+	and %00001100
 	or e
 	ld [hl], a
 	ret
 ; 1b07
 
-
 GetSpriteDirection:: ; 1b07
-	ld hl, $0008
+	ld hl, OBJECT_FACING
 	add hl, bc
 	ld a, [hl]
-	and $c
+	and %00001100
 	ret
 ; 1b0f
-
